@@ -3,6 +3,7 @@ import {AuthController} from "@/controllers/auth/AuthController";
 import {useToast} from "@/hooks/use-toast";
 import {Button, CardContent, CardDescription, CardHeader, CardTitle, Input, Label} from "@/components/ui";
 import Link from "next/link";
+import {useMutation} from "@tanstack/react-query";
 
 type LoginFormProps = {
   startForgotPasswordFlow: () => void;
@@ -11,26 +12,46 @@ export function LoginForm({
   startForgotPasswordFlow
 }: LoginFormProps) {
   const { toast } = useToast()
+  const login = useMutation({
+    mutationFn: (AuthController.login),
+    onError: (error) => {
+      console.log(error)
+      toast({
+        title: error.message,
+        variant: 'destructive',
+      });
+    },
+    onSuccess: (data) => {
+      toast({
+        title: data.message
+      });
+      console.log(data);
+    },
+  })
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('gatvik03@gmail.com');
+  const [password, setPassword] = useState('P@ssword1');
 
-  async function login() {
-    const result = await AuthController.login({
+  async function submit() {
+    login.mutate({
       email,
       password
     });
-
-    if (result.error) {
-      toast({
-        title: result.message,
-        variant: 'destructive',
-      });
-    } else {
-      toast({
-        title: result.message
-      });
-    }
+    // const result = await AuthController.login({
+    //   email,
+    //   password
+    // });
+    //
+    // if (result.error) {
+    //   toast({
+    //     title: result.message,
+    //     variant: 'destructive',
+    //   });
+    // } else {
+    //   toast({
+    //     title: result.message
+    //   });
+    // }
   }
   return (
     <>
@@ -72,7 +93,7 @@ export function LoginForm({
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <Button type="submit" className="w-full" onClick={login}>
+          <Button type="submit" className="w-full" onClick={submit}>
             Login
           </Button>
         </div>

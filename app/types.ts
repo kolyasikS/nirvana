@@ -33,3 +33,10 @@ interface ValidationResult {
 interface ValidationOptions {
   required?: boolean;
 }
+
+interface ServerResponseError {
+  type: string;
+  title: string;
+  status: number;
+  errors: any[];
+}
