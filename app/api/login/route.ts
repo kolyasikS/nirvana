@@ -6,7 +6,6 @@ import {MainError, ResponseError} from "@lib/errors";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  console.log(`${API_URL}/auth/login`)
   return await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
     body: JSON.stringify(body),
