@@ -1,9 +1,11 @@
 import {useState} from "react";
-import {AuthController} from "@/controllers/auth/AuthController";
+import {AuthController} from "@/controllers/auth/Auth.controller";
 import {useToast} from "@/hooks/use-toast";
-import {Button, CardContent, CardDescription, CardHeader, CardTitle, Input, Label} from "@/components/ui";
+import {Button, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Loader} from "@/components/ui";
 import Link from "next/link";
 import {useMutation} from "@tanstack/react-query";
+import {useRouter} from "next/navigation";
+import {userStore} from "@lib/stores";
 
 type LoginFormProps = {
   startForgotPasswordFlow: () => void;
@@ -11,21 +13,28 @@ type LoginFormProps = {
 export function LoginForm({
   startForgotPasswordFlow
 }: LoginFormProps) {
-  const { toast } = useToast()
-  const login = useMutation({
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const loginMutation = useMutation({
     mutationFn: (AuthController.login),
     onError: (error) => {
-      console.log(error)
       toast({
         title: error.message,
         variant: 'destructive',
       });
     },
     onSuccess: (data) => {
+      console.log(data)
+      userStore.setUser({
+        id: data.userId
+      });
+      console.log(userStore)
+
       toast({
         title: data.message
       });
-      console.log(data);
+      router.push('/dashboard');
     },
   })
 
@@ -33,25 +42,12 @@ export function LoginForm({
   const [password, setPassword] = useState('P@ssword1');
 
   async function submit() {
-    login.mutate({
-      email,
-      password
-    });
-    // const result = await AuthController.login({
-    //   email,
-    //   password
-    // });
-    //
-    // if (result.error) {
-    //   toast({
-    //     title: result.message,
-    //     variant: 'destructive',
-    //   });
-    // } else {
-    //   toast({
-    //     title: result.message
-    //   });
-    // }
+    if (!loginMutation.isPending) {
+      loginMutation.mutate({
+        email,
+        password
+      });
+    }
   }
   return (
     <>
@@ -94,7 +90,7 @@ export function LoginForm({
             />
           </div>
           <Button type="submit" className="w-full" onClick={submit}>
-            Login
+            {loginMutation.isPending ? <Loader/> : 'Login'}
           </Button>
         </div>
       </CardContent>

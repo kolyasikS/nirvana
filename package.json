@@ -26,9 +26,9 @@
     "input-otp": "^1.2.4",
     "lucide-react": "^0.446.0",
     "mobx-react-lite": "^4.0.7",
-    "next": "14.2.13",
-    "react": "^18",
-    "react-dom": "^18",
+    "next": "^15.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "yup": "^1.4.0"

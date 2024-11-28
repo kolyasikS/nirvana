@@ -8,7 +8,7 @@ import {
   Label,
 } from "@/components/ui";
 import {useToast} from "@/hooks/use-toast";
-import {AuthController} from "@/controllers/auth/AuthController";
+import {AuthController} from "@/controllers/auth/Auth.controller";
 
 type ForgotPasswordStepProps = {
   nextStep: () => void;

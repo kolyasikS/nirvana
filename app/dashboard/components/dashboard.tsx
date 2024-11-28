@@ -1,23 +1,19 @@
+'use client';
+
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  CreditCard,
   File,
   Home,
   LineChart,
   ListFilter,
-  MoreVertical,
   Package,
   Package2,
   PanelLeft,
   Search,
   Settings,
   ShoppingCart,
-  Truck,
   Users2,
 } from "lucide-react"
 
@@ -28,7 +24,6 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import {
   DropdownMenu,
@@ -39,13 +34,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination"
-import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Table,
@@ -58,8 +46,6 @@ import {
 import {
   Tabs,
   TabsContent,
-  TabsList,
-  TabsTrigger,
 } from "@/components/ui/tabs"
 import {
   Tooltip,
@@ -71,29 +57,29 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle, Input
 } from "@/components/ui";
+import {observer} from "mobx-react-lite";
+import {useSuspenseQuery} from "@tanstack/react-query";
+import {allUsersOption} from "@lib/tanstack/queryOptions";
+import {uppercaseWord} from "@lib/utils";
+import {useState} from "react";
 
-export default function Dashboard() {
+export const Dashboard = observer(() => {
+  const { data: users } = useSuspenseQuery(allUsersOption);
+  const [selectedUser, setSelectedUser] = useState<null | IUserDetails>(null);
+
   return (
     <TooltipProvider>
       <div className="flex min-h-screen w-full flex-col bg-gray-100/40 dark:bg-zinc-800/40">
         <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-white sm:flex dark:bg-background">
           <nav className="flex flex-col items-center gap-4 px-2 sm:py-4">
-            <Link
-              href="#"
-              className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-gray-900 text-lg font-semibold text-gray-50 md:h-8 md:w-8 md:text-base dark:bg-gray-50 dark:text-gray-900"
-            >
-              <Package2 className="h-4 w-4 transition-all group-hover:scale-110"/>
-              <span className="sr-only">Acme Inc</span>
-            </Link>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-950 md:h-8 md:w-8 dark:text-gray-400 dark:hover:text-gray-50"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-950 md:h-8 md:w-8 bg-gray-100 dark:bg-gray-800  dark:text-gray-400 dark:hover:text-gray-50"
                 >
                   <Home className="h-5 w-5"/>
                   <span className="sr-only">Dashboard</span>
@@ -105,7 +91,7 @@ export default function Dashboard() {
               <TooltipTrigger asChild>
                 <Link
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-900 transition-colors hover:text-gray-950 md:h-8 md:w-8 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-900 transition-colors hover:text-gray-950 md:h-8 md:w-8 dark:text-gray-50 dark:hover:text-gray-50"
                 >
                   <ShoppingCart className="h-5 w-5"/>
                   <span className="sr-only">Orders</span>
@@ -226,18 +212,8 @@ export default function Dashboard() {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="#">Dashboard</Link>
+                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
                   </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator/>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="#">Orders</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator/>
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Recent Orders</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -276,63 +252,14 @@ export default function Dashboard() {
             </DropdownMenu>
           </header>
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
-            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
-              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-                <Card
-                  className="sm:col-span-2 dark:bg-background dark:border-zinc-800"
-                  x-chunk="A card for an orders dashboard with a description and button to create new order."
-                >
-                  <CardHeader className="pb-3">
-                    <CardTitle>Your Orders</CardTitle>
-                    <CardDescription className="text-balance max-w-lg leading-relaxed">
-                      Introducing Our Dynamic Orders Dashboard for Seamless
-                      Management and Insightful Analysis.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardFooter>
-                    <Button>Create New Order</Button>
-                  </CardFooter>
-                </Card>
-                <Card
-                  className={'dark:bg-background dark:border-zinc-800'}
-                  x-chunk="A stats card showing this week's total sales in USD, the percentage difference from last week, and a progress bar.">
-                  <CardHeader className="pb-2">
-                    <CardDescription>This Week</CardDescription>
-                    <CardTitle className="text-4xl">$1,329</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      +25% from last week
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Progress value={25} aria-label="25% increase"/>
-                  </CardFooter>
-                </Card>
-                <Card
-                  className={'dark:bg-background dark:border-zinc-800'}
-                  x-chunk="A stats card showing this month's total sales in USD, the percentage difference from last month, and a progress bar.">
-                  <CardHeader className="pb-2">
-                    <CardDescription>This Month</CardDescription>
-                    <CardTitle className="text-4xl">$5,329</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      +10% from last month
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Progress value={12} aria-label="12% increase"/>
-                  </CardFooter>
-                </Card>
-              </div>
+            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-4">
               <Tabs defaultValue="week">
                 <div className="flex items-center">
-                  <TabsList>
+                  {/*<TabsList>
                     <TabsTrigger value="week">Week</TabsTrigger>
                     <TabsTrigger value="month">Month</TabsTrigger>
                     <TabsTrigger value="year">Year</TabsTrigger>
-                  </TabsList>
+                  </TabsList>*/}
                   <div className="ml-auto flex items-center gap-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -374,177 +301,61 @@ export default function Dashboard() {
                     className={'dark:border-zinc-800'}
                     x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
                     <CardHeader className="px-7">
-                      <CardTitle>Orders</CardTitle>
+                      <CardTitle>Users</CardTitle>
                       <CardDescription>
-                        Recent orders from your store.
+                        Members of «Nirvana» hotel.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Customer</TableHead>
+                            <TableHead>Full Name</TableHead>
                             <TableHead className="hidden sm:table-cell">
-                              Type
+                              Post
                             </TableHead>
                             <TableHead className="hidden sm:table-cell">
-                              Status
+                              Gender
                             </TableHead>
                             <TableHead className="hidden md:table-cell">
-                              Date
+                              Email Confirmation Status
                             </TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          <TableRow className="bg-gray-100 dark:bg-zinc-800">
-                            <TableCell>
-                              <div className="font-medium">Liam Johnson</div>
-                              <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                liam@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-23
-                            </TableCell>
-                            <TableCell className="text-right">$250.00</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Olivia Smith</div>
-                              <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                olivia@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Refund
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="outline">
-                                Declined
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-24
-                            </TableCell>
-                            <TableCell className="text-right">$150.00</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Noah Williams</div>
-                              <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                noah@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Subscription
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-25
-                            </TableCell>
-                            <TableCell className="text-right">$350.00</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Emma Brown</div>
-                              <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                emma@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-26
-                            </TableCell>
-                            <TableCell className="text-right">$450.00</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Liam Johnson</div>
-                              <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                liam@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-23
-                            </TableCell>
-                            <TableCell className="text-right">$250.00</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Olivia Smith</div>
-                              <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                olivia@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Refund
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="outline">
-                                Declined
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-24
-                            </TableCell>
-                            <TableCell className="text-right">$150.00</TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Emma Brown</div>
-                              <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                emma@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-26
-                            </TableCell>
-                            <TableCell className="text-right">$450.00</TableCell>
-                          </TableRow>
+                          {users.map((user: IUserDetails) => (
+                            <TableRow
+                              key={user.id}
+                              className={`${user.id === selectedUser?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
+                              onClick={() => setSelectedUser(user)}
+                            >
+                              <TableCell>
+                                <div className="font-medium">{user.firstName}&nbsp;;{user.lastName}</div>
+                                <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
+                                  {user.email}
+                                </div>
+                              </TableCell>
+                              <TableCell className="hidden sm:table-cell">
+                                {''} {/*Here user post will be*/}
+                              </TableCell>
+                              <TableCell className="hidden sm:table-cell">
+                                <Badge className="text-xs" variant="outline">
+                                  {uppercaseWord(user.sex)}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell">
+                                {user.emailConfirmed ? 'Confirmed' : 'Pending'}
+                              </TableCell>
+                            </TableRow>
+                          ))}
                         </TableBody>
                       </Table>
                     </CardContent>
                   </Card>
                 </TabsContent>
               </Tabs>
-            </div>
-            <div>
+            </div> {/*lg:col-span-2*/}
+            {/*<div>
               <Card
                 className="overflow-hidden dark:border-zinc-800"
                 x-chunk="An order details card with details, shipping information, customer information and payment information."
@@ -700,10 +511,12 @@ export default function Dashboard() {
                   </Pagination>
                 </CardFooter>
               </Card>
-            </div>
+            </div>*/}
           </main>
         </div>
       </div>
     </TooltipProvider>
   )
-}
+})
+
+export default Dashboard;

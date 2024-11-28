@@ -40,3 +40,17 @@ interface ServerResponseError {
   status: number;
   errors: any[];
 }
+
+interface IUser {
+  id: string;
+  role: string;
+}
+
+interface IUserDetails {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  sex: string;
+  emailConfirmed: boolean;
+}

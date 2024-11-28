@@ -98,3 +98,6 @@ export {
   TooltipProvider,
   TooltipTrigger
 } from './tooltip';
+export {
+  Loader
+} from './loader';
