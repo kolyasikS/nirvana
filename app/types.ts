@@ -24,6 +24,11 @@ interface SetNewPasswordDto {
   confirmPassword: string;
 }
 
+// Controllers - AdminController
+interface GetUser {
+  userId: string;
+}
+
 // Validation
 interface ValidationResult {
   error: boolean;

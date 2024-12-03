@@ -27,7 +27,8 @@ export function LoginForm({
     onSuccess: (data) => {
       console.log(data)
       userStore.setUser({
-        id: data.userId
+        id: data.userId,
+        role: data.role,
       });
       console.log(userStore)
 

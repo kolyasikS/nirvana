@@ -3,5 +3,9 @@ export const isServer = () => {
 }
 
 export const uppercaseWord = (word: string) => {
-  return word[0].toUpperCase() + word.slice(1);
+  if (word) {
+    return word[0].toUpperCase() + word.slice(1);
+  } else {
+    return '';
+  }
 }
