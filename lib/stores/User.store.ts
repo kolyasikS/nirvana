@@ -19,6 +19,10 @@ class UserStore {
       role
     };
   }
+
+  clearUser(): void {
+    this.user = null;
+  }
 }
 
 export const userStore = new UserStore();

@@ -11,7 +11,7 @@ export function UpdateUserProfile({
 }: Props) {
   const [isLoading, setIsLoading] = useState(false)
 
-  const [form, setForm] = useState(user);
+  const [form, setForm] = useState<IUpdateUserDetails>(user);
 
   const updateUserProfileHandler = () => {} // :REPLACE on mutation
   return (

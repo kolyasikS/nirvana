@@ -5,8 +5,8 @@ import {Button} from "@/components/ui";
 import {Loader} from "lucide-react";
 
 type Props = {
-  form: IUserDetails;
-  setForm: Dispatch<SetStateAction<IUserDetails>>;
+  form: IUpdateUserDetails;
+  setForm: Dispatch<SetStateAction<IUpdateUserDetails>>;
   onSubmit: () => void;
   btnLabel: string;
   isLoading: boolean;
@@ -50,8 +50,8 @@ const UserProfileForm = ({
           id="post"
           type="text"
           placeholder="Manager"
-          value={'MOCK'}
-          onChange={(e) => setForm({...form, firstName: e.target.value})}
+          value={form.role}
+          onChange={(e) => setForm({...form, role: e.target.value})}
           label={'Post'}
         />
         <FormInputBox

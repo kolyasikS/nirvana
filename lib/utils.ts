@@ -1,3 +1,5 @@
+import {ResponseError} from "@lib/errors";
+
 export const isServer = () => {
   return typeof window === 'undefined';
 }
@@ -7,5 +9,24 @@ export const uppercaseWord = (word: string) => {
     return word[0].toUpperCase() + word.slice(1);
   } else {
     return '';
+  }
+}
+
+export const makeResponse = async (
+  nextResponse: Response,
+  message: string = '',
+): Promise<IResponse> => {
+  const error = !nextResponse.ok;
+  let data;
+  try {
+    data = await nextResponse.json();
+  } catch {
+    data = null;
+  }
+
+  return {
+    message: data?.message || message,
+    error,
+    data
   }
 }

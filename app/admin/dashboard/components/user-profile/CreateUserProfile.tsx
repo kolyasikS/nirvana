@@ -10,8 +10,7 @@ export function CreateUserProfile() {
     lastName: '',
     email: '',
     sex: '',
-    password: '',
-    post: '',
+    role: '',
   });
 
   const updateUserProfileHandler = () => {} // :REPLACE on mutation

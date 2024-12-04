@@ -46,6 +46,12 @@ interface ServerResponseError {
   errors: any[];
 }
 
+interface IResponse {
+  message: string;
+  data: any;
+  error: boolean;
+}
+
 interface IUser {
   id: string;
   role: string;
@@ -57,5 +63,14 @@ interface IUserDetails {
   firstName: string;
   lastName: string;
   sex: string;
+  role: string;
   emailConfirmed: boolean;
+}
+
+interface IUpdateUserDetails {
+  email: string;
+  firstName: string;
+  lastName: string;
+  sex: string;
+  role: string;
 }

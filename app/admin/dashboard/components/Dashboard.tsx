@@ -59,27 +59,46 @@ import {
   CardTitle,
 } from "@/components/ui";
 import {observer} from "mobx-react-lite";
-import {useSuspenseQuery} from "@tanstack/react-query";
+import {useMutation, useSuspenseQuery} from "@tanstack/react-query";
 import {uppercaseWord} from "@lib/utils";
 import {useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import {getAllUsersOption} from "@lib/query/admin/queryOptions";
 import UserProfileCard from "@/app/admin/dashboard/components/user-profile/UserProfileCard";
+import {AuthController} from "@/controllers/auth/Auth.controller";
+import {userStore} from "@lib/stores";
+import {toast} from "@/hooks/use-toast";
 
 export const Dashboard = observer(() => {
   const { data: users } = useSuspenseQuery(getAllUsersOption);
-
   const router = useRouter()
 
   const [selectedUser, setSelectedUser] = useState<null | IUserDetails>(null);
   const [isUserCreating, setIsUserCreating] = useState<boolean>(false);
 
-  const showUserProfileCard = selectedUser || isUserCreating;
+  const showUserProfileCard = !!selectedUser || isUserCreating;
+
+  const logout = useMutation({
+    mutationFn: (AuthController.logout),
+    onError: (error) => {
+      toast({
+        title: error.message,
+        variant: 'destructive',
+      });
+    },
+    onSuccess: (data) => {
+      userStore.clearUser();
+      toast({
+        title: data.message
+      });
+      router.push('/login');
+    },
+  })
 
   return (
     <TooltipProvider>
       <div className="flex min-h-screen w-full flex-col bg-gray-100/40 dark:bg-zinc-800/40">
-        <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-white sm:flex dark:bg-background">
+        {/*<aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-white sm:flex dark:bg-background">
           <nav className="flex flex-col items-center gap-4 px-2 sm:py-4">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -156,8 +175,9 @@ export const Dashboard = observer(() => {
               <TooltipContent side="right">Settings</TooltipContent>
             </Tooltip>
           </nav>
-        </aside>
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+        </aside>*/}
+        {/*<div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">*/}
+        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-0">
           <header
             className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-white px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 ">
             <Sheet>
@@ -219,7 +239,7 @@ export const Dashboard = observer(() => {
                 <BreadcrumbList>
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                      <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                      <BreadcrumbPage>Admin Dashboard</BreadcrumbPage>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
@@ -231,22 +251,16 @@ export const Dashboard = observer(() => {
                     size="icon"
                     className="overflow-hidden rounded-full"
                   >
-                    <Image
-                      src="/placeholder-user.jpg"
-                      width={36}
-                      height={36}
-                      alt="Avatar"
-                      className="overflow-hidden rounded-full"
-                    />
+                    <Settings className="h-5 w-5"/>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  {/*<DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator/>
                   <DropdownMenuItem>Settings</DropdownMenuItem>
                   <DropdownMenuItem>Support</DropdownMenuItem>
-                  <DropdownMenuSeparator/>
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                  <DropdownMenuSeparator/>*/}
+                  <DropdownMenuItem onClick={logout.mutate as any}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

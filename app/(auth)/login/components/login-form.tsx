@@ -25,21 +25,19 @@ export function LoginForm({
       });
     },
     onSuccess: (data) => {
-      console.log(data)
       userStore.setUser({
         id: data.userId,
         role: data.role,
       });
-      console.log(userStore)
 
       toast({
         title: data.message
       });
-      router.push('/dashboard');
+      router.push('/admin/dashboard');
     },
   })
 
-  const [email, setEmail] = useState('gatvik03@gmail.com');
+  const [email, setEmail] = useState('admin@localhost.com');
   const [password, setPassword] = useState('P@ssword1');
 
   async function submit() {

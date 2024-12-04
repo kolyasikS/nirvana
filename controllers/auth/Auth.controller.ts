@@ -3,7 +3,7 @@ import {WEB_URL} from "@lib/constants";
 import {validateCode, validateEmail, validatePassword} from "@lib/validation/general";
 import {axios} from "@lib/axios";
 import {MainError, ResponseError} from "@lib/errors";
-import {SUCCESSFULLY_LOGIN_MESSAGE} from "@lib/messages";
+import {makeResponse} from "@lib/utils";
 
 export class AuthController {
 
@@ -13,21 +13,27 @@ export class AuthController {
       throw new MainError(validationResult.message);
     }
 
-    const data = await fetch(`${WEB_URL}/api/login`, {
+    const result = await fetch(`${WEB_URL}/api/login`, {
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
       body: JSON.stringify(loginDto),
-    }).then(res => res.json());
-    console.log(data);
-    if (data.status >= 200 && data.status < 300) {
-      return {
-        ...data,
-        message: SUCCESSFULLY_LOGIN_MESSAGE
-      };
+    }).then((response) => makeResponse(response, 'Log in successfully.'));
+    if (result.error) {
+      throw new ResponseError(result.data)
     } else {
-      throw new ResponseError(data);
+      return result;
+    }
+  }
+
+  static async logout() {
+    const result = await fetch(`${WEB_URL}/api/logout`)
+      .then((response) => makeResponse(response, 'Log out successfully.'));
+    if (result.error) {
+      throw new MainError('Log out failed. Try again later.');
+    } else {
+      return result;
     }
   }
 
