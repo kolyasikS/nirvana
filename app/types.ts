@@ -23,6 +23,9 @@ interface SetNewPasswordDto {
   newPassword: string;
   confirmPassword: string;
 }
+interface EmailConfirmDto {
+  code: string;
+}
 
 
 // Controllers - AdminController

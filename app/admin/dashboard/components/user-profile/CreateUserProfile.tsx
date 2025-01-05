@@ -34,8 +34,12 @@ export function CreateUserProfile({
 
       const previousUsers = queryClient.getQueryData<IUserDetails[]>([GET_ALL_USERS_QK]);
 
+      const newUserWithId = {
+        ...newUser,
+        id: newUser.email,
+      };
       queryClient.setQueryData<IUserDetails[]>([GET_ALL_USERS_QK], (oldUsers) =>
-        oldUsers ? [...oldUsers, newUser] : [newUser as any]
+        oldUsers ? [...oldUsers, newUserWithId] : [newUserWithId as any]
       );
       onClose();
       return { previousUsers };

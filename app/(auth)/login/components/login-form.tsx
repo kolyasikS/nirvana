@@ -9,9 +9,11 @@ import {userStore} from "@lib/stores";
 
 type LoginFormProps = {
   startForgotPasswordFlow: () => void;
+  moveToEmailConfirmation: () => void;
 }
 export function LoginForm({
-  startForgotPasswordFlow
+  startForgotPasswordFlow,
+  moveToEmailConfirmation,
 }: LoginFormProps) {
   const { toast } = useToast();
   const router = useRouter();
@@ -33,7 +35,12 @@ export function LoginForm({
       toast({
         title: message
       });
-      router.push('/admin/dashboard');
+
+      if (!data.emailConfirmed) {
+        moveToEmailConfirmation();
+      } else {
+        router.push('/admin/dashboard');
+      }
     },
   })
 
