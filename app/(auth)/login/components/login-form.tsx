@@ -24,14 +24,14 @@ export function LoginForm({
         variant: 'destructive',
       });
     },
-    onSuccess: (data) => {
+    onSuccess: ({ data, message }) => {
       userStore.setUser({
         id: data.userId,
         role: data.role,
       });
 
       toast({
-        title: data.message
+        title: message
       });
       router.push('/admin/dashboard');
     },

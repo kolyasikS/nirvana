@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from "react"
-import Image from "next/image"
 import Link from "next/link"
 import {
   Home,
@@ -56,12 +55,12 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle, Loader,
 } from "@/components/ui";
 import {observer} from "mobx-react-lite";
-import {useMutation, useSuspenseQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useSuspenseQuery} from "@tanstack/react-query";
 import {uppercaseWord} from "@lib/utils";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import {getAllUsersOption} from "@lib/query/admin/queryOptions";
 import UserProfileCard from "@/app/admin/dashboard/components/user-profile/UserProfileCard";
@@ -70,8 +69,20 @@ import {userStore} from "@lib/stores";
 import {toast} from "@/hooks/use-toast";
 
 export const Dashboard = observer(() => {
-  const { data: users } = useSuspenseQuery(getAllUsersOption);
+  // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);
+  const {
+    data: users,
+  } = useQuery({
+    ...getAllUsersOption,
+  });
   const router = useRouter()
+
+  console.log(users);
+
+  // const [users, setUsers] = useState(queryUsers);
+  // useEffect(() => {
+  //   setUsers(queryUsers);
+  // }, [queryUsers]);
 
   const [selectedUser, setSelectedUser] = useState<null | IUserDetails>(null);
   const [isUserCreating, setIsUserCreating] = useState<boolean>(false);
@@ -86,14 +97,14 @@ export const Dashboard = observer(() => {
         variant: 'destructive',
       });
     },
-    onSuccess: (data) => {
+    onSuccess: ({ data, message}) => {
       userStore.clearUser();
       toast({
-        title: data.message
+        title: message
       });
       router.push('/login');
     },
-  })
+  });
 
   return (
     <TooltipProvider>
@@ -351,7 +362,7 @@ export const Dashboard = observer(() => {
                                 </div>
                               </TableCell>
                               <TableCell className="hidden sm:table-cell">
-                                {''} {/*Here user post will be*/}
+                                {user.role}
                               </TableCell>
                               <TableCell className="hidden sm:table-cell">
                                 <Badge className="text-xs" variant="outline">
@@ -379,15 +390,15 @@ export const Dashboard = observer(() => {
                 </Button>
               </Tabs>
             </div>
-            <UserProfileCard
-              selectedUser={selectedUser}
-              isUserCreating={isUserCreating}
-              show={showUserProfileCard}
-              close={() => {
-                setSelectedUser(null);
-                setIsUserCreating(false);
-              }}
-            />
+            {showUserProfileCard && (
+              <UserProfileCard
+                selectedUser={selectedUser}
+                close={() => {
+                  setSelectedUser(null);
+                  setIsUserCreating(false);
+                }}
+              />
+            )}
           </main>
         </div>
       </div>

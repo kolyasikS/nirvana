@@ -24,10 +24,26 @@ interface SetNewPasswordDto {
   confirmPassword: string;
 }
 
+
 // Controllers - AdminController
 interface GetUser {
   userId: string;
 }
+interface CreateUserDto {
+  email: string;
+  firstName: string;
+  lastName: string;
+  sex: string;
+  role: string;
+}
+interface UpdateUserDto {
+  id: string;
+  firstName: string;
+  lastName: string;
+  sex: string;
+  role: string;
+}
+
 
 // Validation
 interface ValidationResult {
@@ -66,11 +82,17 @@ interface IUserDetails {
   role: string;
   emailConfirmed: boolean;
 }
-
 interface IUpdateUserDetails {
-  email: string;
+  id: string;
   firstName: string;
   lastName: string;
+  sex: string;
+  role: string;
+}
+interface ICreateUserDetails {
+  firstName: string;
+  lastName: string;
+  email: string;
   sex: string;
   role: string;
 }

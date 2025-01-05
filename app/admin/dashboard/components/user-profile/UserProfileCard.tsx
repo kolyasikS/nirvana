@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import {Button, Card, CardContent, CardHeader, CardTitle} from "@/components/ui";
 import {UpdateUserProfile} from "@/app/admin/dashboard/components/user-profile/UpdateUserProfile";
@@ -5,18 +6,14 @@ import {CreateUserProfile} from "@/app/admin/dashboard/components/user-profile/C
 
 type Props = {
   selectedUser: IUserDetails | null;
-  isUserCreating: boolean;
   close: () => void;
-  show: boolean;
 }
 const UserProfileCard = ({
   selectedUser = null,
-  isUserCreating = false,
   close,
-  show
 }: Props) => {
   return (
-    show && <div>
+    <div>
       <Card
         className="overflow-hidden dark:border-zinc-800"
         x-chunk="An order details card with details, shipping information, customer information and payment information."
@@ -57,7 +54,15 @@ const UserProfileCard = ({
           </div>
         </CardHeader>
         <CardContent className="p-6 text-sm bg-background">
-          {selectedUser ? <UpdateUserProfile user={selectedUser}/> : <CreateUserProfile/>}
+          {selectedUser
+            ? <UpdateUserProfile
+              user={selectedUser}
+              onClose={close}
+            />
+            : <CreateUserProfile
+              onClose={close}
+            />
+          }
             {/*<div className="grid gap-3">
                 <div className="font-semibold">Order Details</div>
                 <ul className="grid gap-3">

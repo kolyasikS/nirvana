@@ -30,3 +30,12 @@ export const makeResponse = async (
     data
   }
 }
+
+export const getOneMessageFromErrorObject = (errors: any) => {
+  const keys = Object.keys(errors);
+  if (keys.length === 0) {
+    return null;
+  } else {
+    return `${keys[0]} ${errors[keys[0]]}`;
+  }
+}

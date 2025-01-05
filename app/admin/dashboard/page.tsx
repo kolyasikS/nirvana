@@ -6,7 +6,7 @@ import {getAllUsersOption} from "@lib/query/admin/queryOptions";
 
 const Page = async () => {
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(getAllUsersOption);
+  await queryClient.prefetchQuery(getAllUsersOption);
 
   return (
     <div>
