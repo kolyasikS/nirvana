@@ -62,32 +62,32 @@ import {useMutation, useQuery, useSuspenseQuery} from "@tanstack/react-query";
 import {uppercaseWord} from "@lib/utils";
 import {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
-import {getAllUsersOption} from "@lib/query/admin/queryOptions";
-import UserProfileCard from "@/app/admin/dashboard/components/user-profile/UserProfileCard";
 import {AuthController} from "@/controllers/auth/Auth.controller";
 import {userStore} from "@lib/stores";
 import {toast} from "@/hooks/use-toast";
+import {USER_ROLES_ENUM} from "@lib/constants";
+import {getAllUsersOption} from "@lib/query/user/queryOptions";
+import Timetable from "@/app/(member)/manager/dashboard/components/worker/Timetable";
+import {CreateTask} from "@/app/(member)/manager/dashboard/components/task/CreateTask";
 
 export const Dashboard = observer(() => {
   // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);
   const {
-    data: users,
-  } = useQuery({
-    ...getAllUsersOption,
-  });
+    data: workers,
+  } = useQuery(
+    getAllUsersOption({ roles: [USER_ROLES_ENUM.Housemaid, USER_ROLES_ENUM.Technician]})
+  );
   const router = useRouter()
 
-  console.log(users);
+  console.log(workers);
 
   // const [users, setUsers] = useState(queryUsers);
   // useEffect(() => {
   //   setUsers(queryUsers);
   // }, [queryUsers]);
 
-  const [selectedUser, setSelectedUser] = useState<null | IUserDetails>(null);
-  const [isUserCreating, setIsUserCreating] = useState<boolean>(false);
-
-  const showUserProfileCard = !!selectedUser || isUserCreating;
+  const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>(null);
+  const [taskCreating, setTaskCreating] = useState<any>(false);
 
   const logout = useMutation({
     mutationFn: (AuthController.logout),
@@ -106,6 +106,13 @@ export const Dashboard = observer(() => {
     },
   });
 
+  const selectWorker = (worker: IUserDetails) => {
+    if (selectedWorker?.id === worker.id) {
+      setSelectedWorker(null);
+    } else {
+      setSelectedWorker(worker);
+    }
+  }
   return (
     <TooltipProvider>
       <div className="flex min-h-screen w-full flex-col bg-gray-100/40 dark:bg-zinc-800/40">
@@ -276,134 +283,132 @@ export const Dashboard = observer(() => {
               </DropdownMenu>
             </div>
           </header>
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
+          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
             {/*lg:col-span-2*/}
-            <div className={`grid auto-rows-max items-start gap-4 md:gap-8 ${showUserProfileCard ? 'lg:col-span-2' : 'lg:col-span-4'}`}>
-              <Tabs defaultValue="week">
-                {/*<div className="flex items-center">
-                  <TabsList>
-                    <TabsTrigger value="week">Week</TabsTrigger>
-                    <TabsTrigger value="month">Month</TabsTrigger>
-                    <TabsTrigger value="year">Year</TabsTrigger>
-                  </TabsList>
-                  <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 gap-1 text-sm"
-                        >
-                          <ListFilter className="h-3.5 w-3.5"/>
-                          <span className="sr-only sm:not-sr-only">Filter</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuCheckboxItem checked>
-                          Fulfilled
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem>
-                          Declined
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem>
-                          Refunded
-                        </DropdownMenuCheckboxItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-7 gap-1 text-sm"
-                    >
-                      <File className="h-3.5 w-3.5"/>
-                      <span className="sr-only sm:not-sr-only">Export</span>
-                    </Button>
-                  </div>
-                </div>*/}
-                <TabsContent value="week">
-                  <Card
-                    className={'dark:border-zinc-800'}
-                    x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
-                    <CardHeader className="px-7">
-                      <CardTitle>Users</CardTitle>
-                      <CardDescription>
-                        Members of «Nirvana» hotel.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Full Name</TableHead>
-                            <TableHead className="hidden sm:table-cell">
-                              Post
-                            </TableHead>
-                            <TableHead className="hidden sm:table-cell">
-                              Gender
-                            </TableHead>
-                            <TableHead className="hidden md:table-cell">
-                              Email Confirmation Status
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {users.map((user: IUserDetails) => (
-                            <TableRow
-                              key={user.id}
-                              className={`${user.id === selectedUser?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
-                              onClick={() => setSelectedUser(user)}
-                            >
-                              <TableCell>
-                                <div className="font-medium">{user.firstName}&nbsp;{user.lastName}</div>
-                                <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                  {user.email}
-                                </div>
-                              </TableCell>
-                              <TableCell className="hidden sm:table-cell">
-                                {user.role}
-                              </TableCell>
-                              <TableCell className="hidden sm:table-cell">
-                                <Badge className="text-xs" variant="outline">
-                                  {uppercaseWord(user.sex)}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="hidden md:table-cell">
-                                {user.emailConfirmed ? 'Confirmed' : 'Pending'}
-                              </TableCell>
+            <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
+              <div
+                className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedWorker ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
+                <Tabs defaultValue="week">
+                  {/*<div className="flex items-center">
+                    <TabsList>
+                      <TabsTrigger value="week">Week</TabsTrigger>
+                      <TabsTrigger value="month">Month</TabsTrigger>
+                      <TabsTrigger value="year">Year</TabsTrigger>
+                    </TabsList>
+                    <div className="flex items-center gap-2">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 gap-1 text-sm"
+                          >
+                            <ListFilter className="h-3.5 w-3.5"/>
+                            <span className="sr-only sm:not-sr-only">Filter</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                          <DropdownMenuSeparator/>
+                          <DropdownMenuCheckboxItem checked>
+                            Fulfilled
+                          </DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem>
+                            Declined
+                          </DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem>
+                            Refunded
+                          </DropdownMenuCheckboxItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 gap-1 text-sm"
+                      >
+                        <File className="h-3.5 w-3.5"/>
+                        <span className="sr-only sm:not-sr-only">Export</span>
+                      </Button>
+                    </div>
+                  </div>*/}
+                  <TabsContent value="week">
+                    <Card
+                      className={'dark:border-zinc-800'}
+                      x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
+                      <CardHeader className="px-7">
+                        <CardTitle>Workers</CardTitle>
+                        <CardDescription>
+                          Members of «Nirvana» hotel.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Full Name</TableHead>
+                              <TableHead className="hidden sm:table-cell">
+                                Post
+                              </TableHead>
+                              <TableHead className="hidden sm:table-cell">
+                                Gender
+                              </TableHead>
+                              <TableHead className="hidden md:table-cell">
+                                Email Confirmation Status
+                              </TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                <Button
-                  className={'mt-5'}
-                  onClick={() => {
-                    setIsUserCreating(true);
-                    setSelectedUser(null);
-                  }}
-                >
-                  Create New User
-                </Button>
-              </Tabs>
+                          </TableHeader>
+                          <TableBody>
+                            {workers.map((user: IUserDetails) => (
+                              <TableRow
+                                key={user.id}
+                                className={`${user.id === selectedWorker?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
+                                onClick={() => selectWorker(user)}
+                              >
+                                <TableCell>
+                                  <div className="font-medium">{user.firstName}&nbsp;{user.lastName}</div>
+                                  <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
+                                    {user.email}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell">
+                                  {user.role}
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell">
+                                  <Badge className="text-xs" variant="outline">
+                                    {uppercaseWord(user.sex)}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="hidden md:table-cell">
+                                  {user.emailConfirmed ? 'Confirmed' : 'Pending'}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              </div>
+              {/*{(*/}
+              {selectedWorker && (
+                <Timetable
+                  worker={selectedWorker}
+                  openTaskCreating={() => setTaskCreating(true)}
+                  close={() => setSelectedWorker(null)}
+                />
+              )}
             </div>
-            {showUserProfileCard && (
-              <UserProfileCard
-                selectedUser={selectedUser}
-                close={() => {
-                  setSelectedUser(null);
-                  setIsUserCreating(false);
-                }}
-              />
-            )}
+            <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
+              {!taskCreating && (
+                <CreateTask onClose={() => setTaskCreating(false)}/>
+              )}
+            </div>
           </main>
         </div>
       </div>
     </TooltipProvider>
-  )
+)
 })
 
 export default Dashboard;

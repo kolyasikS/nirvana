@@ -29,9 +29,7 @@ interface EmailConfirmDto {
 
 
 // Controllers - AdminController
-interface GetUser {
-  userId: string;
-}
+
 interface CreateUserDto {
   email: string;
   firstName: string;
@@ -76,6 +74,7 @@ interface IUser {
   role: string;
 }
 
+
 interface IUserDetails {
   id: string;
   email: string;
@@ -98,4 +97,14 @@ interface ICreateUserDetails {
   email: string;
   sex: string;
   role: string;
+}
+interface ITask {
+  startTime: {
+    hours: string;
+    minutes: string;
+  },
+  endTime: {
+    hours: string;
+    minutes: string;
+  }
 }

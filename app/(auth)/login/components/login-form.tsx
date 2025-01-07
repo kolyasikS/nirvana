@@ -6,6 +6,7 @@ import Link from "next/link";
 import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import {userStore} from "@lib/stores";
+import {USER_ROLES_ENUM} from "@lib/constants";
 
 type LoginFormProps = {
   startForgotPasswordFlow: () => void;
@@ -39,13 +40,25 @@ export function LoginForm({
       if (!data.emailConfirmed) {
         moveToEmailConfirmation();
       } else {
-        router.push('/admin/dashboard');
+        switch (data.role) {
+          case USER_ROLES_ENUM.Administrator:
+            router.push('/admin/dashboard');
+            break;
+          case USER_ROLES_ENUM.Manager:
+            router.push('/manager/dashboard');
+            break;
+          default:
+            toast({
+              title: 'Your role is not available',
+              variant: 'destructive',
+            });
+        }
       }
     },
   })
 
-  const [email, setEmail] = useState('admin@localhost.com');
-  const [password, setPassword] = useState('P@ssword1');
+  const [email, setEmail] = useState('mykola.primachenko@gmail.com');
+  const [password, setPassword] = useState('y1HdQBk#o8&H#U'); // P@ssword1
 
   async function submit() {
     if (!loginMutation.isPending) {

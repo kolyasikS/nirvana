@@ -1,11 +1,24 @@
 import {axios} from "@lib/axios";
-import {ResponseError} from "@lib/errors";
-import {IGetUser} from "@lib/query/admin/queryOptions";
-import {IGetUsers} from "@lib/query/user/queryOptions";
+import {MainError, ResponseError} from "@lib/errors";
+import {validateCreateUserSchema, validateUpdateUserSchema} from "@lib/validation/admin-validation";
 
-export class AdminController {
+export class ManagerController {
 
-  static async getUser({ userId }: IGetUser) {
+  static async getAllUsers() {
+    try {
+      const { data } = await axios.get(`/users`);
+      console.log(data)
+      return data;
+    } catch (error: any) {
+      console.error(error);
+      return {
+        error: true,
+        message: error.message
+      }
+    }
+  }
+
+  static async getUser({ userId }: GetUser) {
     try {
       const { data } = await axios.get(`/users/${userId}`);
       console.log(data)

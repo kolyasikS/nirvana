@@ -5,7 +5,7 @@ import {emailValidationObject, passwordValidationObject} from "@/lib/validation/
 const loginSchema = object({
   email: emailValidationObject.email
     .required('Email is required.'),
-  password: passwordValidationObject.password
+  password: string()
     .required('Password is required.')
 });
 const emailConfirmationSchema = object({

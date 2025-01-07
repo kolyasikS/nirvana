@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
 import {Button, Card, CardContent, CardHeader, CardTitle} from "@/components/ui";
-import {UpdateUserProfile} from "@/app/admin/dashboard/components/user-profile/UpdateUserProfile";
-import {CreateUserProfile} from "@/app/admin/dashboard/components/user-profile/CreateUserProfile";
+import {UpdateUserProfile} from "@/app/(member)/admin/dashboard/components/user-profile/UpdateUserProfile";
+import {CreateUserProfile} from "@/app/(member)/admin/dashboard/components/user-profile/CreateUserProfile";
 
 type Props = {
   selectedUser: IUserDetails | null;
