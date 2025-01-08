@@ -1,29 +1,38 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useToast} from "@/hooks/use-toast";
 import {AdminController} from "@/controllers/admin/Admin.controller";
-import {FormInputBox} from "@/components/ui/form-input-box";
+import {FormInputBox} from "@/components/ui/features/form-input-box";
 import {uppercaseWord} from "@lib/utils";
-import {Button, Label, Loader} from "@/components/ui";
+import {Button, FormTextareaBox, Label, Loader} from "@/components/ui";
 import {validateCreateUserSchema} from "@lib/validation/admin-validation";
 import {GET_ALL_USERS_QK} from "@lib/query/user/queryKeys";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-
-type Props = {
-  onClose: () => void;
-};
+import {TASK_TYPES, USER_ROLES} from "@lib/constants";
+import {TaskController} from "@/controllers/manager/Task.controller";
+import SelectTime from "@/app/(member)/manager/dashboard/components/task/components/SelectTime";
 
 const hours = Array.from({ length: 15 }, (_, i) => String(i + 8).padStart(2, '0'))
 const minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
 
+type Props = {
+  onClose: () => void;
+  userRole: string;
+  userId: string;
+  date: Date;
+};
 export function CreateTask ({
   onClose,
+  userRole,
+  userId,
+  date
 }: Props) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [form, setForm] = useState<ITask>({
+  console.log(date);
+  const [form, setForm] = useState<ICreateTask>({
     startTime: {
       hours: '12',
       minutes: '00',
@@ -32,10 +41,14 @@ export function CreateTask ({
       hours: '13',
       minutes: '30',
     },
+    details: '',
+    typeId: '',
+    date,
+    userId,
   });
 
-  const createUserMutation = useMutation({
-    mutationFn: (AdminController.createUser),
+  const createTaskMutation = useMutation({
+    mutationFn: (TaskController.createTask),
     onMutate: async (newUser: ICreateUserDetails) => {
       await queryClient.cancelQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
 
@@ -70,138 +83,151 @@ export function CreateTask ({
 
   const createUserProfileHandler = async (e: any) => {
     e.preventDefault();
-    if (!createUserMutation.isPending) {
-      const validationResult = await validateCreateUserSchema(form);
-      if (validationResult.error) {
-        toast({
-          title: validationResult.message,
-          variant: 'destructive',
-        });
-        return;
-      }
+    if (!createTaskMutation.isPending) {
+      // const validationResult = await validateCreateUserSchema(form);
+      // if (validationResult.error) {
+      //   toast({
+      //     title: validationResult.message,
+      //     variant: 'destructive',
+      //   });
+      //   return;
+      // }
 
-      createUserMutation.mutate(form);
+      createTaskMutation.mutate(form);
     }
   }
 
+  const availableTaskTypes = useMemo(() =>
+    TASK_TYPES.filter(type =>
+      type.roleId === USER_ROLES.find(role => role.name === userRole)?.id
+    ), [userRole]);
+
+  const setFormStartTimeHours = useCallback((hours: string) =>
+    setForm(form => ({
+      ...form,
+      startTime: {
+        ...form.startTime,
+        hours
+      }
+    }
+  )), []);
+
+  const setFormStartTimeMinutes = useCallback((minutes: string) =>
+    setForm(form => ({
+      ...form,
+      startTime: {
+        ...form.startTime,
+        minutes
+      }
+    }
+  )), []);
+
+  const setFormEndTimeHours = useCallback((hours: string) =>
+    setForm(form => ({
+        ...form,
+        endTime: {
+          ...form.endTime,
+          hours
+        }
+      }
+    )), []);
+
+  const setFormEndTimeMinutes = useCallback((minutes: string) =>
+    setForm(form => ({
+        ...form,
+        endTime: {
+          ...form.endTime,
+          minutes
+        }
+      }
+    )), []);
+
   return (
     <form
-      className="space-y-4 flex flex-col w-full bg-zinc-950 rounded-xl border border-zinc-800 p-5 relative dark:text-gray-50"
+      className="flex flex-col w-full bg-zinc-950 rounded-xl border border-zinc-800 p-5 relative dark:text-gray-50"
       onSubmit={createUserProfileHandler}
     >
-      <h2 className="text-2xl font-bold mb-3">Creating Task</h2>
-      <div className="">
+      <h2 className="text-2xl font-bold mb-5">Creating Task</h2>
+      <div className="space-y-4">
         <div className={''}>
           <h3 className={'font-semibold text-emerald-300 mb-1'}>Start Time</h3>
           <div className={'flex space-x-4 mb-6'}>
-            <div className="flex-1">
-              <Label htmlFor="hour-select">Hour</Label>
-              <Select
-                value={form.startTime.hours}
-                onValueChange={(hours) =>
-                  setForm({
-                    ...form,
-                    startTime: {
-                      ...form.startTime,
-                      hours
-                    }
-                  }
-                )}
-              >
-                <SelectTrigger id="hour-select">
-                  <SelectValue placeholder="Select hour"/>
-                </SelectTrigger>
-                <SelectContent>
-                  {hours.map(hour => (
-                    <SelectItem key={hour} value={hour}>{hour}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="minute-select">Minute</Label>
-              <Select
-                value={form.startTime.minutes}
-                onValueChange={(minutes) =>
-                  setForm({
-                    ...form,
-                    startTime: {
-                      ...form.startTime,
-                      minutes
-                    }
-                  }
-                )}
-              >
-                <SelectTrigger id="minute-select">
-                  <SelectValue placeholder="Select minute"/>
-                </SelectTrigger>
-                <SelectContent>
-                  {minutes.map(minute => (
-                    <SelectItem key={minute} value={minute}>{minute}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectTime
+              value={form.startTime.hours}
+              setValue={setFormStartTimeHours}
+              placeholder={'Select hour'}
+              label={'Hour'}
+              time={hours}
+            />
+            <SelectTime
+              value={form.startTime.minutes}
+              setValue={setFormStartTimeMinutes}
+              placeholder={'Select minute'}
+              label={'Minute'}
+              time={minutes}
+            />
           </div>
         </div>
         <div className={''}>
           <h3 className={'font-semibold text-emerald-300 mb-1'}>End Time</h3>
           <div className={'flex space-x-4 mb-6'}>
+            <SelectTime
+              value={form.endTime.hours}
+              setValue={setFormEndTimeHours}
+              placeholder={'Select hour'}
+              label={'Hour'}
+              time={hours}
+            />
+            <SelectTime
+              value={form.endTime.minutes}
+              setValue={setFormEndTimeMinutes}
+              placeholder={'Select minute'}
+              label={'Minute'}
+              time={minutes}
+            />
+          </div>
+        </div>
+        <div>
+          <h3 className={'font-semibold text-emerald-300 mb-1'}>Selected Time</h3>
+          <p className={'text-lg'}>{form.startTime.hours}:{form.startTime.minutes} — {form.endTime.hours}:{form.endTime.minutes}</p>
+        </div>
+        <div>
+          <FormTextareaBox
+            label={'Details'}
+            labelClassname={'font-semibold text-emerald-300 mb-1 text-base'}
+            placeholder={'Type task details.'}
+            value={form.details}
+            onChange={(e) => setForm({...form, details: e.target.value })}
+          />
+        </div>
+        <div className={''}>
+          <h3 className={'font-semibold text-emerald-300 mb-1'}>Task Type</h3>
+          <div className={'flex space-x-4 mb-6'}>
             <div className="flex-1">
-              <Label htmlFor="hour-select">Hour</Label>
               <Select
-                value={form.endTime.hours}
-                onValueChange={(hours) =>
+                value={form.typeId}
+                onValueChange={(typeId) =>
                   setForm({
                     ...form,
-                    endTime: {
-                      ...form.endTime,
-                      hours
-                    }
+                    typeId
                   }
                 )}
               >
-                <SelectTrigger id="hour-select">
-                  <SelectValue placeholder="Select hour"/>
+                <SelectTrigger id="task-type-select">
+                  <SelectValue placeholder="Select type"/>
                 </SelectTrigger>
                 <SelectContent>
-                  {hours.map(hour => (
-                    <SelectItem key={hour} value={hour}>{hour}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="minute-select">Minute</Label>
-              <Select
-                value={form.endTime.minutes}
-                onValueChange={(minutes) =>
-                  setForm({
-                    ...form,
-                    endTime: {
-                      ...form.endTime,
-                      minutes
-                    }
-                  }
-                )}
-              >
-                <SelectTrigger id="minute-select">
-                  <SelectValue placeholder="Select minute"/>
-                </SelectTrigger>
-                <SelectContent>
-                  {minutes.map(minute => (
-                    <SelectItem key={minute} value={minute}>{minute}</SelectItem>
+                  {availableTaskTypes.map(type => (
+                    <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
         </div>
-        <h3 className={'font-semibold text-emerald-300 mb-1'}>Selected Time</h3>
-        <p className={'text-lg'}>{form.startTime.hours}:{form.startTime.minutes} — {form.endTime.hours}:{form.endTime.minutes}</p>
       </div>
-      <Button type="submit" className="w-full">
-        {createUserMutation.isPending ? <Loader/> : 'Create'}
+      <Button type="submit" className="w-full mt-5">
+        {createTaskMutation.isPending ? <Loader/> : 'Create'}
       </Button>
     </form>
   )

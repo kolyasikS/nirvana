@@ -1,5 +1,5 @@
 import {axios} from "@lib/axios";
-import {ResponseError} from "@lib/errors";
+import {MainError, ResponseError} from "@lib/errors";
 import {IGetUser} from "@lib/query/admin/queryOptions";
 import {IGetUsers} from "@lib/query/user/queryOptions";
 
@@ -12,10 +12,7 @@ export class AdminController {
       return data;
     } catch (error: any) {
       console.error(error);
-      return {
-        error: true,
-        message: error.message
-      }
+      throw new MainError(error.message);
     }
   }
 

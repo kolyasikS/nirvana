@@ -39,3 +39,20 @@ export const getOneMessageFromErrorObject = (errors: any) => {
     return `${keys[0]} ${errors[keys[0]]}`;
   }
 }
+
+export const getWorkDays = (tasks: ITask[]): Date[] => {
+  const uniqueDays: Set<string> = new Set();
+  tasks.forEach(task => {
+    const date = (new Date(task.startTime)).toDateString();
+    uniqueDays.add(date);
+  })
+
+  return [...uniqueDays].map((day: string) => new Date(day));
+}
+
+export const getTaskTime = (task: ITask) => {
+  const startTime = new Date(task.startTime);
+  const endTime = new Date(task.endTime);
+
+  return startTime.toLocaleTimeString('en-US', {minute: '2-digit', hour: '2-digit', hour12: false}) + ' — ' + endTime.toLocaleTimeString('en-US', {minute: '2-digit', hour: '2-digit', hour12: false});
+}

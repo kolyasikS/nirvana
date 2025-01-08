@@ -69,6 +69,8 @@ import {USER_ROLES_ENUM} from "@lib/constants";
 import {getAllUsersOption} from "@lib/query/user/queryOptions";
 import Timetable from "@/app/(member)/manager/dashboard/components/worker/Timetable";
 import {CreateTask} from "@/app/(member)/manager/dashboard/components/task/CreateTask";
+import {ListTasks} from "@/app/(member)/manager/dashboard/components/task/ListTasks";
+import WorkSchedule from "@/app/(member)/manager/dashboard/components/worker/WorkSchedule";
 
 export const Dashboard = observer(() => {
   // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);
@@ -77,7 +79,7 @@ export const Dashboard = observer(() => {
   } = useQuery(
     getAllUsersOption({ roles: [USER_ROLES_ENUM.Housemaid, USER_ROLES_ENUM.Technician]})
   );
-  const router = useRouter()
+  const router = useRouter();
 
   console.log(workers);
 
@@ -86,8 +88,15 @@ export const Dashboard = observer(() => {
   //   setUsers(queryUsers);
   // }, [queryUsers]);
 
-  const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>(null);
-  const [taskCreating, setTaskCreating] = useState<any>(false);
+  const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>({
+    "id": "9f19739a-02ad-47a0-91d7-ec467bd8ce31",
+    "firstName": "Kytylo",
+    "lastName": "Gotvyanski",
+    "sex": "male",
+    "email": "kyrylo.hotvianskyi@nure.ua",
+    "emailConfirmed": true,
+    "role": "Housemaid"
+  });
 
   const logout = useMutation({
     mutationFn: (AuthController.logout),
@@ -283,11 +292,11 @@ export const Dashboard = observer(() => {
               </DropdownMenu>
             </div>
           </header>
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-[100px]">
             {/*lg:col-span-2*/}
             <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
               <div
-                className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedWorker ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
+                className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedWorker ? 'lg:col-span-3' : 'lg:col-span-3'}`}>
                 <Tabs defaultValue="week">
                   {/*<div className="flex items-center">
                     <TabsList>
@@ -391,24 +400,18 @@ export const Dashboard = observer(() => {
                 </Tabs>
               </div>
               {/*{(*/}
-              {selectedWorker && (
-                <Timetable
-                  worker={selectedWorker}
-                  openTaskCreating={() => setTaskCreating(true)}
-                  close={() => setSelectedWorker(null)}
-                />
-              )}
             </div>
-            <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
-              {!taskCreating && (
-                <CreateTask onClose={() => setTaskCreating(false)}/>
-              )}
-            </div>
+            {selectedWorker && (
+              <WorkSchedule
+                selectedWorker={selectedWorker}
+                setSelectedWorker={setSelectedWorker}
+              />
+            )}
           </main>
         </div>
       </div>
     </TooltipProvider>
-)
+  )
 })
 
 export default Dashboard;

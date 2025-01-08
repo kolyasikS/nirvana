@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useToast} from "@/hooks/use-toast";
 import {AdminController} from "@/controllers/admin/Admin.controller";
-import {FormInputBox} from "@/components/ui/form-input-box";
+import {FormInputBox} from "@/components/ui/features/form-input-box";
 import {uppercaseWord} from "@lib/utils";
 import {Button, Loader} from "@/components/ui";
 import {GET_ALL_USERS_QK} from "@lib/query/admin/queryKeys";

@@ -74,16 +74,6 @@ interface IUser {
   role: string;
 }
 
-
-interface IUserDetails {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  sex: string;
-  role: string;
-  emailConfirmed: boolean;
-}
 interface IUpdateUserDetails {
   id: string;
   firstName: string;
@@ -98,7 +88,7 @@ interface ICreateUserDetails {
   sex: string;
   role: string;
 }
-interface ITask {
+interface ICreateTask {
   startTime: {
     hours: string;
     minutes: string;
@@ -106,5 +96,35 @@ interface ITask {
   endTime: {
     hours: string;
     minutes: string;
-  }
+  },
+  details: string;
+  typeId: string;
+  date: Date;
+  userId: string;
+}
+
+// entities
+interface IUserDetails {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  sex: string;
+  role: string;
+  emailConfirmed: boolean;
+}
+
+interface ITask {
+  id: string;
+  assignment: {
+    name: string;
+    role: {
+      name: string;
+    }
+  };
+  user: any;
+  details: string;
+  startTime: string;
+  endTime: string;
+  isCompleted: boolean;
 }

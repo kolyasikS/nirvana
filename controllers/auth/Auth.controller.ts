@@ -75,10 +75,7 @@ export class AuthController {
       return data;
     } catch (error: any) {
       console.error(error);
-      return {
-        error: true,
-        message: error.message
-      }
+      throw new MainError(error.message);
     }
   }
 
