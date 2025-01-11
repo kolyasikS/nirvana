@@ -71,6 +71,7 @@ import Timetable from "@/app/(member)/manager/dashboard/components/worker/Timeta
 import {CreateTask} from "@/app/(member)/manager/dashboard/components/task/CreateTask";
 import {ListTasks} from "@/app/(member)/manager/dashboard/components/task/ListTasks";
 import WorkSchedule from "@/app/(member)/manager/dashboard/components/worker/WorkSchedule";
+import WorkerCharts from "@/app/(member)/manager/dashboard/components/worker/WorkerCharts";
 
 export const Dashboard = observer(() => {
   // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);
@@ -81,22 +82,23 @@ export const Dashboard = observer(() => {
   );
   const router = useRouter();
 
-  console.log(workers);
-
   // const [users, setUsers] = useState(queryUsers);
   // useEffect(() => {
   //   setUsers(queryUsers);
   // }, [queryUsers]);
 
-  const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>({
-    "id": "9f19739a-02ad-47a0-91d7-ec467bd8ce31",
-    "firstName": "Kytylo",
-    "lastName": "Gotvyanski",
-    "sex": "male",
-    "email": "kyrylo.hotvianskyi@nure.ua",
-    "emailConfirmed": true,
-    "role": "Housemaid"
-  });
+  const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>(
+    null
+    // {
+    //   "id": "9f19739a-02ad-47a0-91d7-ec467bd8ce31",
+    //   "firstName": "Kytylo",
+    //   "lastName": "Gotvyanski",
+    //   "sex": "male",
+    //   "email": "kyrylo.hotvianskyi@nure.ua",
+    //   "emailConfirmed": true,
+    //   "role": "Housemaid"
+    // }
+  );
 
   const logout = useMutation({
     mutationFn: (AuthController.logout),
@@ -266,7 +268,7 @@ export const Dashboard = observer(() => {
                 <BreadcrumbList>
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                      <BreadcrumbPage>Admin Dashboard</BreadcrumbPage>
+                      <BreadcrumbPage>Manager Dashboard</BreadcrumbPage>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
@@ -407,6 +409,7 @@ export const Dashboard = observer(() => {
                 setSelectedWorker={setSelectedWorker}
               />
             )}
+            <WorkerCharts/>
           </main>
         </div>
       </div>

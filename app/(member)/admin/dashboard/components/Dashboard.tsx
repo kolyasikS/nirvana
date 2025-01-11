@@ -76,8 +76,6 @@ export const Dashboard = observer(() => {
   );
   const router = useRouter()
 
-  console.log(users);
-
   const [selectedUser, setSelectedUser] = useState<null | IUserDetails>(null);
   const [isUserCreating, setIsUserCreating] = useState<boolean>(false);
 

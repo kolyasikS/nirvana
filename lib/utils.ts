@@ -56,3 +56,11 @@ export const getTaskTime = (task: ITask) => {
 
   return startTime.toLocaleTimeString('en-US', {minute: '2-digit', hour: '2-digit', hour12: false}) + ' — ' + endTime.toLocaleTimeString('en-US', {minute: '2-digit', hour: '2-digit', hour12: false});
 }
+
+export const makeTaskTime = (date: Date, hours: string, minutes: string) => {
+  const startTime = new Date(date);
+  startTime.setHours(parseInt(hours));
+  startTime.setMinutes(parseInt(minutes));
+
+  return startTime;
+}

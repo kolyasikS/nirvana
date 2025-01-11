@@ -7,6 +7,7 @@ import {getAllUsersOption} from "@lib/query/user/queryOptions";
 import {USER_ROLES_ENUM} from "@lib/constants";
 import {getAllUserTasksOptions} from "@lib/query/task/queryOptions";
 import {getWorkDays} from "@lib/utils";
+import {validateCreateTaskSchema} from "@lib/validation/task-validation";
 
 type Props = {
   selectedWorker: IUserDetails;
@@ -27,7 +28,7 @@ const WorkSchedule = ({
     data: tasksData,
     isPending
   } = useQuery(
-    getAllUserTasksOptions({ userEmail: selectedWorker.email })
+    getAllUserTasksOptions({ userEmail: selectedWorker.email }),
   );
 
   useEffect(() => {
@@ -37,6 +38,7 @@ const WorkSchedule = ({
     }
   }, [tasksData]);
 
+  console.log(selectedDate)
   return (
     <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
       <Timetable
@@ -46,18 +48,18 @@ const WorkSchedule = ({
         onDateSelect={onDateSelect}
         close={() => setSelectedWorker(null)}
       />
-      {!selectedDate && (<>
+      {selectedDate && (<>
         <ListTasks
+          userEmail={selectedWorker.email}
+          tasks={tasksData?.data ?? []}
+          date={selectedDate}
+        />
+        <CreateTask
           onClose={() => {}}
-          userRole={selectedWorker.role}
+          user={selectedWorker}
+          date={selectedDate}
           tasks={tasksData?.data ?? []}
         />
-        {/*<CreateTask
-          onClose={() => {}}
-          userRole={selectedWorker.role}
-          userId={selectedWorker.id}
-          date={selectedDate}
-        />*/}
       </>)}
     </div>
   );

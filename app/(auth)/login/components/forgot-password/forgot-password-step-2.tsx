@@ -22,7 +22,6 @@ const ForgotPasswordStep2 = ({
   const { formState } = useForgotPasswordFormContext();
 
   async function verifyCode() {
-    console.log(formState)
     const result = await AuthController.verifyCode({
       code,
       email: formState.email,

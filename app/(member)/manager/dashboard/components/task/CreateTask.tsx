@@ -1,68 +1,88 @@
 'use client'
 
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useToast} from "@/hooks/use-toast";
-import {AdminController} from "@/controllers/admin/Admin.controller";
-import {FormInputBox} from "@/components/ui/features/form-input-box";
-import {uppercaseWord} from "@lib/utils";
-import {Button, FormTextareaBox, Label, Loader} from "@/components/ui";
-import {validateCreateUserSchema} from "@lib/validation/admin-validation";
-import {GET_ALL_USERS_QK} from "@lib/query/user/queryKeys";
+import {Button, FormTextareaBox, Loader} from "@/components/ui";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {TASK_TYPES, USER_ROLES} from "@lib/constants";
 import {TaskController} from "@/controllers/manager/Task.controller";
 import SelectTime from "@/app/(member)/manager/dashboard/components/task/components/SelectTime";
+import {GET_ALL_USER_TASKS_QK} from "@lib/query/task/queryKeys";
+import {makeTaskTime} from "@lib/utils";
+import {validateCreateTaskSchema, validateCreateTaskTime} from "@lib/validation/task-validation";
 
 const hours = Array.from({ length: 15 }, (_, i) => String(i + 8).padStart(2, '0'))
 const minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
 
+const defaultTaskForm = {
+  startTime: {
+    hours: '08',
+    minutes: '00',
+  },
+  endTime: {
+    hours: '08',
+    minutes: '00',
+  },
+  details: '',
+  typeId: '',
+}
 type Props = {
   onClose: () => void;
-  userRole: string;
-  userId: string;
+  user: IUserDetails;
   date: Date;
+  tasks: ITask[];
 };
 export function CreateTask ({
   onClose,
-  userRole,
-  userId,
-  date
+  user,
+  date,
+  tasks,
 }: Props) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  console.log(date);
   const [form, setForm] = useState<ICreateTask>({
-    startTime: {
-      hours: '12',
-      minutes: '00',
-    },
-    endTime: {
-      hours: '13',
-      minutes: '30',
-    },
-    details: '',
-    typeId: '',
+    ...defaultTaskForm,
     date,
-    userId,
+    userId: user.id,
   });
+
+  useEffect(() => {
+    setForm((form) => ({
+      ...form,
+      date,
+      userId: user.id,
+    }));
+  }, [date, user.id]);
 
   const createTaskMutation = useMutation({
     mutationFn: (TaskController.createTask),
-    onMutate: async (newUser: ICreateUserDetails) => {
-      await queryClient.cancelQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
+    onMutate: async (task: ICreateTask) => {
+      await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
 
-      const previousUsers = queryClient.getQueryData<IUserDetails[]>([GET_ALL_USERS_QK]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USER_TASKS_QK, user.email]);
 
-      const newUserWithId = {
-        ...newUser,
-        id: newUser.email,
+      const newTaskWithId: ITask = {
+        startTime: makeTaskTime(task.date, task.startTime.hours, task.startTime.minutes).toString(),
+        endTime: makeTaskTime(task.date, task.endTime.hours, task.endTime.minutes).toString(),
+        details: task.details,
+        user: user,
+        assignment: {
+          name: TASK_TYPES.find(type => type.id === task.typeId)?.name ?? '',
+          role: {
+            name: user.role,
+          }
+        },
+        isCompleted: false,
+        id: task.startTime.hours + task.startTime.minutes + task.endTime.hours + task.endTime.minutes,
       };
-      queryClient.setQueryData<IUserDetails[]>([GET_ALL_USERS_QK], (oldUsers) =>
-        oldUsers ? [...oldUsers, newUserWithId] : [newUserWithId as any]
+      queryClient.setQueryData<IResponse>([GET_ALL_USER_TASKS_QK, user.email], (oldResponse) =>
+        oldResponse?.data
+          ? {...oldResponse, data: [...oldResponse.data, newTaskWithId]} as IResponse
+          : {...oldResponse, data: [newTaskWithId]} as IResponse
       );
       onClose();
-      return { previousUsers };
+      return { previousResponse };
     },
     onError: (error) => {
       toast({
@@ -71,27 +91,41 @@ export function CreateTask ({
       });
     },
     onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
       toast({
         title: message
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
     }
   })
 
-  const createUserProfileHandler = async (e: any) => {
+  const createTaskHandler = async (e: any) => {
     e.preventDefault();
     if (!createTaskMutation.isPending) {
-      // const validationResult = await validateCreateUserSchema(form);
-      // if (validationResult.error) {
-      //   toast({
-      //     title: validationResult.message,
-      //     variant: 'destructive',
-      //   });
-      //   return;
-      // }
+      const validationSchemaResult = await validateCreateTaskSchema(form);
+      if (validationSchemaResult.error) {
+        toast({
+          title: validationSchemaResult.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const validationTimeResult = await validateCreateTaskTime({
+        tasks,
+        endTime: form.endTime,
+        startTime: form.startTime,
+        date
+      });
+      if (validationTimeResult.error) {
+        toast({
+          title: validationTimeResult.message,
+          variant: 'destructive',
+        });
+        return;
+      }
 
       createTaskMutation.mutate(form);
     }
@@ -99,8 +133,8 @@ export function CreateTask ({
 
   const availableTaskTypes = useMemo(() =>
     TASK_TYPES.filter(type =>
-      type.roleId === USER_ROLES.find(role => role.name === userRole)?.id
-    ), [userRole]);
+      type.roleId === USER_ROLES.find(role => role.name === user.role)?.id
+    ), [user.role]);
 
   const setFormStartTimeHours = useCallback((hours: string) =>
     setForm(form => ({
@@ -145,7 +179,7 @@ export function CreateTask ({
   return (
     <form
       className="flex flex-col w-full bg-zinc-950 rounded-xl border border-zinc-800 p-5 relative dark:text-gray-50"
-      onSubmit={createUserProfileHandler}
+      onSubmit={createTaskHandler}
     >
       <h2 className="text-2xl font-bold mb-5">Creating Task</h2>
       <div className="space-y-4">

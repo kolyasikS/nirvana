@@ -8,7 +8,6 @@ export class AdminController {
   static async getUser({ userId }: IGetUser) {
     try {
       const { data } = await axios.get(`/users/${userId}`);
-      console.log(data)
       return data;
     } catch (error: any) {
       console.error(error);

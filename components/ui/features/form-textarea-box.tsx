@@ -10,7 +10,6 @@ type FormInputBoxProps = {
 
 const FormTextareaBox = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<"textarea"> & FormInputBoxProps>(
   ({ label, labelClassname, ...props }, ref) => {
-  console.log('FormTextareaBox')
   return (
     <div className="grid gap-2">
       <Label htmlFor={label} className={labelClassname}>{label}</Label>

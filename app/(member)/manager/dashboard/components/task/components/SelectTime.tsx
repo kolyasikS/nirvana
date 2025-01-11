@@ -16,7 +16,6 @@ const SelectTime = memo(({
   time,
   placeholder
 }: Props) => {
-  console.log('SelectTime')
   return (
     <div className="flex-1">
       <Label htmlFor={`${label}-select`}>{label}</Label>

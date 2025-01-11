@@ -6,7 +6,6 @@ export class UserController {
   static async getAllUsers({ roles }: IGetUsers) {
     try {
       const { data } = await axios.get(`/users`);
-      console.log(data);
       if (roles && roles.length > 0) {
         return data.filter((user: IUserDetails) => roles.includes(user.role));
       } else {

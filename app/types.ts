@@ -51,29 +51,28 @@ interface ValidationResult {
   error: boolean;
   message: string;
 }
-
 interface ValidationOptions {
   required?: boolean;
 }
 
+// Response
 interface ServerResponseError {
   type: string;
   title: string;
   status: number;
   errors: any[];
 }
-
 interface IResponse {
   message: string;
   data: any;
   error: boolean;
 }
 
+// User
 interface IUser {
   id: string;
   role: string;
 }
-
 interface IUpdateUserDetails {
   id: string;
   firstName: string;
@@ -88,6 +87,8 @@ interface ICreateUserDetails {
   sex: string;
   role: string;
 }
+
+// Task
 interface ICreateTask {
   startTime: {
     hours: string;
@@ -101,6 +102,12 @@ interface ICreateTask {
   typeId: string;
   date: Date;
   userId: string;
+}
+interface IDeleteTask {
+  id: string;
+}
+interface IMarkAsCompletedTask {
+  id: string;
 }
 
 // entities
