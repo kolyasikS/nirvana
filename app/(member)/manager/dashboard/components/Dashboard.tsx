@@ -67,11 +67,9 @@ import {userStore} from "@lib/stores";
 import {toast} from "@/hooks/use-toast";
 import {USER_ROLES_ENUM} from "@lib/constants";
 import {getAllUsersOption} from "@lib/query/user/queryOptions";
-import Timetable from "@/app/(member)/manager/dashboard/components/worker/Timetable";
-import {CreateTask} from "@/app/(member)/manager/dashboard/components/task/CreateTask";
-import {ListTasks} from "@/app/(member)/manager/dashboard/components/task/ListTasks";
 import WorkSchedule from "@/app/(member)/manager/dashboard/components/worker/WorkSchedule";
 import WorkerCharts from "@/app/(member)/manager/dashboard/components/worker/WorkerCharts";
+import {BarChartIcon} from "@radix-ui/react-icons"
 
 export const Dashboard = observer(() => {
   // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);
@@ -88,7 +86,9 @@ export const Dashboard = observer(() => {
   // }, [queryUsers]);
 
   const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>(
-    null
+    null);
+
+  const [showWorkerCharts, setShowWorkerCharts] = useState<boolean>(false
     // {
     //   "id": "9f19739a-02ad-47a0-91d7-ec467bd8ce31",
     //   "firstName": "Kytylo",
@@ -399,6 +399,12 @@ export const Dashboard = observer(() => {
                       </CardContent>
                     </Card>
                   </TabsContent>
+                  {/*<Button
+                    className={'mt-5'}
+                    onClick={() => setShowWorkerCharts(true)}
+                  >
+                    Show Worker Charts&ensp;<BarChartIcon/>
+                  </Button>*/}
                 </Tabs>
               </div>
               {/*{(*/}
@@ -409,7 +415,7 @@ export const Dashboard = observer(() => {
                 setSelectedWorker={setSelectedWorker}
               />
             )}
-            <WorkerCharts/>
+            <WorkerCharts workers={workers}/>
           </main>
         </div>
       </div>

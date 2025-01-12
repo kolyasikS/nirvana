@@ -54,27 +54,27 @@ type TooltipGroupingMode = typeof options["tooltipGroupingMode"][number];
 const optionKeys = Object.keys(options) as (keyof typeof options)[];
 
 export default function useChartConfig({
-                                         series,
-                                         datums = 10,
-                                         show = [],
-                                         count = 1,
-                                         resizable = true,
-                                         dataType = "time",
-                                         elementType = "line",
-                                         primaryAxisType = "time",
-                                         secondaryAxisType = "linear",
-                                         primaryAxisPosition = "bottom",
-                                         secondaryAxisPosition = "left",
-                                         primaryAxisStack = false,
-                                         secondaryAxisStack = true,
-                                         primaryAxisShow = true,
-                                         secondaryAxisShow = true,
-                                         tooltipAnchor = "closest",
-                                         tooltipAlign = "auto",
-                                         interactionMode = "primary",
-                                         tooltipGroupingMode = "primary",
-                                         snapCursor = true,
-                                       }: {
+  series,
+  datums = 10,
+  show = [],
+  count = 1,
+  resizable = true,
+  dataType = "time",
+  elementType = "line",
+  primaryAxisType = "time",
+  secondaryAxisType = "linear",
+  primaryAxisPosition = "bottom",
+  secondaryAxisPosition = "left",
+  primaryAxisStack = false,
+  secondaryAxisStack = true,
+  primaryAxisShow = true,
+  secondaryAxisShow = true,
+  tooltipAnchor = "closest",
+  tooltipAlign = "auto",
+  interactionMode = "primary",
+  tooltipGroupingMode = "primary",
+  snapCursor = true,
+}: {
   series: number;
   datums?: number;
   show?: (keyof typeof options)[];
