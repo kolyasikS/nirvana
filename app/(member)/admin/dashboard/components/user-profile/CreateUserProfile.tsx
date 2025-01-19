@@ -82,7 +82,6 @@ export function CreateUserProfile({
       <div className="grid gap-4">
         <FormInputBox
           id="name"
-          type="name"
           placeholder="John"
           value={form.firstName}
           onChange={(e) => setForm({...form, firstName: e.target.value})}
@@ -90,7 +89,6 @@ export function CreateUserProfile({
         />
         <FormInputBox
           id="last_name"
-          type="last_name"
           placeholder="Snow"
           value={form.lastName}
           onChange={(e) => setForm({...form, lastName: e.target.value})}
@@ -106,7 +104,6 @@ export function CreateUserProfile({
         />
         <FormInputBox
           id="role"
-          type="text"
           placeholder="Manager"
           value={form.role}
           onChange={(e) => setForm({...form, role: e.target.value})}
@@ -114,7 +111,6 @@ export function CreateUserProfile({
         />
         <FormInputBox
           id="gender"
-          type="gender"
           placeholder="Male"
           value={uppercaseWord(form.sex)}
           onChange={(e) => setForm({...form, sex: e.target.value})}

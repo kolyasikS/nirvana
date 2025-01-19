@@ -1,6 +1,6 @@
 import {queryOptions} from "@tanstack/react-query";
 import {TaskController} from "@/controllers/manager/Task.controller";
-import {GET_ALL_USER_TASKS_QK} from "@lib/query/task/queryKeys";
+import {GET_ALL_USER_TASKS_QK} from "@lib/query/manager/queryKeys";
 
 export interface IGetAllUserTasks {
   userEmail: string;

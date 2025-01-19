@@ -58,28 +58,25 @@ import {
   CardTitle, Loader,
 } from "@/components/ui";
 import {observer} from "mobx-react-lite";
-import {useMutation, useQuery, useSuspenseQuery} from "@tanstack/react-query";
-import {uppercaseWord} from "@lib/utils";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
-import UserProfileCard from "@/app/(member)/admin/dashboard/components/user-profile/UpdateProfileCard";
 import {AuthController} from "@/controllers/auth/Auth.controller";
 import {userStore} from "@lib/stores";
-import {getAllUsersOption} from "@lib/query/user/queryOptions";
 import {toast} from "@/hooks/use-toast";
+import {getAllItemsOptions} from "@lib/query/inventory-manager/queryOptions";
+import ItemCard from "@/app/(member)/inventory-manager/dashboard/components/item/ItemCard";
+import MakeOrder from "@/app/(member)/inventory-manager/dashboard/components/order/MakeOrder";
+import MakeOrderContainer from "@/app/(member)/inventory-manager/dashboard/components/order/MakeOrderContainer";
 
 export const Dashboard = observer(() => {
+  // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);
   const {
-    data: users,
-  } = useQuery(
-    getAllUsersOption({})
-  );
-  const router = useRouter()
+    data: itemsResponse,
+  } = useQuery(getAllItemsOptions());
+  const router = useRouter();
 
-  const [selectedUser, setSelectedUser] = useState<null | IUserDetails>(null);
-  const [isUserCreating, setIsUserCreating] = useState<boolean>(false);
-
-  const showUserProfileCard = !!selectedUser || isUserCreating;
+  const [selectedItem, setSelectedItem] = useState<null | IItem>(null);
 
   const logout = useMutation({
     mutationFn: (AuthController.logout),
@@ -98,6 +95,13 @@ export const Dashboard = observer(() => {
     },
   });
 
+  const selectItem = (item: IItem) => {
+    if (selectedItem?.id === item.id) {
+      setSelectedItem(null);
+    } else {
+      setSelectedItem(item);
+    }
+  }
   return (
     <TooltipProvider>
       <div className="flex min-h-screen w-full flex-col bg-gray-100/40 dark:bg-zinc-800/40">
@@ -242,7 +246,7 @@ export const Dashboard = observer(() => {
                 <BreadcrumbList>
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                      <BreadcrumbPage>Admin Dashboard</BreadcrumbPage>
+                      <BreadcrumbPage>Inventory Manager Dashboard</BreadcrumbPage>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
@@ -268,129 +272,93 @@ export const Dashboard = observer(() => {
               </DropdownMenu>
             </div>
           </header>
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
+          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-[100px]">
             {/*lg:col-span-2*/}
-            <div className={`grid auto-rows-max items-start gap-4 md:gap-8 ${showUserProfileCard ? 'lg:col-span-2' : 'lg:col-span-4'}`}>
-              <Tabs defaultValue="week">
-                {/*<div className="flex items-center">
-                  <TabsList>
-                    <TabsTrigger value="week">Week</TabsTrigger>
-                    <TabsTrigger value="month">Month</TabsTrigger>
-                    <TabsTrigger value="year">Year</TabsTrigger>
-                  </TabsList>
-                  <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 gap-1 text-sm"
-                        >
-                          <ListFilter className="h-3.5 w-3.5"/>
-                          <span className="sr-only sm:not-sr-only">Filter</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuCheckboxItem checked>
-                          Fulfilled
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem>
-                          Declined
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem>
-                          Refunded
-                        </DropdownMenuCheckboxItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-7 gap-1 text-sm"
-                    >
-                      <File className="h-3.5 w-3.5"/>
-                      <span className="sr-only sm:not-sr-only">Export</span>
-                    </Button>
-                  </div>
-                </div>*/}
-                <TabsContent value="week">
-                  <Card
-                    className={'dark:border-zinc-800'}
-                    x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
-                    <CardHeader className="px-7">
-                      <CardTitle>Users</CardTitle>
-                      <CardDescription>
-                        Members of «Nirvana» hotel.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Full Name</TableHead>
-                            <TableHead className="hidden sm:table-cell">
-                              Post
-                            </TableHead>
-                            <TableHead className="hidden sm:table-cell">
-                              Gender
-                            </TableHead>
-                            <TableHead className="hidden md:table-cell">
-                              Email Confirmation Status
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {users.map((user: IUserDetails) => (
-                            <TableRow
-                              key={user.id}
-                              className={`${user.id === selectedUser?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
-                              onClick={() => setSelectedUser(user)}
-                            >
-                              <TableCell>
-                                <div className="font-medium">{user.firstName}&nbsp;{user.lastName}</div>
-                                <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                  {user.email}
-                                </div>
-                              </TableCell>
-                              <TableCell className="hidden sm:table-cell">
-                                {user.role}
-                              </TableCell>
-                              <TableCell className="hidden sm:table-cell">
-                                <Badge className="text-xs" variant="outline">
-                                  {uppercaseWord(user.sex)}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="hidden md:table-cell">
-                                {user.emailConfirmed ? 'Confirmed' : 'Pending'}
-                              </TableCell>
+            <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
+              <div
+                className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedItem ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
+                <Tabs defaultValue="week">
+                  <TabsContent value="week">
+                    <Card
+                      className={'dark:border-zinc-800'}
+                      x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
+                      <CardHeader className="px-7">
+                        <CardTitle>Inventory</CardTitle>
+                        <CardDescription>
+                          Items of «Nirvana» hotel.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Name</TableHead>
+                              <TableHead className="hidden sm:table-cell">
+                                Quantity
+                              </TableHead>
+                              <TableHead className="hidden sm:table-cell">
+                                Minimum Required Quantity
+                              </TableHead>
+                              {/*<TableHead className="hidden sm:table-cell">
+                                Action
+                              </TableHead>*/}
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                <Button
-                  className={'mt-5'}
-                  onClick={() => {
-                    setIsUserCreating(true);
-                    setSelectedUser(null);
+                          </TableHeader>
+                          <TableBody>
+                            {itemsResponse?.data?.map((item: IItem) => (
+                              <TableRow
+                                key={item.id}
+                                className={`${item.id === selectedItem?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
+                                onClick={() => selectItem(item)}
+                              >
+                                <TableCell>
+                                  <div className="font-medium">{item.name}</div>
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell">
+                                  <Badge className="text-xs"
+                                         variant={`${item.quantity < item.minimumStockQuantity ? 'destructive' : 'outline'}`}>
+                                    {item.quantity}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell">
+                                  <Badge className="text-xs" variant="default">
+                                    {item.minimumStockQuantity}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                        <div className={'w-full flex justify-end'}>
+                          <Button
+                            className={'mt-5'}
+                            onClick={() => {
+                              setSelectedItem({
+                                id: '',
+                                quantity: 0,
+                                minimumStockQuantity: 0,
+                                name: '',
+                              })
+                            }}
+                          >
+                            + Add
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              </div>
+              {selectedItem && (
+                <ItemCard
+                  selectedItem={selectedItem}
+                  close={() => {
+                    setSelectedItem(null);
                   }}
-                >
-                  Create New User
-                </Button>
-              </Tabs>
+                />
+              )}
             </div>
-            {showUserProfileCard && (
-              <UserProfileCard
-                selectedUser={selectedUser}
-                close={() => {
-                  setSelectedUser(null);
-                  setIsUserCreating(false);
-                }}
-              />
-            )}
+            <MakeOrderContainer/>
           </main>
         </div>
       </div>

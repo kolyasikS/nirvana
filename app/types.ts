@@ -110,6 +110,29 @@ interface IMarkAsCompletedTask {
   id: string;
 }
 
+// Item
+interface ICreateItem {
+  name: string;
+  quantity: number;
+  minimumStockQuantity: number;
+}
+interface IDeleteItem {
+  id: string;
+}
+interface IUpdateItem {
+  id: string;
+  name: string;
+  minimumStockQuantity: number;
+}
+interface IOrder {
+  items: IOrderItem[];
+}
+interface IOrderItem {
+  id: string;
+  name: string;
+  quantity: number;
+}
+
 // entities
 interface IUserDetails {
   id: string;
@@ -134,4 +157,11 @@ interface ITask {
   startTime: string;
   endTime: string;
   isCompleted: boolean;
+}
+
+interface IItem {
+  id: string;
+  name: string;
+  quantity: number;
+  minimumStockQuantity: number;
 }

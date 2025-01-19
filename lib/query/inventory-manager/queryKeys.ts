@@ -1,0 +1,6 @@
+export const GET_ALL_ITEMS_QK = 'all_items_qk'
+export const CREATE_ITEM = 'create_item_qk'
+export const DELETE_ITEM = 'delete_item_qk'
+export const UPDATE_ITEM = 'update_item_qk'
+export const GET_LACKING_ITEMS_QK = 'lacking_items_qk'
+export const MAKE_ORDER = 'make_order_qk'

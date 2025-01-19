@@ -1,6 +1,6 @@
 import {axios} from "@lib/axios";
 import {MainError, ResponseError} from "@lib/errors";
-import {IGetAllUserTasks} from "@lib/query/task/queryOptions";
+import {IGetAllUserTasks} from "@lib/query/manager/queryOptions";
 import {makeTaskTime} from "@lib/utils";
 
 export class TaskController {

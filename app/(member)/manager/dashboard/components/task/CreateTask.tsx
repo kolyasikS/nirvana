@@ -8,7 +8,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {TASK_TYPES, USER_ROLES} from "@lib/constants";
 import {TaskController} from "@/controllers/manager/Task.controller";
 import SelectTime from "@/app/(member)/manager/dashboard/components/task/components/SelectTime";
-import {GET_ALL_USER_TASKS_QK} from "@lib/query/task/queryKeys";
+import {GET_ALL_USER_TASKS_QK} from "@lib/query/manager/queryKeys";
 import {makeTaskTime} from "@lib/utils";
 import {validateCreateTaskSchema, validateCreateTaskTime} from "@lib/validation/task-validation";
 

@@ -4,7 +4,7 @@ import {cn} from "@lib/utils-client";
 import {getTaskTime} from "@lib/utils";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {TaskController} from "@/controllers/manager/Task.controller";
-import {GET_ALL_USER_TASKS_QK} from "@lib/query/task/queryKeys";
+import {GET_ALL_USER_TASKS_QK} from "@lib/query/manager/queryKeys";
 import {useToast} from "@/hooks/use-toast";
 
 type Props = {
@@ -24,14 +24,14 @@ const Task = ({
 
   const deleteTaskMutation = useMutation({
     mutationFn: (TaskController.deleteTask),
-    onMutate: async ({ id: newTaskId }: IDeleteTask) => {
+    onMutate: async ({ id: toDeleteTaskId }: IDeleteTask) => {
       await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
 
       const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USER_TASKS_QK, userEmail]);
 
       queryClient.setQueryData<IResponse>([GET_ALL_USER_TASKS_QK, userEmail], (oldResponse) =>
         oldResponse?.data
-          ? {...oldResponse, data: oldResponse.data.filter((oldTask: ITask) => oldTask.id !== newTaskId)} as IResponse
+          ? {...oldResponse, data: oldResponse.data.filter((oldTask: ITask) => oldTask.id !== toDeleteTaskId)} as IResponse
           : oldResponse
       );
       return { previousResponse };
@@ -51,8 +51,9 @@ const Task = ({
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
     }
-  })
-  const markAsCompletedMutation = useMutation({
+  });
+
+ /* const markAsCompletedMutation = useMutation({
     mutationFn: (TaskController.markAsCompleted),
     onMutate: async ({ id: newTaskId }: IMarkAsCompletedTask) => {
       await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
@@ -82,8 +83,8 @@ const Task = ({
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
     }
-  })
-
+  });
+*/
   const deleteTaskHandler = async (e: any) => {
     e.preventDefault();
     if (!deleteTaskMutation.isPending) {
@@ -91,12 +92,12 @@ const Task = ({
     }
   }
 
-  const markAsCompletedTaskHandler = async (e: any) => {
+/*  const markAsCompletedTaskHandler = async (e: any) => {
     e.preventDefault();
     if (!markAsCompletedMutation.isPending) {
       markAsCompletedMutation.mutate({ id: task.id });
     }
-  }
+  }*/
 
   return (
     <div className={cn({

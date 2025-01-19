@@ -5,7 +5,7 @@ import {CreateTask} from "@/app/(member)/manager/dashboard/components/task/Creat
 import {useQuery} from "@tanstack/react-query";
 import {getAllUsersOption} from "@lib/query/user/queryOptions";
 import {USER_ROLES_ENUM} from "@lib/constants";
-import {getAllUserTasksOptions} from "@lib/query/task/queryOptions";
+import {getAllUserTasksOptions} from "@lib/query/manager/queryOptions";
 import {getWorkDays} from "@lib/utils";
 import {validateCreateTaskSchema} from "@lib/validation/task-validation";
 
