@@ -1,5 +1,6 @@
 'ues client';
 
+import {TrashIcon, PlusCircledIcon} from "@radix-ui/react-icons";
 import {ItemController} from "@/controllers/inventory-manager/Item.controller";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import React, {useCallback, useEffect, useState} from 'react';
@@ -99,6 +100,27 @@ const MakeOrder = ({
     e.preventDefault();
     makeOrderMutation.mutate(order);
   }
+
+  /*const addEmptyOrderItem = () => {
+    setOrder(order => ({
+      ...order,
+      items: [
+        ...order.items,
+        {
+          id: (new Date()).getTime().toString(),
+          name: ``,
+          quantity: 0,
+        }
+      ],
+    }));
+  }*/
+
+  const removeOrderItem = (toDeleteItemName: string) => {
+    setOrder(order => ({
+      ...order,
+      items: order.items.filter(item => item.name !== toDeleteItemName)
+    }));
+  }
   return (
     <div className={'grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2'}>
       <Card
@@ -128,34 +150,59 @@ const MakeOrder = ({
                       <TableHead className="pl-5">
                         Quantity to replenish
                       </TableHead>
+                      <TableHead>
+                        Action
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {order?.items?.length > 0
-                      ? order?.items?.map((item: IOrderItem) => (
-                        <TableRow
-                          key={`lack-${item.name}`}
-                          className={'dark:hover:bg-transparent'}
-                        >
-                          <TableCell>
-                            <div className="font-medium">{item.name}</div>
-                          </TableCell>
-                          <TableCell className="text-base dark:text-green-400 pl-5">
-                            <QuantityInput
-                              onChange={onQuantityChange}
-                              item={item}
-                            />
-                            {/*<Input
-                              className={''}
-                              value={item.quantity}
-                              onChange={(e) =>
-                                setOrder(order => ({
-                                  items: order.items.map((inlineItem: IOrderItem) => item.id === inlineItem.id && !isNaN(+e.target.value) ? {...inlineItem, quantity: +e.target.value} : inlineItem),
-                                }))}
-                            />*/}
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      ? (
+                        <>
+                          {order?.items?.map((item: IOrderItem) => (
+                            <TableRow
+                              key={`lack-${item.name}`}
+                              className={'dark:hover:bg-transparent'}
+                            >
+                              <TableCell>
+                                <div className="font-medium">{item.name}</div>
+                              </TableCell>
+                              <TableCell className="text-base dark:text-green-400 pl-5">
+                                <QuantityInput
+                                  onChange={onQuantityChange}
+                                  item={item}
+                                />
+                                {/*<Input
+                                className={''}
+                                value={item.quantity}
+                                onChange={(e) =>
+                                  setOrder(order => ({
+                                    items: order.items.map((inlineItem: IOrderItem) => item.id === inlineItem.id && !isNaN(+e.target.value) ? {...inlineItem, quantity: +e.target.value} : inlineItem),
+                                  }))}
+                              />*/}
+                              </TableCell>
+                              <TableCell className={''}>
+                                <div className={'flex justify-start'}>
+                                  <TrashIcon
+                                    onClick={() => removeOrderItem(item.name)}
+                                    className={`text-red-500 w-5 h-5 cursor-pointer hover:text-red-600 transition`}
+                                  />
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          {/*<TableRow className={'dark:hover:bg-zinc-900 cursor-pointer'}>
+                            <TableCell className={''} colSpan={3}>
+                              <div className={'flex justify-center'}>
+                                <PlusCircledIcon
+                                  onClick={addEmptyOrderItem}
+                                  className={`text-blue-300 h-6 w-6 hover:text-blue-400 transition`}
+                                />
+                              </div>
+                            </TableCell>
+                          </TableRow>*/}
+                        </>
+                      )
                       :  (
                         <TableRow className="dark:hover:bg-transparent">
                           <TableCell className={'col-span-2 row-span-2'} colSpan={2}>
