@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import React from 'react';
 import Dashboard from "@/app/(member)/admin/dashboard/components/Dashboard";
 import {getQueryClient} from "@lib/query/get-query-client";

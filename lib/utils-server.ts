@@ -1,8 +1,10 @@
 'use server';
-import {cookies as getCookies} from "next/headers";
+// import {cookies as getCookies} from "next/headers";
 
 export async function getCookieOnServer(name: string) {
+  const { cookies: getCookies } = await import('next/headers');
   const cookies = await getCookies();
 
-  return cookies.get(name)?.value;
+  const value = cookies.get(name)?.value;
+  return value;
 }

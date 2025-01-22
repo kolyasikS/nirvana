@@ -3,6 +3,7 @@ import {API_URL, AUTH_HEADER_NAME} from "@lib/constants";
 import {getCookieOnClient} from "@lib/utils-client";
 import {getCookieOnServer} from "@lib/utils-server";
 import {isServer} from "@lib/utils";
+
 export const axios = axiosDefault.create({
   baseURL: API_URL,
 });
