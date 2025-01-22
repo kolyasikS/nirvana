@@ -10,7 +10,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui";
 import {useToast} from "@/hooks/use-toast";
-import {AuthController} from "@/controllers/auth/AuthController";
+import {AuthController} from "@/controllers/auth/Auth.controller";
 import {useForgotPasswordFormContext} from "@/app/(auth)/login/components/forgot-password/forgot-password-form";
 
 const ForgotPasswordStep2 = ({
@@ -22,7 +22,6 @@ const ForgotPasswordStep2 = ({
   const { formState } = useForgotPasswordFormContext();
 
   async function verifyCode() {
-    console.log(formState)
     const result = await AuthController.verifyCode({
       code,
       email: formState.email,

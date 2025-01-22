@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Button, CardContent, CardDescription, CardHeader, CardTitle, Input, Label} from "@/components/ui";
 import {useToast} from "@/hooks/use-toast";
-import {AuthController} from "@/controllers/auth/AuthController";
+import {AuthController} from "@/controllers/auth/Auth.controller";
 import {useForgotPasswordFormContext} from "@/app/(auth)/login/components/forgot-password/forgot-password-form";
 
 const ForgotPasswordStep1 = ({

@@ -1,0 +1,1 @@
+export const GET_USER_QK = 'get_user_qk'
