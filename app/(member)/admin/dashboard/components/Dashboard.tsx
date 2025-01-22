@@ -341,7 +341,7 @@ export const Dashboard = observer(() => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {/*{users.map((user: IUserDetails) => (
+                          {users.map((user: IUserDetails) => (
                             <TableRow
                               key={user.id}
                               className={`${user.id === selectedUser?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
@@ -365,7 +365,7 @@ export const Dashboard = observer(() => {
                                 {user.emailConfirmed ? 'Confirmed' : 'Pending'}
                               </TableCell>
                             </TableRow>
-                          ))}*/}
+                          ))}
                         </TableBody>
                       </Table>
                     </CardContent>
