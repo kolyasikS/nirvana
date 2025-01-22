@@ -50,6 +50,10 @@ export function LoginForm({
           case USER_ROLES_ENUM.InventoryManager:
             router.push('/inventory-manager/dashboard');
             break;
+          case USER_ROLES_ENUM.Housemaid:
+          case USER_ROLES_ENUM.Technician:
+            router.push('/worker/dashboard');
+            break;
           default:
             toast({
               title: 'Your role is not available',
@@ -60,7 +64,7 @@ export function LoginForm({
     },
   })
 
-  const [email, setEmail] = useState('nickolay.primachenko@gmail.com');
+  const [email, setEmail] = useState('housemaid@localhost.com');
   const [password, setPassword] = useState('y1HdQBk#o8&H#U'); // P@ssword1
 
   async function submit() {

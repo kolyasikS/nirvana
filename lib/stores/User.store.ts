@@ -1,4 +1,5 @@
 import {action, makeObservable, observable} from "mobx";
+import {UserStoreKey} from "@lib/constants";
 
 class UserStore {
   user: IUser | null = null;
@@ -7,7 +8,8 @@ class UserStore {
     makeObservable(this, {
       user: observable,
       setUser: action
-    })
+    });
+    this.loadState();
   }
 
   setUser({
@@ -18,10 +20,24 @@ class UserStore {
       id,
       role
     };
+    this.saveState();
   }
 
   clearUser(): void {
     this.user = null;
+    localStorage.removeItem(UserStoreKey);
+  }
+
+
+  saveState() {
+    localStorage.setItem(UserStoreKey, JSON.stringify(this.user));
+  }
+
+  loadState() {
+    const savedState = localStorage.getItem(UserStoreKey);
+    if (savedState) {
+      this.user = JSON.parse(savedState);
+    }
   }
 }
 
