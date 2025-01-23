@@ -4,6 +4,7 @@ import {validateCode, validateEmail, validatePassword} from "@lib/validation/gen
 import {axios} from "@lib/axios";
 import {MainError, ResponseError} from "@lib/errors";
 import {makeResponse} from "@lib/utils";
+import {IGetUser} from "@lib/query/admin/queryOptions";
 
 export class AuthController {
 
@@ -55,6 +56,16 @@ export class AuthController {
     } else {
       return result;
     }
+  }
+
+  static async getUserDetails() {
+      try {
+        const { data } = await axios.get(`/users/self`);
+        return data;
+      } catch (error: any) {
+        console.error(error);
+        throw new MainError(error.message);
+      }
   }
 
   static async sendCodeToEmail({

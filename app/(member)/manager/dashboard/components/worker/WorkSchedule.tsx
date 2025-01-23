@@ -8,6 +8,8 @@ import {USER_ROLES_ENUM} from "@lib/constants";
 import {getAllUserTasksOptions} from "@lib/query/manager/queryOptions";
 import {getWorkDays} from "@lib/utils";
 import {validateCreateTaskSchema} from "@lib/validation/task-validation";
+import Task from "@/app/(member)/manager/dashboard/components/task/components/Task";
+import {ListTasksWrapper} from "@/components/wrappers";
 
 type Props = {
   selectedWorker: IUserDetails;
@@ -38,7 +40,6 @@ const WorkSchedule = ({
     }
   }, [tasksData]);
 
-  console.log(selectedDate)
   return (
     <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
       <Timetable
@@ -49,10 +50,11 @@ const WorkSchedule = ({
         close={() => setSelectedWorker(null)}
       />
       {selectedDate && (<>
-        <ListTasks
+        <ListTasksWrapper
           userEmail={selectedWorker.email}
           tasks={tasksData?.data ?? []}
           date={selectedDate}
+          TaskComponent={Task}
         />
         <CreateTask
           onClose={() => {}}

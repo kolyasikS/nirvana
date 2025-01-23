@@ -28,43 +28,47 @@ export function LoginForm({
       });
     },
     onSuccess: ({ data, message }) => {
-      userStore.setUser({
-        id: data.userId,
-        role: data.role,
-      });
+      AuthController.getUserDetails()
+        .then((userDetails: IUserDetails) => {
+          userStore.setUser({
+            id: userDetails.id,
+            role: userDetails.role,
+            email: userDetails.email,
+          });
 
-      toast({
-        title: message
-      });
+          toast({
+            title: message
+          });
 
-      if (!data.emailConfirmed) {
-        moveToEmailConfirmation();
-      } else {
-        switch (data.role) {
-          case USER_ROLES_ENUM.Administrator:
-            router.push('/admin/dashboard');
-            break;
-          case USER_ROLES_ENUM.Manager:
-            router.push('/manager/dashboard');
-            break;
-          case USER_ROLES_ENUM.InventoryManager:
-            router.push('/inventory-manager/dashboard');
-            break;
-          case USER_ROLES_ENUM.Housemaid:
-          case USER_ROLES_ENUM.Technician:
-            router.push('/worker/dashboard');
-            break;
-          default:
-            toast({
-              title: 'Your role is not available',
-              variant: 'destructive',
-            });
-        }
-      }
+          if (!data.emailConfirmed) {
+            moveToEmailConfirmation();
+          } else {
+            switch (data.role) {
+              case USER_ROLES_ENUM.Administrator:
+                router.push('/admin/dashboard');
+                break;
+              case USER_ROLES_ENUM.Manager:
+                router.push('/manager/dashboard');
+                break;
+              case USER_ROLES_ENUM.InventoryManager:
+                router.push('/inventory-manager/dashboard');
+                break;
+              case USER_ROLES_ENUM.Housemaid:
+              case USER_ROLES_ENUM.Technician:
+                router.push('/worker/dashboard');
+                break;
+              default:
+                toast({
+                  title: 'Your role is not available',
+                  variant: 'destructive',
+                });
+            }
+          }
+        })
     },
   })
 
-  const [email, setEmail] = useState('housemaid@localhost.com');
+  const [email, setEmail] = useState('kyrylo.hotvianskyi@nure.ua');
   const [password, setPassword] = useState('y1HdQBk#o8&H#U'); // P@ssword1
 
   async function submit() {

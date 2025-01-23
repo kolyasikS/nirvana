@@ -14,12 +14,14 @@ type Props = {
   tasks: ITask[];
   date: Date;
   TaskComponent: React.FC<any>;
+  taskProps?: any;
 };
-export const ListTasks = memo(({
+export const ListTasksWrapper = memo(({
   userEmail,
   tasks,
   date,
   TaskComponent,
+  taskProps,
 }: Props) => {
   const { toast } = useToast();
 
@@ -71,7 +73,7 @@ export const ListTasks = memo(({
       <div className="space-y-4">
         {onDateTasks.length > 0
           ? onDateTasks.map((task, ind) =>
-            <TaskComponent task={task} number={ind} key={task.id} userEmail={userEmail}/>
+            <TaskComponent task={task} number={ind} key={task.id} userEmail={userEmail} {...taskProps} />
           )
           : <p className={'text-lg text-center font-bold py-5 text-gray-400'}>No Tasks</p>
         }
@@ -80,5 +82,5 @@ export const ListTasks = memo(({
   )
 });
 
-ListTasks.displayName = 'ListTasks';
-export default ListTasks;
+ListTasksWrapper.displayName = 'ListTasksWrapper';
+export default ListTasksWrapper;

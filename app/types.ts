@@ -72,6 +72,7 @@ interface IResponse {
 interface IUser {
   id: string;
   role: string;
+  email: string;
 }
 interface IUpdateUserDetails {
   id: string;

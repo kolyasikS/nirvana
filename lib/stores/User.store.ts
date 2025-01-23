@@ -12,14 +12,8 @@ class UserStore {
     this.loadState();
   }
 
-  setUser({
-    id,
-    role
-  }: IUser): void {
-    this.user = {
-      id,
-      role
-    };
+  setUser(user: IUser): void {
+    this.user = user;
     this.saveState();
   }
 

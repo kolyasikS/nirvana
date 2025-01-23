@@ -51,9 +51,7 @@ export class TaskController {
   static async markAsCompleted({ id }: IMarkAsCompletedTask): Promise<IResponse> {
     try {
       const result = await axios.put(`/assignmentsToUsers/markAsCompleted`, {
-        data: {
-          assignmentToUserId: id
-        }
+        assignmentToUserId: id
       });
 
       return {
