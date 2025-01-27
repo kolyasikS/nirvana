@@ -71,6 +71,7 @@ import WorkSchedule from "@/app/(member)/manager/dashboard/components/worker/Wor
 import WorkerCharts from "@/app/(member)/manager/dashboard/components/worker/WorkerCharts";
 import {BarChartIcon} from "@radix-ui/react-icons"
 import TasksCalendar from "@/app/(member)/worker/dashboard/components/tasks-calendar/TasksCalendar";
+import {getAllItemsOptions} from "@lib/query/inventory-manager/queryOptions";
 
 export const Dashboard = observer(() => {
   // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);

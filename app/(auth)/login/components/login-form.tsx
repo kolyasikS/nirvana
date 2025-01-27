@@ -69,7 +69,7 @@ export function LoginForm({
   })
 
   const [email, setEmail] = useState('kyrylo.hotvianskyi@nure.ua');
-  const [password, setPassword] = useState('y1HdQBk#o8&H#U'); // P@ssword1
+  const [password, setPassword] = useState('P@ssword1'); // P@ssword1
 
   async function submit() {
     if (!loginMutation.isPending) {

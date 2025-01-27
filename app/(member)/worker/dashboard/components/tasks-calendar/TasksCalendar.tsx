@@ -7,7 +7,7 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
+  CardTitle, FormInputBox,
   Input,
   Label,
   Table, TableBody, TableCell, TableHead,
@@ -35,6 +35,8 @@ import {
 import QuantityInput from "@/app/(member)/inventory-manager/dashboard/components/order/QuantityInput";
 import {PlusCircledIcon, TrashIcon} from "@radix-ui/react-icons";
 import {ScrollArea} from "@/components/ui/scroll-area";
+import UseDebounceValue from "@/hooks/useDebounceValue";
+import useDebounceValue from "@/hooks/useDebounceValue";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
@@ -183,6 +185,55 @@ const TasksCalendar = () => {
   }, []);
 
   console.log(workingDates)
+
+
+  const items: IItem[] = useMemo(() => [
+    {
+      "id": "75de4f70-0237-4df5-846f-6e825f946f87",
+      "name": "Nail",
+      "quantity": 500,
+      "minimumStockQuantity": 500
+    },
+    {
+      "id": "674c73fc-2a7b-40ba-af56-d6a8a486cb3e",
+      "name": "Light bulb",
+      "quantity": 84,
+      "minimumStockQuantity": 84
+    },
+    {
+      "id": "8da704f4-af4d-4e1a-b151-74f042572600",
+      "name": "Bedding set",
+      "quantity": 21,
+      "minimumStockQuantity": 25
+    },
+    {
+      "id": "b702a464-7170-4a7a-b6b7-4ecedda97792",
+      "name": "Soap",
+      "quantity": 55,
+      "minimumStockQuantity": 55
+    }
+  ], []);
+
+  const [page, setPage] = useState(1);
+  const [usedItems, setUsedItems] = useState<(IItem & { usedAmount: number })[]>([] as any);
+  const [searchValue, setSearchValue, debounceValue] = useDebounceValue({
+    debounceDelay: 400
+  });
+
+  const filterItems = useMemo(() => {
+    return items
+      .filter((item: IItem) =>
+        usedItems.every((usedItem: IItem) => usedItem.id !== item.id)
+      )
+      .filter(item =>
+        item.name.toLowerCase().includes(debounceValue.toLowerCase())
+      );
+  }, [items, usedItems, debounceValue]);
+
+  const markAsCompleted = (usedItems: (IItem & { usedAmount: number})[] = []) => {
+
+  }
+
   return (
     <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
       {/*<div
@@ -273,79 +324,122 @@ const TasksCalendar = () => {
           </div>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Mark as completed</DialogTitle>
-            <DialogDescription>
-              Indicate the items you used/spent while completing the task. Otherwise press &quot;Skip&quot;
-            </DialogDescription>
-          </DialogHeader>
-          <div>
-            <ScrollArea className={'max-h-[30dvh] h-full'}>
-            <Table>
-              <TableHeader>
-                <TableRow
-                  className={'dark:hover:bg-transparent'}
-                >
-                  <TableHead className={'w-1/2'}>Item Name</TableHead>
-                  <TableHead className="pl-5 w-full">
-                    Amount spent
-                  </TableHead>
-                  <TableHead>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                  {[...(new Array(10))].map((_, ind) => (
-                    <TableRow
-                      key={`lack-${ind}`}
-                      className={'dark:hover:bg-transparent'}
-                    >
-                      <TableCell className={'w-max'}>
-                        <div className="font-medium">{'Bucket'}</div>
-                      </TableCell>
-                      <TableCell className="text-base dark:text-white pl-5">
-                        <Input value={'5'}/>
-                      </TableCell>
-                      <TableCell className={''}>
-                        <div className={'flex justify-start'}>
-                          <TrashIcon
-                            onClick={() => {}}
-                            className={`text-red-500 w-5 h-5 cursor-pointer hover:text-red-600 transition`}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-            </ScrollArea>
-            <div className={'dark:hover:bg-zinc-900 cursor-pointer'}>
-              <div className={'py-2'}>
-                <div className={'flex justify-center'}>
-                  <PlusCircledIcon
-                    onClick={() => {}}
-                    className={`text-blue-300 h-6 w-6 hover:text-blue-400 transition`}
+          {
+            page === 0
+              ? <>
+                <DialogHeader>
+                  <DialogTitle>Mark as completed</DialogTitle>
+                  <DialogDescription>
+                    Indicate the items you used/spent while completing the task. Otherwise press &quot;Skip&quot;
+                  </DialogDescription>
+                </DialogHeader>
+                  <ScrollArea className={cn(usedItems.length > 0 && 'max-h-[30dvh] h-full')}>
+                    <Table>
+                      <TableHeader>
+                        <TableRow
+                          className={'dark:hover:bg-transparent'}
+                        >
+                          <TableHead className={'w-1/2'}>Item Name</TableHead>
+                          <TableHead className="pl-5 w-full">
+                            Amount spent
+                          </TableHead>
+                          <TableHead>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {usedItems.map((item, ind) => (
+                          <TableRow
+                            key={item.id}
+                            className={'dark:hover:bg-transparent'}
+                          >
+                            <TableCell className={'w-max'}>
+                              <div className="font-medium">{item.name}</div>
+                            </TableCell>
+                            <TableCell className="text-base dark:text-white pl-5">
+                              <Input
+                                value={item.usedAmount}
+                                onChange={(e) =>
+                                  !isNaN(+e.target.value)
+                                    ? setUsedItems(usedItems => usedItems.map(usedItem => usedItem.id === item.id ? {...usedItem, usedAmount: +e.target.value} : usedItem))
+                                    : null
+                                }
+                              />
+                            </TableCell>
+                            <TableCell className={''}>
+                              <div className={'flex justify-start'}>
+                                <TrashIcon
+                                  onClick={() => setUsedItems(usedItems => usedItems.filter(usedItem => usedItem.id !== item.id))}
+                                  className={`text-red-500 w-5 h-5 cursor-pointer hover:text-red-600 transition`}
+                                />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
+                  <div
+                    className={'dark:hover:bg-zinc-900 cursor-pointer'}
+                    onClick={() => setPage(1)}
+                  >
+                    <div className={'py-2'}>
+                      <div className={'flex justify-center'}>
+                        <PlusCircledIcon
+                          className={`text-blue-300 h-6 w-6 hover:text-blue-400 transition`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                {/* <div className="grid gap-4 pb-4">
+                  <div>
+                    <h3>Used/Spend Items List</h3>
+                    <ul className={'mt-2 pl-5'}>
+                      <li className={'flex text-sm font-normal'}>
+                        <span>1.&ensp;</span>
+                        <p className={''}>Bucket —&ensp;</p>
+                        <p>5</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>*/}
+                <DialogFooter className={'flex w-full justify-between'}>
+                  <Button type="button" variant="outline" onClick={markAsCompleted}>Skip</Button>
+                  <Button type="submit" onClick={() => markAsCompleted(usedItems)}>Apply</Button>
+                </DialogFooter>
+              </>
+              : <>
+                <DialogHeader>
+                  <DialogTitle>Mark as completed</DialogTitle>
+                  <DialogDescription>
+                    Add an item to list
+                  </DialogDescription>
+                </DialogHeader>
+                <div>
+                  <FormInputBox
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    placeholder="Search..."
+                    label={'Item Name'}
                   />
+                  <ScrollArea className={'max-h-[30dvh] h-full mt-3 z-0'}>
+                    {filterItems.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => setUsedItems((usedItems) => [...usedItems, {...item, usedAmount: 0}])}
+                        className={'bg-zinc-900 p-2 rounded-md mb-2 hover:bg-zinc-800 cursor-default'}
+                      >
+                        {item.name}
+                      </div>
+                    ))}
+                  </ScrollArea>
                 </div>
-              </div>
-            </div>
-          </div>
-         {/* <div className="grid gap-4 pb-4">
-            <div>
-              <h3>Used/Spend Items List</h3>
-              <ul className={'mt-2 pl-5'}>
-                <li className={'flex text-sm font-normal'}>
-                  <span>1.&ensp;</span>
-                  <p className={''}>Bucket —&ensp;</p>
-                  <p>5</p>
-                </li>
-              </ul>
-            </div>
-          </div>*/}
-          <DialogFooter className={'flex w-full justify-between'}>
-            <Button type="button" variant="outline">Skip</Button>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
+                <DialogFooter className={'flex w-full justify-between relative z-10'}>
+                  <Button type="button" variant="outline" onClick={() => setPage(0)}>Back</Button>
+                  {/*<Button type="button">Add</Button>*/}
+                </DialogFooter>
+              </>
+          }
         </DialogContent>
       </Dialog>
 
