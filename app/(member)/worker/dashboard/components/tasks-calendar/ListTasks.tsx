@@ -6,10 +6,12 @@ import Task from "@/app/(member)/worker/dashboard/components/tasks-calendar/Task
 type Props = {
   selectedDate: Date;
   tasks: ITask[];
+  items: IItem[];
 }
 const ListTasks = ({
   selectedDate,
   tasks,
+  items
 }: Props) => {
   // const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
 
@@ -23,7 +25,7 @@ const ListTasks = ({
       date={selectedDate}
       TaskComponent={Task}
       taskProps={{
-        onMarkAsCompletedClick: () => {console.log(1)},
+        items
       }}
     />
   );

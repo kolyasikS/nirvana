@@ -108,7 +108,7 @@ interface IDeleteTask {
   id: string;
 }
 interface IMarkAsCompletedTask {
-  id: string;
+  assignmentToUserId: string;
 }
 
 // Item
@@ -132,6 +132,10 @@ interface IOrderItem {
   id: string;
   name: string;
   quantity: number;
+}
+interface IModifyItem {
+  itemId: string;
+  amount: number;
 }
 
 // entities

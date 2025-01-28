@@ -1,78 +1,24 @@
 'use client';
 
 import React, {useState} from 'react';
-import {ChevronDownIcon, TrashIcon} from "@radix-ui/react-icons";
+import {ChevronDownIcon} from "@radix-ui/react-icons";
 import {cn} from "@lib/utils-client";
 import {getTaskTime} from "@lib/utils";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {TaskController} from "@/controllers/manager/Task.controller";
-import {GET_ALL_USER_TASKS_QK} from "@lib/query/manager/queryKeys";
-import {useToast} from "@/hooks/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription, DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog";
-import {Button, Input, Label} from "@/components/ui";
+import MarkAsCompletedModal from "@/app/(member)/worker/dashboard/components/tasks-calendar/MarkAsCompletedModal";
 
 type Props = {
   task: ITask;
   number: number;
   userEmail: string;
   onMarkAsCompletedClick: () => void;
+  items: IItem[];
 }
 const Task = ({
   task,
   number,
-  userEmail,
-  onMarkAsCompletedClick
+  items,
 }: Props) => {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
   const [detailsVisible, setDetailsVisible] = useState(false);
-
-  const markAsCompletedMutation = useMutation({
-    mutationFn: (TaskController.markAsCompleted),
-    onMutate: async ({ id: newTaskId }: IMarkAsCompletedTask) => {
-      await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
-
-      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USER_TASKS_QK, userEmail]);
-
-      queryClient.setQueryData<IResponse>([GET_ALL_USER_TASKS_QK, userEmail], (oldResponse) =>
-        oldResponse?.data
-          ? {...oldResponse, data: oldResponse.data.map((oldTask: ITask) => oldTask.id === newTaskId ? ({...oldTask, isCompleted: true}) : oldTask)} as IResponse
-          : oldResponse
-      );
-      setDetailsVisible(false);
-      return { previousResponse };
-    },
-    onError: (error) => {
-      toast({
-        title: error.message,
-        variant: 'destructive',
-      });
-    },
-    onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
-      toast({
-        title: message
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
-    }
-  });
-
-  const markAsCompletedTaskHandler = async (e: any) => {
-    e.preventDefault();
-    if (!markAsCompletedMutation.isPending) {
-      markAsCompletedMutation.mutate({ id: task.id });
-    }
-  }
 
   return (
     <div className={cn({
@@ -103,42 +49,9 @@ const Task = ({
           <p className={'font-bold text-sm mt-3'}>Details:</p>
           <p>{task.details}</p>
         </div>
-        {!task.isCompleted && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <div className={'flex flex-1 items-center min-w-fit'}>
-                <button className={'underline text-sm text-emerald-400'} onClick={onMarkAsCompletedClick}>
-                  Mark as completed
-                </button>
-              </div>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Mark as completed</DialogTitle>
-                <DialogDescription>
-                  Make changes to your profile here. Click save when you&apos;re done.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input id="name" value="Pedro Duarte" className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="username" className="text-right">
-                    Username
-                  </Label>
-                  <Input id="username" value="@peduarte" className="col-span-3" />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit">Save changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
+        {!task.isCompleted &&
+          <MarkAsCompletedModal items={items} taskId={task.id}/>
+        }
       </div>
     </div>
   );

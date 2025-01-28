@@ -2,28 +2,6 @@ import {axios} from "@lib/axios";
 import {MainError, ResponseError} from "@lib/errors";
 
 export class ItemController {
-  static async getAllItems(): Promise<IResponse> {
-    try {
-      const { data } = await axios.get(`/items`);
-      return {
-        error: false,
-        message: 'Items were fetched successfully.',
-        data
-      }
-    } catch (error: any) {
-      if (error.status === 404) {
-        return {
-          error: false,
-          message: 'Items were fetched successfully.',
-          data: [],
-        }
-      } else {
-        console.error(error);
-        throw new MainError(error.message);
-      }
-    }
-  }
-
   static async createItem(createItemDto: ICreateItem): Promise<IResponse> {
     try {
       const result = await axios.post(`/items`, createItemDto);

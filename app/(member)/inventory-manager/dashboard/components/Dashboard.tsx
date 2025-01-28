@@ -64,10 +64,10 @@ import {useRouter} from "next/navigation";
 import {AuthController} from "@/controllers/auth/Auth.controller";
 import {userStore} from "@lib/stores";
 import {toast} from "@/hooks/use-toast";
-import {getAllItemsOptions} from "@lib/query/inventory-manager/queryOptions";
 import ItemCard from "@/app/(member)/inventory-manager/dashboard/components/item/ItemCard";
 import MakeOrder from "@/app/(member)/inventory-manager/dashboard/components/order/MakeOrder";
 import MakeOrderContainer from "@/app/(member)/inventory-manager/dashboard/components/order/MakeOrderContainer";
+import {getAllItemsOptions} from "@lib/query/user/queryOptions";
 
 export const Dashboard = observer(() => {
   // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);

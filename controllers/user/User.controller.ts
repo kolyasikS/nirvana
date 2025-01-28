@@ -1,5 +1,6 @@
 import {axios} from "@lib/axios";
 import {IGetUsers} from "@lib/query/user/queryOptions";
+import {MainError} from "@lib/errors";
 
 export class UserController {
 
@@ -16,6 +17,28 @@ export class UserController {
       return {
         error: true,
         message: error.message
+      }
+    }
+  }
+
+  static async getAllItems(): Promise<IResponse> {
+    try {
+      const { data } = await axios.get(`/items`);
+      return {
+        error: false,
+        message: 'Items were fetched successfully.',
+        data
+      }
+    } catch (error: any) {
+      if (error.status === 404) {
+        return {
+          error: false,
+          message: 'Items were fetched successfully.',
+          data: [],
+        }
+      } else {
+        console.error(error);
+        throw new MainError(error.message);
       }
     }
   }
