@@ -64,7 +64,7 @@ import {userStore} from "@lib/stores";
 import {USER_ROLES_ENUM} from "@lib/constants";
 import {getAllUsersOption} from "@lib/query/user/queryOptions";
 import WorkSchedule from "@/app/(member)/manager/dashboard/components/worker/WorkSchedule";
-import WorkerCharts from "@/app/(member)/manager/dashboard/components/worker/WorkerCharts";
+import WorkerCharts from "@/app/(member)/manager/dashboard/components/worker/chart/WorkerCharts";
 import {DashboardHeader} from "@/components/ui/widgets";
 
 export const Dashboard = observer(() => {
