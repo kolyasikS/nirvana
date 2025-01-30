@@ -1,13 +1,9 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect} from 'react';
 import Timetable from "@/app/(member)/manager/dashboard/components/worker/Timetable";
-import {ListTasks} from "@/app/(member)/manager/dashboard/components/task/ListTasks";
 import {CreateTask} from "@/app/(member)/manager/dashboard/components/task/CreateTask";
 import {useQuery} from "@tanstack/react-query";
-import {getAllUsersOption} from "@lib/query/user/queryOptions";
-import {USER_ROLES_ENUM} from "@lib/constants";
 import {getAllUserTasksOptions} from "@lib/query/manager/queryOptions";
 import {getWorkDays} from "@lib/utils";
-import {validateCreateTaskSchema} from "@lib/validation/task-validation";
 import Task from "@/app/(member)/manager/dashboard/components/task/components/Task";
 import {ListTasksWrapper} from "@/components/wrappers";
 

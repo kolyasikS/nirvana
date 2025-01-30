@@ -4,6 +4,10 @@ type FlowStepProps = {
   nextStep: () => void;
   previousStep: () => void;
 }
+type IBreadcrumb = {
+  title: string;
+  route: string;
+}
 
 // Controllers
 

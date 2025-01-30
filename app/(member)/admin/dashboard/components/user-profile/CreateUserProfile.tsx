@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useToast} from "@/hooks/use-toast";
 import {AdminController} from "@/controllers/admin/Admin.controller";
-import {FormInputBox} from "@/components/ui/features/form-input-box";
+import {FormInputBox} from "@/components/ui/features";
 import {uppercaseWord} from "@lib/utils";
 import {Button, Loader} from "@/components/ui";
 import {validateCreateUserSchema} from "@lib/validation/admin-validation";
@@ -32,17 +32,19 @@ export function CreateUserProfile({
     onMutate: async (newUser: ICreateUserDetails) => {
       await queryClient.cancelQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
 
-      const previousUsers = queryClient.getQueryData<IUserDetails[]>([GET_ALL_USERS_QK]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USERS_QK]);
 
       const newUserWithId = {
         ...newUser,
         id: newUser.email,
       };
-      queryClient.setQueryData<IUserDetails[]>([GET_ALL_USERS_QK], (oldUsers) =>
-        oldUsers ? [...oldUsers, newUserWithId] : [newUserWithId as any]
+      queryClient.setQueryData<IResponse>([GET_ALL_USERS_QK], (oldResponse) =>
+        oldResponse?.data
+          ? {...oldResponse, data: [...oldResponse.data, newUserWithId]} as IResponse
+          : {...oldResponse, data: [newUserWithId]} as IResponse
       );
       onClose();
-      return { previousUsers };
+      return { previousResponse };
     },
     onError: (error) => {
       toast({

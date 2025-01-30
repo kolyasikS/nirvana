@@ -4,31 +4,31 @@ import {validateCode, validateEmail, validatePassword} from "@lib/validation/gen
 import {axios} from "@lib/axios";
 import {MainError, ResponseError} from "@lib/errors";
 import {makeResponse} from "@lib/utils";
-import {IGetUser} from "@lib/query/admin/queryOptions";
 
 export class AuthController {
 
-  static async login(loginDto: LoginDto) {
+  static async login(loginDto: LoginDto): Promise<IResponse> {
     const validationResult = await validateLogin(loginDto);
     if (validationResult.error) {
       throw new MainError(validationResult.message);
     }
 
-    const result = await fetch(`${WEB_URL}/api/login`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify(loginDto),
-    }).then((response) => makeResponse(response, 'Log in successfully.'));
-    if (result.error) {
-      throw new ResponseError(result.data)
-    } else {
-      return result;
+    try {
+      const response = await fetch(`${WEB_URL}/api/login`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify(loginDto),
+      });
+
+      return makeResponse(response, 'Log in successfully');
+    } catch (error: any) {
+      throw ResponseError.createResponseError(error, 'Log in failed. Try again later.');
     }
   }
 
-  static async confirmEmail(emailConfirmDto: EmailConfirmDto) {
+  static async confirmEmail(emailConfirmDto: EmailConfirmDto): Promise<IResponse> {
     const validationResult = await validateEmailConfirmation(emailConfirmDto);
     if (validationResult.error) {
       throw new MainError(validationResult.message);
@@ -48,58 +48,68 @@ export class AuthController {
     }
   }
 
-  static async logout() {
-    const result = await fetch(`${WEB_URL}/api/logout`)
-      .then((response) => makeResponse(response, 'Log out successfully.'));
-    if (result.error) {
-      throw new MainError('Log out failed. Try again later.');
-    } else {
-      return result;
+  static async logout(): Promise<IResponse> {
+    try {
+      const response = await fetch(`${WEB_URL}/api/logout`);
+
+      return makeResponse(response, 'Log out successfully.');
+    } catch (error: any) {
+      throw ResponseError.createResponseError(error, 'Log out failed. Try again later.');
     }
   }
 
-  static async getUserDetails() {
+  static async getUserDetails(): Promise<IResponse> {
       try {
         const { data } = await axios.get(`/users/self`);
-        return data;
+        return {
+          message: 'Data has been fetched successfully.',
+          data,
+          error: false,
+        };
+
       } catch (error: any) {
         console.error(error);
-        throw new MainError(error.message);
+        throw ResponseError.createResponseError(error);
       }
   }
 
   static async sendCodeToEmail({
     email
-  }: SendCodeDto) {
+  }: SendCodeDto): Promise<IResponse> {
     const validationEmailResult = await validateEmail(email, {
       required: true,
     });
 
     if (validationEmailResult.error) {
-      return validationEmailResult;
+      throw new MainError(validationEmailResult.message);
     }
 
     try {
       const { data } = await axios.post(`/send-code`, {
         email
       });
-      return data;
+
+      return {
+        message: 'Code was sent successfully.',
+        data,
+        error: false,
+      };
     } catch (error: any) {
       console.error(error);
-      throw new MainError(error.message);
+      throw ResponseError.createResponseError(error);
     }
   }
 
   static async verifyCode({
     code,
     email
-  }: VerifyCodeDto) {
+  }: VerifyCodeDto): Promise<IResponse> {
     const validationCodeResult = await validateCode(code, {
       required: true,
     });
 
     if (validationCodeResult.error) {
-      return validationCodeResult;
+      throw new MainError(validationCodeResult.message);
     }
 
     const validationEmailResult = await validateEmail(email, {
@@ -107,7 +117,7 @@ export class AuthController {
     });
 
     if (validationEmailResult.error) {
-      return validationEmailResult;
+      throw new MainError(validationEmailResult.message);
     }
 
     try {
@@ -115,44 +125,45 @@ export class AuthController {
         code,
         email
       });
-      return data;
+
+      return {
+        message: 'Code was verified successfully.',
+        data,
+        error: false,
+      };
     } catch (error: any) {
       console.error(error);
-      return {
-        error: true,
-        message: error.message
-      }
+      throw ResponseError.createResponseError(error);
     }
   }
 
   static async recoverPassword({
     newPassword,
     confirmPassword,
-  }: SetNewPasswordDto) {
+  }: SetNewPasswordDto): Promise<IResponse> {
     const validationResult = await validatePassword(newPassword, {
       required: true,
     });
 
     if (validationResult.error) {
-      return validationResult;
+      throw new MainError(validationResult.message);
     } else if (newPassword !== confirmPassword) {
-      return {
-        message: 'Passwords do not match',
-        error: true
-      };
+      throw new MainError('Passwords do not match');
     }
 
     try {
       const { data } = await axios.post(`/recover-password`, {
         password: newPassword,
       });
-      return data;
+
+      return {
+        message: 'Password was recovered successfully.',
+        data,
+        error: false,
+      };
     } catch (error: any) {
       console.error(error);
-      return {
-        error: true,
-        message: error.message
-      }
+      throw ResponseError.createResponseError(error);
     }
   }
 

@@ -1,17 +1,21 @@
 import {axios} from "@lib/axios";
-import {MainError, ResponseError} from "@lib/errors";
+import {ResponseError} from "@lib/errors";
 import {IGetUser} from "@lib/query/admin/queryOptions";
-import {IGetUsers} from "@lib/query/user/queryOptions";
 
 export class AdminController {
 
-  static async getUser({ userId }: IGetUser) {
+  static async getUser({ userId }: IGetUser): Promise<IResponse> {
     try {
       const { data } = await axios.get(`/users/${userId}`);
-      return data;
+
+      return {
+        message: 'Data has been fetched successfully.',
+        data,
+        error: false,
+      }
     } catch (error: any) {
       console.error(error);
-      throw new MainError(error.message);
+      throw ResponseError.createResponseError(error);
     }
   }
 

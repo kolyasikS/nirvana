@@ -38,7 +38,7 @@ export class TaskController {
         }
       } else {
         console.error(error);
-        throw new MainError(error.message);
+        throw ResponseError.createResponseError(error);
       }
     }
   }

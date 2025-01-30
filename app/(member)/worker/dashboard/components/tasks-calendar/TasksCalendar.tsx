@@ -1,17 +1,13 @@
 "use client"
 
-import {useEffect, useMemo, useState} from "react"
+import {useMemo, useState} from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent, CardDescription,
   CardHeader,
-  CardTitle, FormInputBox,
-  Input,
-  Label,
-  Table, TableBody, TableCell, TableHead,
-  TableHeader, TableRow,
+  CardTitle,
   Tabs,
   TabsContent
 } from "@/components/ui";
@@ -53,7 +49,6 @@ const TasksCalendar = () => {
 
   const {
     data: tasksData,
-    isPending
   } = useQuery(
     getAllWorkerTasksOptions(),
   );
