@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 import {Button, Card, CardContent, CardHeader, CardTitle} from "@/components/ui";
-import {UpdateUserProfile} from "@/app/(member)/admin/dashboard/components/user-profile/UpdateUserProfile";
-import {CreateUserProfile} from "@/app/(member)/admin/dashboard/components/user-profile/CreateUserProfile";
 import {UpdateItem} from "@/app/(member)/inventory-manager/dashboard/components/item/UpdateItem";
 import {CreateItem} from "@/app/(member)/inventory-manager/dashboard/components/item/CreateItem";
 

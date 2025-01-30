@@ -11,6 +11,11 @@ const updateItemSchema = object({
   name: string().required('Name is required'),
 });
 
+const modifyItemSchema = object({
+  itemId: string().required('Item ID is required.'),
+  amount: number().typeError('Amount is required'),
+})
+
 
 export async function validateCreateItemSchema(createItem: ICreateItem): Promise<ValidationResult> {
   return await createItemSchema.validate(createItem)
@@ -26,6 +31,18 @@ export async function validateCreateItemSchema(createItem: ICreateItem): Promise
 
 export async function validateUpdateItemSchema(updateItem: IUpdateItem): Promise<ValidationResult> {
   return await updateItemSchema.validate(updateItem)
+    .then(() => ({
+      error: false,
+      message: ''
+    }))
+    .catch(err => ({
+      error: true,
+      message: err.errors[0]
+    }));
+}
+
+export async function validateModifyItemSchema(modifyItem: IModifyItem): Promise<ValidationResult> {
+  return await modifyItemSchema.validate(modifyItem)
     .then(() => ({
       error: false,
       message: ''

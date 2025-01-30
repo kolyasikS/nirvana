@@ -53,51 +53,12 @@ const Task = ({
     }
   });
 
- /* const markAsCompletedMutation = useMutation({
-    mutationFn: (TaskController.markAsCompleted),
-    onMutate: async ({ id: newTaskId }: IMarkAsCompletedTask) => {
-      await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
-
-      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USER_TASKS_QK, userEmail]);
-
-      queryClient.setQueryData<IResponse>([GET_ALL_USER_TASKS_QK, userEmail], (oldResponse) =>
-        oldResponse?.data
-          ? {...oldResponse, data: oldResponse.data.map((oldTask: ITask) => oldTask.id === newTaskId ? ({...oldTask, isCompleted: true}) : oldTask)} as IResponse
-          : oldResponse
-      );
-      setDetailsVisible(false);
-      return { previousResponse };
-    },
-    onError: (error) => {
-      toast({
-        title: error.message,
-        variant: 'destructive',
-      });
-    },
-    onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
-      toast({
-        title: message
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, userEmail], exact: true });
-    }
-  });
-*/
   const deleteTaskHandler = async (e: any) => {
     e.preventDefault();
     if (!deleteTaskMutation.isPending) {
       deleteTaskMutation.mutate({ id: task.id });
     }
   }
-
-/*  const markAsCompletedTaskHandler = async (e: any) => {
-    e.preventDefault();
-    if (!markAsCompletedMutation.isPending) {
-      markAsCompletedMutation.mutate({ id: task.id });
-    }
-  }*/
 
   return (
     <div className={cn({
@@ -134,13 +95,6 @@ const Task = ({
           <p className={'font-bold text-sm mt-3'}>Details:</p>
           <p>{task.details}</p>
         </div>
-        {/*{!task.isCompleted && (
-          <div className={'flex flex-1 items-center min-w-fit'}>
-            <button className={'underline text-sm text-emerald-400'} onClick={markAsCompletedTaskHandler}>Mark as
-              completed
-            </button>
-          </div>
-        )}*/}
       </div>
     </div>
   );

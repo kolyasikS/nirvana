@@ -47,4 +47,7 @@ export const TASK_TYPES = [
     name: 'Clear room',
     roleId: '9beb8da7-4160-4db7-9982-05604a4e51d5'
   },
-]
+];
+
+// LocalStorage
+export const UserStoreKey = 'UserStore'

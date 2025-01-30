@@ -6,8 +6,9 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {FormInputBox, Loader} from "@/components/ui";
 import {Button} from "@/components/ui";
 import {ItemController} from "@/controllers/inventory-manager/Item.controller";
-import {GET_ALL_ITEMS_QK, GET_LACKING_ITEMS_QK} from "@lib/query/inventory-manager/queryKeys";
+import {GET_LACKING_ITEMS_QK} from "@lib/query/inventory-manager/queryKeys";
 import {validateUpdateItemSchema} from "@lib/validation/item-validation";
+import {GET_ALL_ITEMS_QK} from "@lib/query/user/queryKeys";
 
 type Props = {
   item: IItem;
@@ -26,7 +27,7 @@ export function UpdateItem({
     onMutate: async (updateItemDto: IUpdateItem) => {
       await queryClient.cancelQueries({ queryKey: [GET_ALL_ITEMS_QK], exact: true });
 
-      const previousResponse = queryClient.getQueryData<IResponse[]>([GET_ALL_ITEMS_QK]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_ITEMS_QK]);
 
       queryClient.setQueryData<IResponse>([GET_ALL_ITEMS_QK], (oldResponse) =>
         ({

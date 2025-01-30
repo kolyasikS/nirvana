@@ -1,6 +1,8 @@
+import {GET_ALL_ITEMS_QK} from "@lib/query/user/queryKeys";
+
 'ues client';
 
-import {TrashIcon, PlusCircledIcon} from "@radix-ui/react-icons";
+import {TrashIcon} from "@radix-ui/react-icons";
 import {ItemController} from "@/controllers/inventory-manager/Item.controller";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import React, {useCallback, useEffect, useState} from 'react';
@@ -17,7 +19,7 @@ import {
 } from "@/components/ui";
 import {getLackingItems} from "@lib/query/inventory-manager/queryOptions";
 import QuantityInput from "@/app/(member)/inventory-manager/dashboard/components/order/QuantityInput";
-import {GET_ALL_ITEMS_QK, GET_LACKING_ITEMS_QK} from "@lib/query/inventory-manager/queryKeys";
+import {GET_LACKING_ITEMS_QK} from "@lib/query/inventory-manager/queryKeys";
 import {useToast} from "@/hooks/use-toast";
 
 type Props = {
@@ -55,7 +57,7 @@ const MakeOrder = ({
       await queryClient.cancelQueries({ queryKey: [GET_ALL_ITEMS_QK], exact: true });
       await queryClient.cancelQueries({ queryKey: [GET_LACKING_ITEMS_QK], exact: true });
 
-      const previousResponse = queryClient.getQueryData<IResponse[]>([GET_ALL_ITEMS_QK]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_ITEMS_QK]);
 
       queryClient.setQueryData<IResponse>([GET_ALL_ITEMS_QK], (oldResponse) =>
         oldResponse?.data

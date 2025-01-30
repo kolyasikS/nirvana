@@ -11,10 +11,6 @@ type Props = {
 const WorkerCharts = ({
   workers,
 }: Props) => {
-/*  const { data } = useChartConfig({
-    series: 10,
-    dataType: "time",
-  });*/
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState<{data: any, maxTasksInDay: number}>({
     data: [],

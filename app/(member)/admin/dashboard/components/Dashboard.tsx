@@ -67,10 +67,11 @@ import {AuthController} from "@/controllers/auth/Auth.controller";
 import {userStore} from "@lib/stores";
 import {getAllUsersOption} from "@lib/query/user/queryOptions";
 import {toast} from "@/hooks/use-toast";
+import {DashboardHeader} from "@/components/ui/widgets";
 
 export const Dashboard = observer(() => {
   const {
-    data: users,
+    data: usersResponse,
   } = useQuery(
     getAllUsersOption({})
   );
@@ -81,22 +82,10 @@ export const Dashboard = observer(() => {
 
   const showUserProfileCard = !!selectedUser || isUserCreating;
 
-  const logout = useMutation({
-    mutationFn: (AuthController.logout),
-    onError: (error) => {
-      toast({
-        title: error.message,
-        variant: 'destructive',
-      });
-    },
-    onSuccess: ({ data, message}) => {
-      userStore.clearUser();
-      toast({
-        title: message
-      });
-      router.push('/login');
-    },
-  });
+  const breadcrumbs = useMemo(() => [{
+    title: `${userStore.user?.role ?? ''} Dashboard`,
+    route: '',
+  }], []);
 
   return (
     <TooltipProvider>
@@ -181,93 +170,7 @@ export const Dashboard = observer(() => {
         </aside>*/}
         {/*<div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">*/}
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-0">
-          <header
-            className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-white px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 ">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button size="icon" variant="outline" className="sm:hidden">
-                  <PanelLeft className="h-5 w-5"/>
-                  <span className="sr-only">Toggle Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="sm:max-w-xs">
-                <nav className="grid gap-6 text-lg font-medium">
-                  <Link
-                    href="#"
-                    className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-gray-900 text-lg font-semibold text-gray-50 md:text-base dark:bg-gray-50 dark:text-gray-900"
-                  >
-                    <Package2 className="h-5 w-5 transition-all group-hover:scale-110"/>
-                    <span className="sr-only">Acme Inc</span>
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center gap-4 px-2.5 text-gray-500 hover:text-gray-950 dark:text-gray-400 dark:hover:text-gray-50"
-                  >
-                    <Home className="h-5 w-5"/>
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center gap-4 px-2.5 text-gray-950 dark:text-gray-50"
-                  >
-                    <ShoppingCart className="h-5 w-5"/>
-                    Orders
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center gap-4 px-2.5 text-gray-500 hover:text-gray-950 dark:text-gray-400 dark:hover:text-gray-50"
-                  >
-                    <Package className="h-5 w-5"/>
-                    Products
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center gap-4 px-2.5 text-gray-500 hover:text-gray-950 dark:text-gray-400 dark:hover:text-gray-50"
-                  >
-                    <Users2 className="h-5 w-5"/>
-                    Customers
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center gap-4 px-2.5 text-gray-500 hover:text-gray-950 dark:text-gray-400 dark:hover:text-gray-50"
-                  >
-                    <LineChart className="h-5 w-5"/>
-                    Settings
-                  </Link>
-                </nav>
-              </SheetContent>
-            </Sheet>
-            <div className={'flex justify-between w-full gap-5'}>
-              <Breadcrumb className="hidden md:flex">
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                      <BreadcrumbPage>Admin Dashboard</BreadcrumbPage>
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="overflow-hidden rounded-full"
-                  >
-                    <Settings className="h-5 w-5"/>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {/*<DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator/>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Support</DropdownMenuItem>
-                  <DropdownMenuSeparator/>*/}
-                  <DropdownMenuItem onClick={logout.mutate as any}>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </header>
+          <DashboardHeader breadcrumbs={breadcrumbs}/>
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
             {/*lg:col-span-2*/}
             <div className={`grid auto-rows-max items-start gap-4 md:gap-8 ${showUserProfileCard ? 'lg:col-span-2' : 'lg:col-span-4'}`}>
@@ -341,7 +244,7 @@ export const Dashboard = observer(() => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {users.map((user: IUserDetails) => (
+                          {usersResponse?.data.map((user: IUserDetails) => (
                             <TableRow
                               key={user.id}
                               className={`${user.id === selectedUser?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}

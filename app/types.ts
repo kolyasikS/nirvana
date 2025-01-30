@@ -4,6 +4,10 @@ type FlowStepProps = {
   nextStep: () => void;
   previousStep: () => void;
 }
+type IBreadcrumb = {
+  title: string;
+  route: string;
+}
 
 // Controllers
 
@@ -72,6 +76,7 @@ interface IResponse {
 interface IUser {
   id: string;
   role: string;
+  email: string;
 }
 interface IUpdateUserDetails {
   id: string;
@@ -107,7 +112,7 @@ interface IDeleteTask {
   id: string;
 }
 interface IMarkAsCompletedTask {
-  id: string;
+  assignmentToUserId: string;
 }
 
 // Item
@@ -131,6 +136,10 @@ interface IOrderItem {
   id: string;
   name: string;
   quantity: number;
+}
+interface IModifyItem {
+  itemId: string;
+  amount: number;
 }
 
 // entities

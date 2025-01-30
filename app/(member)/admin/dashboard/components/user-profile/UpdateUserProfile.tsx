@@ -33,20 +33,25 @@ export function UpdateUserProfile({
     onMutate: async (updatedUser: IUpdateUserDetails) => {
       await queryClient.cancelQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
 
-      const previousUsers = queryClient.getQueryData<IUserDetails[]>([GET_ALL_USERS_QK]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USERS_QK]);
 
-      queryClient.setQueryData<IUserDetails[]>([GET_ALL_USERS_QK], (oldUsers) =>
-        oldUsers?.map((user) =>
-          user.id === updatedUser.id ? { ...user, ...updatedUser } : user
-        )
+      queryClient.setQueryData<IResponse>([GET_ALL_USERS_QK], (oldResponse) =>
+        ({
+          ...oldResponse,
+          data: oldResponse?.data.map((user: IUserDetails) =>
+            user.id === updatedUser.id
+              ? { ...user, ...updatedUser }
+              : user
+          )
+        }) as IResponse
       );
       onClose();
-      return { previousUsers };
+      return { previousResponse };
     },
-    onError: (error, _updatedUser, context: any) => {
-      if (context?.previousUsers) {
-        queryClient.setQueryData([GET_ALL_USERS_QK], context.previousUsers);
-      }
+    onError: (error) => {
+      // if (context?.previousUsers) {
+      //   queryClient.setQueryData([GET_ALL_USERS_QK], context.previousUsers);
+      // }
       toast({
         title: error.message,
         variant: 'destructive',

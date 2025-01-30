@@ -1,19 +1,27 @@
 'use client'
 
-import React, {memo, useMemo} from 'react'
+import React, {memo, useMemo, useState} from 'react'
+import {ChevronDownIcon} from "@radix-ui/react-icons"
 import {useToast} from "@/hooks/use-toast";
+import {cn} from "@lib/utils-client";
+import Task from "@/app/(member)/manager/dashboard/components/task/components/Task";
+
+const hours = Array.from({ length: 15 }, (_, i) => String(i + 8).padStart(2, '0'))
+const minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
 
 type Props = {
   userEmail: string;
   tasks: ITask[];
   date: Date;
   TaskComponent: React.FC<any>;
+  taskProps?: any;
 };
-export const ListTasks = memo(({
+export const ListTasksWrapper = memo(({
   userEmail,
   tasks,
   date,
   TaskComponent,
+  taskProps,
 }: Props) => {
   const { toast } = useToast();
 
@@ -65,7 +73,7 @@ export const ListTasks = memo(({
       <div className="space-y-4">
         {onDateTasks.length > 0
           ? onDateTasks.map((task, ind) =>
-            <TaskComponent task={task} number={ind} key={task.id} userEmail={userEmail}/>
+            <TaskComponent task={task} number={ind} key={task.id} userEmail={userEmail} {...taskProps} />
           )
           : <p className={'text-lg text-center font-bold py-5 text-gray-400'}>No Tasks</p>
         }
@@ -74,5 +82,5 @@ export const ListTasks = memo(({
   )
 });
 
-ListTasks.displayName = 'ListTasks';
-export default ListTasks;
+ListTasksWrapper.displayName = 'ListTasksWrapper';
+export default ListTasksWrapper;

@@ -15,8 +15,25 @@ const createTaskSchema = object({
   typeId: string().required('Type is required'),
 });
 
+const markAsCompletedTaskSchema = object({
+  assignmentToUserId: string().required('Task ID is required'),
+});
+
+
 export async function validateCreateTaskSchema(createTask: ICreateTask): Promise<ValidationResult> {
   return await createTaskSchema.validate(createTask)
+    .then(() => ({
+      error: false,
+      message: ''
+    }))
+    .catch(err => ({
+      error: true,
+      message: err.errors[0]
+    }));
+}
+
+export async function validateMarkAsCompletedTaskSchema(markAsCompletedTask: IMarkAsCompletedTask): Promise<ValidationResult> {
+  return await markAsCompletedTaskSchema.validate(markAsCompletedTask)
     .then(() => ({
       error: false,
       message: ''

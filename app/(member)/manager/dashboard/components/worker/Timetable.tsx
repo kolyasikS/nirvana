@@ -1,7 +1,6 @@
-import React, {useEffect, useMemo} from 'react';
+import React from 'react';
 import {Calendar} from "@/components/ui/calendar";
 import {Cross1Icon} from "@radix-ui/react-icons"
-import {getWorkDays} from "@lib/utils";
 import {Loader} from "@/components/ui";
 
 type Props = {
