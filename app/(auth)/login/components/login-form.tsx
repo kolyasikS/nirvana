@@ -29,12 +29,15 @@ export function LoginForm({
     },
     onSuccess: ({ data, message }) => {
       AuthController.getUserDetails()
-        .then((userDetails: IUserDetails) => {
-          userStore.setUser({
-            id: userDetails.id,
-            role: userDetails.role,
-            email: userDetails.email,
-          });
+        .then(({ data, error }: IResponse) => {
+
+          if (!error) {
+            userStore.setUser({
+              id: data.id,
+              role: data.role,
+              email: data.email,
+            });
+          }
 
           toast({
             title: message
