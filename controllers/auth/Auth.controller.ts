@@ -21,7 +21,6 @@ export class AuthController {
         method: 'POST',
         body: JSON.stringify(loginDto),
       });
-
       return makeResponse(response, 'Log in successfully');
     } catch (error: any) {
       throw ResponseError.createResponseError(error, 'Log in failed. Try again later.');

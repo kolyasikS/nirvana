@@ -42,7 +42,7 @@ export function LoginForm({
           toast({
             title: message
           });
-
+          console.log(data)
           if (!data.emailConfirmed) {
             moveToEmailConfirmation();
           } else {
@@ -71,7 +71,7 @@ export function LoginForm({
     },
   })
 
-  const [email, setEmail] = useState('kyrylo.hotvianskyi@nure.ua');
+  const [email, setEmail] = useState('mykola.primachenko@gmail.com'); //kyrylo.hotvianskyi@nure.ua
   const [password, setPassword] = useState('P@ssword1'); // P@ssword1
 
   async function submit() {

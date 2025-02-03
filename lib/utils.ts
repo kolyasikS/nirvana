@@ -1,4 +1,4 @@
-import {ResponseError} from "@lib/errors";
+import {MainError, ResponseError} from "@lib/errors";
 
 export const isServer = () => {
   return typeof window === 'undefined';
@@ -24,6 +24,18 @@ export const makeResponse = async (
     data = null;
   }
 
+  if (error) {
+    if (data) {
+      throw new ResponseError(data);
+    } else {
+      throw new ResponseError({
+        errors: [],
+        type: 'InternalServerError',
+        title: MainError.getStatusMessage(500),
+        status: 500,
+      });
+    }
+  }
   return {
     message: data?.message || message,
     error,
