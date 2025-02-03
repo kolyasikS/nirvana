@@ -55,4 +55,25 @@ export class UserController {
     }
   }
 
+  static async getAllRoles(): Promise<IResponse> {
+    try {
+      const { data } = await axios.get(`/roles`);
+      return {
+        error: false,
+        message: 'Roles were fetched successfully.',
+        data
+      }
+    } catch (error: any) {
+      if (error.status === 404) {
+        return {
+          error: false,
+          message: 'Roles were fetched successfully.',
+          data: [],
+        }
+      } else {
+        console.error(error);
+        throw ResponseError.createResponseError(error);
+      }
+    }
+  }
 }

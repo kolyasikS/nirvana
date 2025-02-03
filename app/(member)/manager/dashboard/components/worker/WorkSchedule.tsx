@@ -10,10 +10,12 @@ import {ListTasksWrapper} from "@/components/wrappers";
 type Props = {
   selectedWorker: IUserDetails;
   setSelectedWorker: (work: IUserDetails | null) => void;
+  roles: IRole[];
 }
 const WorkSchedule = ({
   selectedWorker,
-  setSelectedWorker
+  setSelectedWorker,
+  roles,
 }: Props) => {
   const [dates, setDates] = React.useState<Date[] | undefined>([]);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
@@ -57,6 +59,7 @@ const WorkSchedule = ({
           user={selectedWorker}
           date={selectedDate}
           tasks={tasksData?.data ?? []}
+          roles={roles}
         />
       </>)}
     </div>

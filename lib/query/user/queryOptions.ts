@@ -1,5 +1,5 @@
 import {
-  GET_ALL_ITEMS_QK,
+  GET_ALL_ITEMS_QK, GET_ALL_ROLES_QK,
   GET_ALL_USERS_QK
 } from "@lib/query/user/queryKeys";
 import {queryOptions} from "@tanstack/react-query";
@@ -13,6 +13,12 @@ export const getAllItemsOptions = () => queryOptions({
   queryKey: [GET_ALL_ITEMS_QK],
   queryFn: () => UserController.getAllItems(),
   staleTime: 10 * 1000,
+});
+
+export const getAllRoles = () => queryOptions({
+  queryKey: [GET_ALL_ROLES_QK],
+  queryFn: () => UserController.getAllRoles(),
+  staleTime: 10 * 1000,
 })
 
 export const getAllUsersOption = ({
@@ -21,4 +27,4 @@ export const getAllUsersOption = ({
   queryKey: [GET_ALL_USERS_QK, roles],
   queryFn: () => UserController.getAllUsers({roles}),
   staleTime: 10 * 1000,
-})
+});

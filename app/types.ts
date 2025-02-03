@@ -174,3 +174,8 @@ interface IItem {
   quantity: number;
   minimumStockQuantity: number;
 }
+
+interface IRole {
+  id: string;
+  name: string;
+}

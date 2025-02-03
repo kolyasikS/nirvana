@@ -62,7 +62,7 @@ import {uppercaseWord} from "@lib/utils";
 import {useMemo, useState} from "react";
 import {userStore} from "@lib/stores";
 import {USER_ROLES_ENUM} from "@lib/constants";
-import {getAllUsersOption} from "@lib/query/user/queryOptions";
+import {getAllRoles, getAllUsersOption} from "@lib/query/user/queryOptions";
 import WorkSchedule from "@/app/(member)/manager/dashboard/components/worker/WorkSchedule";
 import WorkerCharts from "@/app/(member)/manager/dashboard/components/worker/chart/WorkerCharts";
 import {DashboardHeader} from "@/components/ui/widgets";
@@ -73,6 +73,12 @@ export const Dashboard = observer(() => {
   } = useQuery(
     getAllUsersOption({ roles: [USER_ROLES_ENUM.Housemaid, USER_ROLES_ENUM.Technician]})
   );
+  const {
+    data: rolesResponse,
+  } = useQuery(
+    getAllRoles()
+  );
+  console.log(rolesResponse)
 
   const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>(
     null);
@@ -293,6 +299,7 @@ export const Dashboard = observer(() => {
               <WorkSchedule
                 selectedWorker={selectedWorker}
                 setSelectedWorker={setSelectedWorker}
+                roles={rolesResponse?.data ?? []}
               />
             )}
             <WorkerCharts workers={workersResponse?.data ?? []}/>
