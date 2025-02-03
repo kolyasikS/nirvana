@@ -17,6 +17,8 @@ function isAuthorizedRoute(pathname: string, role: string) {
     case 'Housemaid':
     case 'Technician':
       return pathname.includes(`/worker`);
+    case 'Administrator':
+      return pathname.includes(`/admin`);
     default:
       return pathname.includes(`/${role.toLowerCase()}`);
   }

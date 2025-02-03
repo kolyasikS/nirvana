@@ -21,6 +21,14 @@ export const USER_ROLES = [
   'Housemaid',
 ];
 
+export const USER_ROLE_LABELS = {
+  Administrator: 'Administrator',
+  Manager: 'Manager',
+  "Inventory Manager": 'InventoryManager',
+  Technician: 'Technician',
+  Housemaid: 'Housemaid',
+};
+
 export const TASK_TYPES = [
   {
     id: '58302ce8-d000-4301-b24b-52cd5ded95a2',
