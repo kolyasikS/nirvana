@@ -47,3 +47,5 @@ export const UserStoreKey = 'UserStore'
 
 // General
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+export const AMOUNT_IN_PAGE = 10;

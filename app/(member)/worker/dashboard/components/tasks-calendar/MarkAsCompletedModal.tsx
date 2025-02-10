@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {Dispatch, SetStateAction, useCallback, useMemo, useState} from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {cn} from "@lib/utils-client";
 import {
   Button,
   FormInputBox,
-  Input,
+  Input, Loader,
   Table,
   TableBody,
   TableCell,
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui";
 import {PlusCircledIcon, TrashIcon} from "@radix-ui/react-icons";
 import useDebounceValue from "@/hooks/useDebounceValue";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useToast} from "@/hooks/use-toast";
 import {TaskController} from "@/controllers/worker/Task.controller";
 import {GET_ALL_WORKER_TASKS_QK} from "@lib/query/worker/queryKeys";
@@ -30,18 +30,29 @@ import {validateMarkAsCompletedTaskSchema} from "@lib/validation/task-validation
 import {validateModifyItemSchema} from "@lib/validation/item-validation";
 import {ItemController} from "@/controllers/worker/Item.controller";
 import {GET_ALL_ITEMS_QK} from "@lib/query/user/queryKeys";
+import {getAllItemsOptions} from "@lib/query/user/queryOptions";
+import {AMOUNT_IN_PAGE} from "@lib/constants";
+import {TablePagination} from "@/components/ui/features";
 
 type IUsedItem = IItem & {
   usedAmount: number;
 }
 type Props = {
-  items: IItem[];
   taskId: string;
 }
 const MarkAsCompletedModal = ({
-  items,
   taskId,
 }: Props) => {
+  const [pageNumber, setPageNumber] = useState(1);
+  const {
+    data: itemsResponse,
+    isFetching,
+    isPlaceholderData,
+  } = useQuery(getAllItemsOptions({
+    pageNumber,
+    pageSize: 10,
+  }));
+
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -50,16 +61,16 @@ const MarkAsCompletedModal = ({
   const [searchValue, setSearchValue, debounceValue] = useDebounceValue({
     debounceDelay: 400
   });
-
+  console.log(itemsResponse?.data)
   const filterItems = useMemo(() => {
-    return items
-      .filter((item: IItem) =>
+    return itemsResponse?.data?.items?.
+      filter((item: IItem) =>
         usedItems.every((usedItem: IItem) => usedItem.id !== item.id)
-      )
-      .filter(item =>
+      ).
+      filter((item: IItem) =>
         item.name.toLowerCase().includes(debounceValue.toLowerCase())
       );
-  }, [items, usedItems, debounceValue]);
+  }, [itemsResponse, usedItems, debounceValue]);
 
   const markAsCompletedMutation = useMutation({
     mutationFn: (TaskController.markAsCompleted),
@@ -242,7 +253,7 @@ const MarkAsCompletedModal = ({
                   label={'Item Name'}
                 />
                 <ScrollArea className={'max-h-[30dvh] h-full mt-3 z-0'}>
-                  {filterItems.map((item) => (
+                  {filterItems?.map((item: IItem) => (
                     <div
                       key={item.id}
                       onClick={() => setUsedItems((usedItems) => [...usedItems, {...item, usedAmount: 0}])}
@@ -253,6 +264,16 @@ const MarkAsCompletedModal = ({
                   ))}
                 </ScrollArea>
               </div>
+              <TablePagination
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                count={itemsResponse?.data?.count ?? 0}
+              />
+              {isPlaceholderData && isFetching && (
+                <div className={'absolute z-50 top-0 left-0 w-full h-full flex items-center justify-center bg-black/30 backdrop-blur-[2px]'}>
+                  <Loader/>
+                </div>
+              )}
               <DialogFooter className={'flex w-full justify-between relative z-10'}>
                 <Button type="button" variant="outline" onClick={() => setPage(0)}>Back</Button>
                 {/*<Button type="button">Add</Button>*/}

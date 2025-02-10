@@ -5,18 +5,19 @@ import {ChevronDownIcon} from "@radix-ui/react-icons";
 import {cn} from "@lib/utils-client";
 import {getTaskTime} from "@lib/utils";
 import MarkAsCompletedModal from "@/app/(member)/worker/dashboard/components/tasks-calendar/MarkAsCompletedModal";
+import {useQuery} from "@tanstack/react-query";
+import {getAllItemsOptions} from "@lib/query/user/queryOptions";
+import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 type Props = {
   task: ITask;
   number: number;
   userEmail: string;
   onMarkAsCompletedClick: () => void;
-  items: IItem[];
 }
 const Task = ({
   task,
   number,
-  items,
 }: Props) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
 
@@ -50,7 +51,9 @@ const Task = ({
           <p>{task.details}</p>
         </div>
         {!task.isCompleted &&
-          <MarkAsCompletedModal items={items} taskId={task.id}/>
+          <MarkAsCompletedModal
+            taskId={task.id}
+          />
         }
       </div>
     </div>

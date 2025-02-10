@@ -48,7 +48,7 @@ const WorkerCharts = ({
 
     const tasksPromises: Promise<[IResponse, string]>[] = [];
     workers.forEach((worker) => {
-      tasksPromises.push(TaskController.getAllUserTasks({userEmail: worker.email}).then(res => [res, worker.email]));
+      tasksPromises.push(TaskController.getAllUserTasks({userEmail: 'adsda'}).then(res => [res, worker.email]));
     })
 
     Promise.all(tasksPromises)
@@ -56,7 +56,7 @@ const WorkerCharts = ({
         responses.forEach(([response, workerEmail]) => {
           if (!response.error && response.data) {
             const tasks = response.data;
-            console.log(tasks)
+            console.log(tasks, workerEmail)
             /*const tasks = [
               {
                 "id": "cfce965a-2e79-4d46-af0b-2fbbc409bcdc",

@@ -1,5 +1,6 @@
 import {axios} from "@lib/axios";
 import {MainError, ResponseError} from "@lib/errors";
+import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 export class ItemController {
   static async createItem(createItemDto: ICreateItem): Promise<IResponse> {
@@ -83,6 +84,28 @@ export class ItemController {
     } catch (error: any) {
       console.error(error);
       throw ResponseError.createResponseError(error);
+    }
+  }
+
+  static async getItemHistory({ pageNumber = 1, pageSize = AMOUNT_IN_PAGE }: IPagination): Promise<IResponse> {
+    try {
+      const { data } = await axios.get(`/itemHistories?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+      return {
+        error: false,
+        message: 'History of modifying items were fetched successfully.',
+        data
+      }
+    } catch (error: any) {
+      if (error.status === 404) {
+        return {
+          error: false,
+          message: 'History of modifying items were fetched successfully.',
+          data: [],
+        }
+      } else {
+        console.error(error);
+        throw ResponseError.createResponseError(error);
+      }
     }
   }
 }

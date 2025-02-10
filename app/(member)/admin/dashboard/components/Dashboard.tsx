@@ -68,12 +68,22 @@ import {userStore} from "@lib/stores";
 import {getAllUsersOption} from "@lib/query/user/queryOptions";
 import {toast} from "@/hooks/use-toast";
 import {DashboardHeader} from "@/components/ui/widgets";
+import {AMOUNT_IN_PAGE} from "@lib/constants";
+import {TablePagination} from "@/components/ui/features";
 
 export const Dashboard = observer(() => {
+  const [pageNumber, setPageNumber] = useState(1);
   const {
     data: usersResponse,
+    isFetching,
+    isPlaceholderData,
   } = useQuery(
-    getAllUsersOption({})
+    getAllUsersOption({
+      pagination: {
+        pageNumber: 1,
+        pageSize: AMOUNT_IN_PAGE,
+      }
+    })
   );
   const router = useRouter()
 
@@ -228,7 +238,7 @@ export const Dashboard = observer(() => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Table>
+                      <Table className={'mb-5'}>
                         <TableHeader>
                           <TableRow>
                             <TableHead>Full Name</TableHead>
@@ -244,7 +254,7 @@ export const Dashboard = observer(() => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {usersResponse?.data.map((user: IUserDetails) => (
+                          {usersResponse?.data?.users?.map((user: IUserDetails) => (
                             <TableRow
                               key={user.id}
                               className={`${user.id === selectedUser?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
@@ -271,6 +281,16 @@ export const Dashboard = observer(() => {
                           ))}
                         </TableBody>
                       </Table>
+                      <TablePagination
+                        pageNumber={pageNumber}
+                        setPageNumber={setPageNumber}
+                        count={usersResponse?.data?.count ?? 0}
+                      />
+                      {isPlaceholderData && isFetching && (
+                        <div className={'absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-black/30 backdrop-blur-[2px]'}>
+                          <Loader/>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </TabsContent>

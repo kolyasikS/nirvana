@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import {API_URL, AUTH_HEADER_NAME, USER_ROLES} from "@lib/constants";
+import {API_URL, AUTH_HEADER_NAME, USER_ROLES, USER_ROLES_ENUM} from "@lib/constants";
 
 function redirect(request: NextRequest, redirectPath: string, searchParams: any = null) {
   const url = request.nextUrl.clone();
@@ -14,11 +14,13 @@ function redirect(request: NextRequest, redirectPath: string, searchParams: any 
 }
 function isAuthorizedRoute(pathname: string, role: string) {
   switch (role) {
-    case 'Housemaid':
-    case 'Technician':
+    case USER_ROLES_ENUM.Housemaid:
+    case USER_ROLES_ENUM.Technician:
       return pathname.includes(`/worker`);
-    case 'Administrator':
+    case USER_ROLES_ENUM.Administrator:
       return pathname.includes(`/admin`);
+    case USER_ROLES_ENUM.InventoryManager:
+      return pathname.includes(`/inventory-manager`);
     default:
       return pathname.includes(`/${role.toLowerCase()}`);
   }

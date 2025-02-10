@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {useToast} from "@/hooks/use-toast";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {AdminController} from "@/controllers/admin/Admin.controller";
@@ -29,6 +29,16 @@ export function UpdateUserProfile({
     role: user.role,
     sex: user.sex
   });
+
+  useEffect(() => {
+    setForm({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      sex: user.sex
+    });
+  }, [user]);
 
   const updateUserMutation = useMutation({
     mutationFn: (AdminController.updateUser),

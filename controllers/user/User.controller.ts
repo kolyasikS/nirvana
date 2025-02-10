@@ -1,15 +1,19 @@
 import {axios} from "@lib/axios";
 import {IGetUsers} from "@lib/query/user/queryOptions";
 import {MainError, ResponseError} from "@lib/errors";
+import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 export class UserController {
 
-  static async getAllUsers({ roles }: IGetUsers): Promise<IResponse> {
+  static async getAllUsers({ roles, pagination: { pageNumber, pageSize } }: IGetUsers): Promise<IResponse> {
     try {
-      const { data } = await axios.get(`/users`);
-      let filteredData: any[] = [];
+      const { data } = await axios.get(`/users?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+      let filteredData: any = {};
       if (roles && roles.length > 0) {
-        filteredData = data.filter((user: IUserDetails) => roles.includes(user.role));
+        filteredData = {
+          users: data.users.filter((user: IUserDetails) => roles.includes(user.role)),
+          count: data.count,
+        };
       } else {
         filteredData = data;
       }
@@ -33,9 +37,9 @@ export class UserController {
     }
   }
 
-  static async getAllItems(): Promise<IResponse> {
+  static async getAllItems({ pageNumber = 1, pageSize = AMOUNT_IN_PAGE }: IPagination): Promise<IResponse> {
     try {
-      const { data } = await axios.get(`/items`);
+      const { data } = await axios.get(`/items?pageNumber=${pageNumber}&pageSize=${pageSize}`);
       return {
         error: false,
         message: 'Items were fetched successfully.',
