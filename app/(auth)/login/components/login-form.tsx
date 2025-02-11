@@ -53,6 +53,7 @@ export function LoginForm({
               case USER_ROLES_ENUM.Manager:
                 router.push('/manager/dashboard');
                 break;
+
               case USER_ROLES_ENUM.InventoryManager:
                 router.push('/inventory-manager/dashboard');
                 break;
