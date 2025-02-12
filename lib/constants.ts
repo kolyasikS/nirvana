@@ -14,27 +14,20 @@ export enum USER_ROLES_ENUM {
 }
 
 export const USER_ROLES = [
-  {
-    id: 'cbc43a8e-f7bb-4445-baaf-1add431ffbbf',
-    name: USER_ROLES_ENUM.Administrator,
-  },
-  {
-    id: 'cac43a6e-f7bb-4448-baaf-1add431ccbbf',
-    name: USER_ROLES_ENUM.Manager,
-  },
-  {
-    id: '36f579e8-2f52-473f-91f2-550331d81d04',
-    name: USER_ROLES_ENUM.InventoryManager,
-  },
-  {
-    id: 'a0f845d1-2680-459d-981a-d40b176c5ca8',
-    name: USER_ROLES_ENUM.Technician,
-  },
-  {
-    id: '9beb8da7-4160-4db7-9982-05604a4e51d5',
-    name: USER_ROLES_ENUM.Housemaid,
-  },
+  'Administrator',
+  'Manager',
+  'InventoryManager',
+  'Technician',
+  'Housemaid',
 ];
+
+export const USER_ROLE_LABELS = {
+  Administrator: 'Administrator',
+  Manager: 'Manager',
+  "Inventory Manager": 'InventoryManager',
+  Technician: 'Technician',
+  Housemaid: 'Housemaid',
+};
 
 export const TASK_TYPES = [
   {
@@ -51,3 +44,8 @@ export const TASK_TYPES = [
 
 // LocalStorage
 export const UserStoreKey = 'UserStore'
+
+// General
+export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+export const AMOUNT_IN_PAGE = 10;

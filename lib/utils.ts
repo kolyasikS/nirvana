@@ -1,4 +1,4 @@
-import {ResponseError} from "@lib/errors";
+import {MainError, ResponseError} from "@lib/errors";
 
 export const isServer = () => {
   return typeof window === 'undefined';
@@ -24,6 +24,18 @@ export const makeResponse = async (
     data = null;
   }
 
+  if (error) {
+    if (data) {
+      throw new ResponseError(data);
+    } else {
+      throw new ResponseError({
+        errors: [],
+        type: 'InternalServerError',
+        title: MainError.getStatusMessage(500),
+        status: 500,
+      });
+    }
+  }
   return {
     message: data?.message || message,
     error,
@@ -63,4 +75,16 @@ export const makeTaskTime = (date: Date, hours: string, minutes: string) => {
   startTime.setMinutes(parseInt(minutes));
 
   return startTime;
+}
+
+export const getFormattedTime = (date: string) => {
+  const time = new Date(date);
+  return time.toLocaleTimeString('ru-RU', {
+    day: '2-digit',
+    year: 'numeric',
+    month: '2-digit',
+    minute: '2-digit',
+    hour: '2-digit',
+    hour12: false
+  }).replace(',', '');
 }

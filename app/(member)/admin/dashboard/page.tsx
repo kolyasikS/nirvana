@@ -1,3 +1,5 @@
+import {AMOUNT_IN_PAGE} from "@lib/constants";
+
 export const dynamic = 'force-dynamic';
 
 import React from 'react';
@@ -8,7 +10,12 @@ import {getAllUsersOption} from "@lib/query/user/queryOptions";
 
 const Page = async () => {
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery(getAllUsersOption({}));
+  await queryClient.prefetchQuery(getAllUsersOption({
+    pagination: {
+      pageNumber: 1,
+      pageSize: AMOUNT_IN_PAGE,
+    }
+  }));
 
   return (
     <div>

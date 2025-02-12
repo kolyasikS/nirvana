@@ -32,12 +32,14 @@ type Props = {
   user: IUserDetails;
   date: Date;
   tasks: ITask[];
+  roles: IRole[];
 };
 export function CreateTask ({
   onClose,
   user,
   date,
   tasks,
+  roles
 }: Props) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -133,8 +135,8 @@ export function CreateTask ({
 
   const availableTaskTypes = useMemo(() =>
     TASK_TYPES.filter(type =>
-      type.roleId === USER_ROLES.find(role => role.name === user.role)?.id
-    ), [user.role]);
+      type.roleId === roles.find(role => role.name === user.role)?.id
+    ), [roles, user.role]);
 
   const setFormStartTimeHours = useCallback((hours: string) =>
     setForm(form => ({

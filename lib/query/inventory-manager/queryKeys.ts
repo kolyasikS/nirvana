@@ -1,5 +1,2 @@
-export const CREATE_ITEM = 'create_item_qk'
-export const DELETE_ITEM = 'delete_item_qk'
-export const UPDATE_ITEM = 'update_item_qk'
 export const GET_LACKING_ITEMS_QK = 'lacking_items_qk'
-export const MAKE_ORDER = 'make_order_qk'
+export const GET_ITEMS_HISTORIES_QK = 'items_histories_qk'

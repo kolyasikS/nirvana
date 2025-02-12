@@ -1,37 +1,6 @@
 'use client';
 
 import * as React from "react"
-import Link from "next/link"
-import {
-  Home,
-  LineChart,
-  ListFilter,
-  Package,
-  Package2,
-  PanelLeft,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react"
-
-import { Badge } from "@/components/ui/badge"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Table,
   TableBody,
@@ -45,42 +14,45 @@ import {
   TabsContent,
 } from "@/components/ui/tabs"
 import {
-  Tooltip,
-  TooltipContent, TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle, Loader,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui";
 import {observer} from "mobx-react-lite";
 import {useQuery} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
-import {userStore} from "@lib/stores";
 import ItemCard from "@/app/(member)/inventory-manager/dashboard/components/item/ItemCard";
-import MakeOrderContainer from "@/app/(member)/inventory-manager/dashboard/components/order/MakeOrderContainer";
-import {getAllItemsOptions} from "@lib/query/user/queryOptions";
 import {DashboardHeader} from "@/components/ui/widgets";
-import {AMOUNT_IN_PAGE} from "@lib/constants";
+import {getItemHistories} from "@lib/query/inventory-manager/queryOptions";
+import {getFormattedTime} from "@lib/utils";
 import {TablePagination} from "@/components/ui/features";
+import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 export const Dashboard = observer(() => {
+  // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);
   const [pageNumber, setPageNumber] = useState(1);
   const {
-    data: itemsResponse,
+    data: itemsHistoryResponse,
     isFetching,
     isPlaceholderData
-  } = useQuery(getAllItemsOptions({
+  } = useQuery(getItemHistories({
     pageNumber,
     pageSize: AMOUNT_IN_PAGE,
   }));
 
+  const router = useRouter();
+
   const [selectedItem, setSelectedItem] = useState<null | IItem>(null);
+
   const selectItem = (item: IItem) => {
     if (selectedItem?.id === item.id) {
       setSelectedItem(null);
@@ -94,6 +66,10 @@ export const Dashboard = observer(() => {
     route: '',
   }], []);
 
+  // const getNewItemsHistoryPage = useCallback((newPageNumber) => {
+  //   setPageNumber(newPageNumber);
+  //   refetch()
+  // }, [refetch]);
   return (
     <>
       {/*<div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">*/}
@@ -112,45 +88,49 @@ export const Dashboard = observer(() => {
                     <CardHeader className="px-7">
                       <CardTitle>Inventory</CardTitle>
                       <CardDescription>
-                        Items of «Nirvana» hotel.
+                        History of item changes.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className={'relative'}>
                       <Table className={'mb-5'}>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Name</TableHead>
+                            <TableHead>Item Name</TableHead>
                             <TableHead className="hidden sm:table-cell">
-                              Quantity
+                              Item Change Value
                             </TableHead>
                             <TableHead className="hidden sm:table-cell">
-                              Minimum Required Quantity
+                              Performer Name
                             </TableHead>
-                            {/*<TableHead className="hidden sm:table-cell">
-                              Action
-                            </TableHead>*/}
+                            <TableHead className="hidden sm:table-cell">
+                              Performed Action
+                            </TableHead>
+                            <TableHead className="hidden sm:table-cell">
+                              Date
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {itemsResponse?.data?.items.map((item: IItem) => (
+                          {itemsHistoryResponse?.data?.itemHistories?.map((itemHistory: IItemHistory) => (
                             <TableRow
-                              key={item.id}
-                              className={`${item.id === selectedItem?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
-                              onClick={() => selectItem(item)}
+                              key={itemHistory.dateOfAction}
+                              // className={`${item.id === selectedItem?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
+                              // onClick={() => selectItem(item)}
                             >
                               <TableCell>
-                                <div className="font-medium">{item.name}</div>
+                                <div className="font-medium">{itemHistory.item.name}</div>
                               </TableCell>
-                              <TableCell className="hidden sm:table-cell">
-                                <Badge className="text-xs"
-                                       variant={`${item.quantity < item.minimumStockQuantity ? 'destructive' : 'outline'}`}>
-                                  {item.quantity}
-                                </Badge>
+                              <TableCell>
+                                <div className="font-medium">{itemHistory.value}</div>
                               </TableCell>
-                              <TableCell className="hidden sm:table-cell">
-                                <Badge className="text-xs" variant="default">
-                                  {item.minimumStockQuantity}
-                                </Badge>
+                              <TableCell>
+                                <div className="font-medium">{itemHistory.user.firstName} {itemHistory.user.lastName}</div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="font-medium">{itemHistory.performedAction}</div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="font-medium">{getFormattedTime(itemHistory.dateOfAction)}</div>
                               </TableCell>
                             </TableRow>
                           ))}
@@ -159,28 +139,13 @@ export const Dashboard = observer(() => {
                       <TablePagination
                         pageNumber={pageNumber}
                         setPageNumber={setPageNumber}
-                        count={itemsResponse?.data?.count ?? 0}
+                        count={itemsHistoryResponse?.data?.count ?? 0}
                       />
                       {isPlaceholderData && isFetching && (
                         <div className={'absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-black/30 backdrop-blur-[2px]'}>
                           <Loader/>
                         </div>
                       )}
-                      <div className={'w-full flex justify-end'}>
-                        <Button
-                          className={'mt-1'}
-                          onClick={() => {
-                            setSelectedItem({
-                              id: '',
-                              quantity: 0,
-                              minimumStockQuantity: 0,
-                              name: '',
-                            })
-                          }}
-                        >
-                          + Add
-                        </Button>
-                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -195,7 +160,6 @@ export const Dashboard = observer(() => {
               />
             )}
           </div>
-          <MakeOrderContainer/>
         </main>
       </div>
     </>

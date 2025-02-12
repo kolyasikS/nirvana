@@ -6,12 +6,10 @@ import Task from "@/app/(member)/worker/dashboard/components/tasks-calendar/Task
 type Props = {
   selectedDate: Date;
   tasks: ITask[];
-  items: IItem[];
 }
 const ListTasks = ({
   selectedDate,
-  tasks,
-  items
+  tasks
 }: Props) => {
   return (
     <ListTasksWrapper
@@ -19,9 +17,6 @@ const ListTasks = ({
       tasks={tasks}
       date={selectedDate}
       TaskComponent={Task}
-      taskProps={{
-        items
-      }}
     />
   );
 };

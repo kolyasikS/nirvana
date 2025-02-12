@@ -9,6 +9,8 @@ import {uppercaseWord} from "@lib/utils";
 import {Button, Loader} from "@/components/ui";
 import {validateCreateUserSchema} from "@lib/validation/admin-validation";
 import {GET_ALL_USERS_QK} from "@lib/query/user/queryKeys";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {USER_ROLE_LABELS} from "@lib/constants";
 
 type Props = {
   onClose: () => void;
@@ -104,13 +106,30 @@ export function CreateUserProfile({
           onChange={(e) => setForm({...form, email: e.target.value})}
           label={'Email'}
         />
-        <FormInputBox
-          id="role"
-          placeholder="Manager"
-          value={form.role}
-          onChange={(e) => setForm({...form, role: e.target.value})}
-          label={'Role'}
-        />
+        <div>
+          <h3 className={'font-semibold mb-1'}>Role</h3>
+          <div className={'flex space-x-4'}>
+            <div className="flex-1">
+              <Select
+                value={form.role}
+                onValueChange={(role: string) =>
+                  setForm({
+                    ...form,
+                    role,
+                  })}
+              >
+                <SelectTrigger id="task-type-select">
+                  <SelectValue placeholder="Select type"/>
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(USER_ROLE_LABELS).map(([key, value]) => (
+                    <SelectItem key={value} value={value}>{key}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
         <FormInputBox
           id="gender"
           placeholder="Male"

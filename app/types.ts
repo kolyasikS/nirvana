@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // General
-type FlowStepProps = {
+interface FlowStepProps {
   nextStep: () => void;
   previousStep: () => void;
 }
-type IBreadcrumb = {
+interface IBreadcrumb {
   title: string;
   route: string;
+}
+interface IPagination {
+  pageNumber?: number;
+  pageSize?: number;
 }
 
 // Controllers
@@ -141,6 +145,13 @@ interface IModifyItem {
   itemId: string;
   amount: number;
 }
+interface IItemHistory {
+  dateOfAction: string; // date
+  item: IItem;
+  performedAction: 'Put',
+  user: IUserDetails;
+  value: number;
+}
 
 // entities
 interface IUserDetails {
@@ -173,4 +184,9 @@ interface IItem {
   name: string;
   quantity: number;
   minimumStockQuantity: number;
+}
+
+interface IRole {
+  id: string;
+  name: string;
 }

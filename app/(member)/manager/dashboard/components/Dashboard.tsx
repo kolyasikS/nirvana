@@ -54,25 +54,41 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle, Loader,
 } from "@/components/ui";
 import {observer} from "mobx-react-lite";
 import {useQuery} from "@tanstack/react-query";
 import {uppercaseWord} from "@lib/utils";
 import {useMemo, useState} from "react";
 import {userStore} from "@lib/stores";
-import {USER_ROLES_ENUM} from "@lib/constants";
-import {getAllUsersOption} from "@lib/query/user/queryOptions";
+import {AMOUNT_IN_PAGE, USER_ROLES_ENUM} from "@lib/constants";
+import {getAllRoles, getAllUsersOption} from "@lib/query/user/queryOptions";
 import WorkSchedule from "@/app/(member)/manager/dashboard/components/worker/WorkSchedule";
-import WorkerCharts from "@/app/(member)/manager/dashboard/components/worker/WorkerCharts";
+import WorkerCharts from "@/app/(member)/manager/dashboard/components/worker/chart/WorkerCharts";
 import {DashboardHeader} from "@/components/ui/widgets";
+import {TablePagination} from "@/components/ui/features";
 
 export const Dashboard = observer(() => {
+  const [pageNumber, setPageNumber] = useState(1);
   const {
     data: workersResponse,
+    isFetching,
+    isPlaceholderData
   } = useQuery(
-    getAllUsersOption({ roles: [USER_ROLES_ENUM.Housemaid, USER_ROLES_ENUM.Technician]})
+    getAllUsersOption({
+      roles: [USER_ROLES_ENUM.Housemaid, USER_ROLES_ENUM.Technician],
+      pagination: {
+        pageNumber: 1,
+        pageSize: AMOUNT_IN_PAGE,
+      }
+    })
   );
+  const {
+    data: rolesResponse,
+  } = useQuery(
+    getAllRoles()
+  );
+  console.log(rolesResponse)
 
   const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>(
     null);
@@ -233,7 +249,7 @@ export const Dashboard = observer(() => {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <Table>
+                        <Table className={'mb-5'}>
                           <TableHeader>
                             <TableRow>
                               <TableHead>Full Name</TableHead>
@@ -249,7 +265,7 @@ export const Dashboard = observer(() => {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {workersResponse?.data.map((user: IUserDetails) => (
+                            {workersResponse?.data?.users?.map((user: IUserDetails) => (
                               <TableRow
                                 key={user.id}
                                 className={`${user.id === selectedWorker?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
@@ -276,6 +292,16 @@ export const Dashboard = observer(() => {
                             ))}
                           </TableBody>
                         </Table>
+                        <TablePagination
+                          pageNumber={pageNumber}
+                          setPageNumber={setPageNumber}
+                          count={workersResponse?.data?.count ?? 0}
+                        />
+                        {isPlaceholderData && isFetching && (
+                          <div className={'absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-black/30 backdrop-blur-[2px]'}>
+                            <Loader/>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   </TabsContent>
@@ -293,9 +319,10 @@ export const Dashboard = observer(() => {
               <WorkSchedule
                 selectedWorker={selectedWorker}
                 setSelectedWorker={setSelectedWorker}
+                roles={rolesResponse?.data ?? []}
               />
             )}
-            <WorkerCharts workers={workersResponse?.data ?? []}/>
+            <WorkerCharts workers={workersResponse?.data?.users ?? []}/>
           </main>
         </div>
       </div>
