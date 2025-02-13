@@ -68,6 +68,8 @@ import {getAllItemsOptions} from "@lib/query/user/queryOptions";
 import {DashboardHeader} from "@/components/ui/widgets";
 import {AMOUNT_IN_PAGE} from "@lib/constants";
 import {TablePagination} from "@/components/ui/features";
+import ExportUsersButton from "@/app/(member)/admin/dashboard/components/ExportUsersButton";
+import ExportItemsButton from "@/app/(member)/inventory-manager/dashboard/components/ExportItemsButton";
 
 export const Dashboard = observer(() => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -106,6 +108,16 @@ export const Dashboard = observer(() => {
               className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedItem ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
               <Tabs defaultValue="week">
                 <TabsContent value="week">
+                  <div className="flex items-center mb-2">
+                    {/*<TabsList>
+                      <TabsTrigger value="week">Week</TabsTrigger>
+                      <TabsTrigger value="month">Month</TabsTrigger>
+                      <TabsTrigger value="year">Year</TabsTrigger>
+                    </TabsList>*/}
+                    <div className="flex w-full items-center gap-2 justify-end">
+                      <ExportItemsButton items={itemsResponse?.data?.items ?? []}/>
+                    </div>
+                  </div>
                   <Card
                     className={'dark:border-zinc-800'}
                     x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">

@@ -36,6 +36,9 @@ import {getItemHistories} from "@lib/query/inventory-manager/queryOptions";
 import {getFormattedTime} from "@lib/utils";
 import {TablePagination} from "@/components/ui/features";
 import {AMOUNT_IN_PAGE} from "@lib/constants";
+import ExportItemsButton from "@/app/(member)/inventory-manager/dashboard/components/ExportItemsButton";
+import ExportItemsHistoryButton
+  from "@/app/(member)/inventory-manager/items-history/components/ExportItemsHistoryButton";
 
 export const Dashboard = observer(() => {
   // const { data: queryUsers } = useSuspenseQuery(getAllUsersOption);
@@ -82,6 +85,11 @@ export const Dashboard = observer(() => {
               className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedItem ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
               <Tabs defaultValue="week">
                 <TabsContent value="week">
+                  <div className="flex items-center mb-2">
+                    <div className="flex w-full items-center gap-2 justify-end">
+                      <ExportItemsHistoryButton itemsHistory={itemsHistoryResponse?.data?.itemHistories ?? []}/>
+                    </div>
+                  </div>
                   <Card
                     className={'dark:border-zinc-800'}
                     x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
@@ -124,7 +132,8 @@ export const Dashboard = observer(() => {
                                 <div className="font-medium">{itemHistory.value}</div>
                               </TableCell>
                               <TableCell>
-                                <div className="font-medium">{itemHistory.user.firstName} {itemHistory.user.lastName}</div>
+                                <div
+                                  className="font-medium">{itemHistory.user.firstName} {itemHistory.user.lastName}</div>
                               </TableCell>
                               <TableCell>
                                 <div className="font-medium">{itemHistory.performedAction}</div>
@@ -142,7 +151,8 @@ export const Dashboard = observer(() => {
                         count={itemsHistoryResponse?.data?.count ?? 0}
                       />
                       {isPlaceholderData && isFetching && (
-                        <div className={'absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-black/30 backdrop-blur-[2px]'}>
+                        <div
+                          className={'absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-black/30 backdrop-blur-[2px]'}>
                           <Loader/>
                         </div>
                       )}
