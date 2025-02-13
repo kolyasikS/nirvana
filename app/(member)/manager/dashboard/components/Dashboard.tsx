@@ -1,37 +1,7 @@
 'use client';
 
 import * as React from "react"
-import Link from "next/link"
-import {
-  Home,
-  LineChart,
-  ListFilter,
-  Package,
-  Package2,
-  PanelLeft,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react"
-
 import { Badge } from "@/components/ui/badge"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Table,
   TableBody,
@@ -45,9 +15,7 @@ import {
   TabsContent,
 } from "@/components/ui/tabs"
 import {
-  Tooltip,
-  TooltipContent, TooltipProvider,
-  TooltipTrigger,
+  TooltipProvider,
 } from "@/components/ui/tooltip"
 import {
   Card,
@@ -109,135 +77,13 @@ export const Dashboard = observer(() => {
   return (
     <TooltipProvider>
       <div className="flex min-h-screen w-full flex-col bg-gray-100/40 dark:bg-zinc-800/40">
-        {/*<aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-white sm:flex dark:bg-background">
-          <nav className="flex flex-col items-center gap-4 px-2 sm:py-4">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-950 md:h-8 md:w-8 bg-gray-100 dark:bg-gray-800  dark:text-gray-400 dark:hover:text-gray-50"
-                >
-                  <Home className="h-5 w-5"/>
-                  <span className="sr-only">Dashboard</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Dashboard</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-900 transition-colors hover:text-gray-950 md:h-8 md:w-8 dark:text-gray-50 dark:hover:text-gray-50"
-                >
-                  <ShoppingCart className="h-5 w-5"/>
-                  <span className="sr-only">Orders</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Orders</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-950 md:h-8 md:w-8 dark:text-gray-400 dark:hover:text-gray-50"
-                >
-                  <Package className="h-5 w-5"/>
-                  <span className="sr-only">Products</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Products</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-950 md:h-8 md:w-8 dark:text-gray-400 dark:hover:text-gray-50"
-                >
-                  <Users2 className="h-5 w-5"/>
-                  <span className="sr-only">Customers</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Customers</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-950 md:h-8 md:w-8 dark:text-gray-400 dark:hover:text-gray-50"
-                >
-                  <LineChart className="h-5 w-5"/>
-                  <span className="sr-only">Analytics</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Analytics</TooltipContent>
-            </Tooltip>
-          </nav>
-          <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-4">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:text-gray-950 md:h-8 md:w-8 dark:text-gray-400 dark:hover:text-gray-50"
-                >
-                  <Settings className="h-5 w-5"/>
-                  <span className="sr-only">Settings</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Settings</TooltipContent>
-            </Tooltip>
-          </nav>
-        </aside>*/}
-        {/*<div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">*/}
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-0">
           <DashboardHeader breadcrumbs={breadcrumbs}/>
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-[100px]">
-            {/*lg:col-span-2*/}
             <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
               <div
                 className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedWorker ? 'lg:col-span-3' : 'lg:col-span-3'}`}>
                 <Tabs defaultValue="week">
-                  {/*<div className="flex items-center">
-                    <TabsList>
-                      <TabsTrigger value="week">Week</TabsTrigger>
-                      <TabsTrigger value="month">Month</TabsTrigger>
-                      <TabsTrigger value="year">Year</TabsTrigger>
-                    </TabsList>
-                    <div className="flex items-center gap-2">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 gap-1 text-sm"
-                          >
-                            <ListFilter className="h-3.5 w-3.5"/>
-                            <span className="sr-only sm:not-sr-only">Filter</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                          <DropdownMenuSeparator/>
-                          <DropdownMenuCheckboxItem checked>
-                            Fulfilled
-                          </DropdownMenuCheckboxItem>
-                          <DropdownMenuCheckboxItem>
-                            Declined
-                          </DropdownMenuCheckboxItem>
-                          <DropdownMenuCheckboxItem>
-                            Refunded
-                          </DropdownMenuCheckboxItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 gap-1 text-sm"
-                      >
-                        <File className="h-3.5 w-3.5"/>
-                        <span className="sr-only sm:not-sr-only">Export</span>
-                      </Button>
-                    </div>
-                  </div>*/}
                   <TabsContent value="week">
                     <Card
                       className={'dark:border-zinc-800'}
@@ -305,12 +151,6 @@ export const Dashboard = observer(() => {
                       </CardContent>
                     </Card>
                   </TabsContent>
-                  {/*<Button
-                    className={'mt-5'}
-                    onClick={() => setShowWorkerCharts(true)}
-                  >
-                    Show Worker Charts&ensp;<BarChartIcon/>
-                  </Button>*/}
                 </Tabs>
               </div>
               {/*{(*/}

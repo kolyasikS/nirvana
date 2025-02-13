@@ -1,6 +1,6 @@
 import {validateEmailConfirmation, validateLogin} from "@lib/validation/auth-validation";
 import {WEB_URL} from "@lib/constants";
-import {validateCode, validateEmail, validatePassword} from "@lib/validation/general";
+import {validateEmail, validatePassword} from "@lib/validation/general";
 import {axios} from "@lib/axios";
 import {MainError, ResponseError} from "@lib/errors";
 import {makeResponse} from "@lib/utils";
@@ -84,12 +84,12 @@ export class AuthController {
     }
 
     try {
-      const { data } = await axios.post(`/send-code`, {
+      const { data } = await axios.put(`/users/recoverPassword`, {
         email
       });
 
       return {
-        message: 'Code was sent successfully.',
+        message: 'Email with further instructions has been sent successfully.',
         data,
         error: false,
       };
@@ -99,18 +99,12 @@ export class AuthController {
     }
   }
 
-  static async verifyCode({
+  static async setNewPassword({
     code,
-    email
+    email,
+    password,
+    confirmPassword
   }: VerifyCodeDto): Promise<IResponse> {
-    const validationCodeResult = await validateCode(code, {
-      required: true,
-    });
-
-    if (validationCodeResult.error) {
-      throw new MainError(validationCodeResult.message);
-    }
-
     const validationEmailResult = await validateEmail(email, {
       required: true,
     });
@@ -119,44 +113,25 @@ export class AuthController {
       throw new MainError(validationEmailResult.message);
     }
 
-    try {
-      const { data } = await axios.post(`/verify-code`, {
-        code,
-        email
-      });
-
-      return {
-        message: 'Code was verified successfully.',
-        data,
-        error: false,
-      };
-    } catch (error: any) {
-      console.error(error);
-      throw ResponseError.createResponseError(error);
-    }
-  }
-
-  static async recoverPassword({
-    newPassword,
-    confirmPassword,
-  }: SetNewPasswordDto): Promise<IResponse> {
-    const validationResult = await validatePassword(newPassword, {
+    const validationResult = await validatePassword(password, {
       required: true,
     });
 
     if (validationResult.error) {
       throw new MainError(validationResult.message);
-    } else if (newPassword !== confirmPassword) {
+    } else if (password !== confirmPassword) {
       throw new MainError('Passwords do not match');
     }
 
     try {
-      const { data } = await axios.post(`/recover-password`, {
-        password: newPassword,
+      const { data } = await axios.put(`/users/confirmPasswordRecovery`, {
+        code: 'CfDJ8Eno4aVdvEBEp/BYeHC1Zf1ObuZQLWu2Tjrtfeq+FbaVIv8EiYr8z+pGz+f28NVv+3rRuoVANSeZeyZz7UAODLO5yzB9jW77zpnuKG1DGV8dV+N/gmRbRkts/87qN2Nh3I67w/5xr9KziqztXb1u/7GtJvo4zPEJ4i/kY+KuySEvIoy297+8ViDma36myn3WPmS7J+R0lv46xBCvW1oRolIgFAUDRJ+6UHZEIdVLu/qT',
+        email,
+        newPassword: password
       });
 
       return {
-        message: 'Password was recovered successfully.',
+        message: 'New password was set successfully.',
         data,
         error: false,
       };
@@ -165,5 +140,4 @@ export class AuthController {
       throw ResponseError.createResponseError(error);
     }
   }
-
 }

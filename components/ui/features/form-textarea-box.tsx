@@ -1,6 +1,5 @@
 import React from 'react';
 import {Label} from "@/components/ui/label";
-import {InputProps} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 
 type FormInputBoxProps = {

@@ -7,7 +7,6 @@ import {
   PaginationNext,
   PaginationPrevious
 } from "@/components/ui";
-import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 type Props = {
   count: number;

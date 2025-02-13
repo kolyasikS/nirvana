@@ -72,37 +72,7 @@ export const Dashboard = observer(() => {
             <div className={`grid auto-rows-max items-start gap-4 md:gap-8 ${showUserProfileCard ? 'lg:col-span-2' : 'lg:col-span-4'}`}>
               <Tabs defaultValue="week">
                 <div className="flex items-center mb-2">
-                  {/*<TabsList>
-                    <TabsTrigger value="week">Week</TabsTrigger>
-                    <TabsTrigger value="month">Month</TabsTrigger>
-                    <TabsTrigger value="year">Year</TabsTrigger>
-                  </TabsList>*/}
                   <div className="flex w-full items-center gap-2 justify-end">
-                    {/*<DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 gap-1 text-sm"
-                        >
-                          <ListFilter className="h-3.5 w-3.5"/>
-                          <span className="sr-only sm:not-sr-only">Filter</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuCheckboxItem checked>
-                          Fulfilled
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem>
-                          Declined
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem>
-                          Refunded
-                        </DropdownMenuCheckboxItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>*/}
                     <ExportUsersButton users={usersResponse?.data?.users ?? []}/>
                   </div>
                 </div>

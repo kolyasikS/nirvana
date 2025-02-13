@@ -15,37 +15,6 @@ export const ListTasks = memo(({
   date,
   TaskComponent,
 }: Props) => {
-  const { toast } = useToast();
-
-  // const tasks = [
-  //   {
-  //     "id": "174d0393-80f6-42fb-84a0-e917d6bf620e",
-  //     "assignment": {
-  //       "name": "Clear room",
-  //       "role": {
-  //         "name": "Housemaid"
-  //       }
-  //     },
-  //     "user": null,
-  //     "details": "Hello details",
-  //     "startTime": "2025-01-10T10:00:00Z",
-  //     "endTime": "2025-01-10T11:30:00Z",
-  //     "isCompleted": false
-  //   }, {
-  //     "id": "174d0393-80f6-42fsb-84a0-e917d6bf620e",
-  //     "assignment": {
-  //       "name": "Clear room",
-  //       "role": {
-  //         "name": "Housemaid"
-  //       }
-  //     },
-  //     "user": null,
-  //     "details": "Hello details",
-  //     "startTime": "2025-01-10T10:00:00Z",
-  //     "endTime": "2025-01-10T11:30:00Z",
-  //     "isCompleted": true
-  //   }
-  // ];
   const onDateTasks = useMemo(() => {
     return tasks.filter((task: ITask) => {
       const taskDateTime = new Date(task.startTime);

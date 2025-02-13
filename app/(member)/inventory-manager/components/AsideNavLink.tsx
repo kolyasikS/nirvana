@@ -2,7 +2,6 @@
 import React from 'react';
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui";
 import Link from "next/link";
-import {Home} from "lucide-react";
 import {usePathname} from "next/navigation";
 
 

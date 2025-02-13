@@ -1,5 +1,5 @@
 import {axios} from "@lib/axios";
-import {MainError, ResponseError} from "@lib/errors";
+import {ResponseError} from "@lib/errors";
 import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 export class ItemController {

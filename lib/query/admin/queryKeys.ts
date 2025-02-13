@@ -1,1 +1,0 @@
-export const GET_ALL_USERS_QK = 'get_user_qk'

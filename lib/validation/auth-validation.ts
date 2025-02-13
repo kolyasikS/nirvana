@@ -1,6 +1,6 @@
 
 import {object, string} from 'yup';
-import {emailValidationObject, passwordValidationObject} from "@/lib/validation/general";
+import {emailValidationObject} from "@/lib/validation/general";
 
 const loginSchema = object({
   email: emailValidationObject.email

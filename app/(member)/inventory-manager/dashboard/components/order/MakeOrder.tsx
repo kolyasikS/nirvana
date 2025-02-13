@@ -1,7 +1,6 @@
-import {GET_ALL_ITEMS_QK} from "@lib/query/user/queryKeys";
-
 'ues client';
 
+import {GET_ALL_ITEMS_QK} from "@lib/query/user/queryKeys";
 import {TrashIcon} from "@radix-ui/react-icons";
 import {ItemController} from "@/controllers/inventory-manager/Item.controller";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
