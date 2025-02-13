@@ -3,21 +3,16 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import RecoverForm from "@/app/(auth)/login/recover-password/[code]/RecoverForm";
 
 type Props = {
-  params: {
-    code: string
-  },
-  searchParams: {
-    email: string;
-  }
+  params: Promise<any>,
+  searchParams: Promise<any>,
 }
-const Page = ({
-  params: {
-    code,
-  },
-  searchParams: {
-    email,
-  }
+const Page = async ({
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: Props) => {
+  const params = await paramsPromise;
+  const searchParams = await searchParamsPromise;
+
   return (
     <Card className="mx-auto w-full max-w-sm">
       <CardHeader>
@@ -28,8 +23,8 @@ const Page = ({
       </CardHeader>
       <CardContent>
         <RecoverForm
-          code={code}
-          email={email}
+          code={params.code}
+          email={searchParams.email}
         />
       </CardContent>
     </Card>
