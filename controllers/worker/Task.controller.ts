@@ -1,7 +1,5 @@
 import {axios} from "@lib/axios";
-import {MainError, ResponseError} from "@lib/errors";
-import {IGetAllUserTasks} from "@lib/query/manager/queryOptions";
-import {makeTaskTime} from "@lib/utils";
+import {ResponseError} from "@lib/errors";
 
 export class TaskController {
   static async markAsCompleted({ assignmentToUserId }: IMarkAsCompletedTask): Promise<IResponse> {

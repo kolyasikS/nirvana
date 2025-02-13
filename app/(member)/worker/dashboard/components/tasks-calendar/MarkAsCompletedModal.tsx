@@ -1,4 +1,4 @@
-import React, {Dispatch, SetStateAction, useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,6 @@ import {validateModifyItemSchema} from "@lib/validation/item-validation";
 import {ItemController} from "@/controllers/worker/Item.controller";
 import {GET_ALL_ITEMS_QK} from "@lib/query/user/queryKeys";
 import {getAllItemsOptions} from "@lib/query/user/queryOptions";
-import {AMOUNT_IN_PAGE} from "@lib/constants";
 import {TablePagination} from "@/components/ui/features";
 
 type IUsedItem = IItem & {
@@ -221,18 +220,6 @@ const MarkAsCompletedModal = ({
                   </div>
                 </div>
               </div>
-              {/* <div className="grid gap-4 pb-4">
-                  <div>
-                    <h3>Used/Spend Items List</h3>
-                    <ul className={'mt-2 pl-5'}>
-                      <li className={'flex text-sm font-normal'}>
-                        <span>1.&ensp;</span>
-                        <p className={''}>Bucket —&ensp;</p>
-                        <p>5</p>
-                      </li>
-                    </ul>
-                  </div>
-                </div>*/}
               <DialogFooter className={'flex w-full justify-between'}>
                 <Button type="button" variant="outline" onClick={markAsCompletedTaskHandler as any}>Skip</Button>
                 <Button type="submit" onClick={markAsCompletedTaskHandler as any}>Apply</Button>
@@ -276,7 +263,6 @@ const MarkAsCompletedModal = ({
               )}
               <DialogFooter className={'flex w-full justify-between relative z-10'}>
                 <Button type="button" variant="outline" onClick={() => setPage(0)}>Back</Button>
-                {/*<Button type="button">Add</Button>*/}
               </DialogFooter>
             </>
         }

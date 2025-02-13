@@ -4,12 +4,12 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList, BreadcrumbPage,
-  Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  Button,
   Sheet,
   SheetContent,
   SheetTrigger
 } from "@/components/ui";
-import {Home, LineChart, Package, Package2, PanelLeft, Settings, ShoppingCart, Users2} from "lucide-react";
+import {Home, LineChart, Package, Package2, PanelLeft, ShoppingCart, Users2} from "lucide-react";
 import Link from "next/link";
 import Menu from "@/components/ui/widgets/dashboard-header/Menu";
 

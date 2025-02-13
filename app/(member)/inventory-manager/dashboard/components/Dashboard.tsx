@@ -1,37 +1,7 @@
 'use client';
 
 import * as React from "react"
-import Link from "next/link"
-import {
-  Home,
-  LineChart,
-  ListFilter,
-  Package,
-  Package2,
-  PanelLeft,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from "lucide-react"
-
 import { Badge } from "@/components/ui/badge"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Table,
   TableBody,
@@ -45,11 +15,6 @@ import {
   TabsContent,
 } from "@/components/ui/tabs"
 import {
-  Tooltip,
-  TooltipContent, TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import {
   Button,
   Card,
   CardContent,
@@ -60,14 +25,13 @@ import {
 import {observer} from "mobx-react-lite";
 import {useQuery} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
-import {useRouter} from "next/navigation";
-import {userStore} from "@lib/stores";
 import ItemCard from "@/app/(member)/inventory-manager/dashboard/components/item/ItemCard";
 import MakeOrderContainer from "@/app/(member)/inventory-manager/dashboard/components/order/MakeOrderContainer";
 import {getAllItemsOptions} from "@lib/query/user/queryOptions";
 import {DashboardHeader} from "@/components/ui/widgets";
 import {AMOUNT_IN_PAGE} from "@lib/constants";
 import {TablePagination} from "@/components/ui/features";
+import ExportItemsButton from "@/app/(member)/inventory-manager/dashboard/components/ExportItemsButton";
 
 export const Dashboard = observer(() => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -96,16 +60,19 @@ export const Dashboard = observer(() => {
 
   return (
     <>
-      {/*<div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">*/}
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <DashboardHeader breadcrumbs={breadcrumbs}/>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-[100px]">
-          {/*lg:col-span-2*/}
           <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
             <div
               className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedItem ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
               <Tabs defaultValue="week">
                 <TabsContent value="week">
+                  <div className="flex items-center mb-2">
+                    <div className="flex w-full items-center gap-2 justify-end">
+                      <ExportItemsButton items={itemsResponse?.data?.items ?? []}/>
+                    </div>
+                  </div>
                   <Card
                     className={'dark:border-zinc-800'}
                     x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
@@ -126,9 +93,6 @@ export const Dashboard = observer(() => {
                             <TableHead className="hidden sm:table-cell">
                               Minimum Required Quantity
                             </TableHead>
-                            {/*<TableHead className="hidden sm:table-cell">
-                              Action
-                            </TableHead>*/}
                           </TableRow>
                         </TableHeader>
                         <TableBody>

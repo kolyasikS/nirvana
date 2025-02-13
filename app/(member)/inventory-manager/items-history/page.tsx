@@ -1,7 +1,6 @@
-import {AMOUNT_IN_PAGE} from "@lib/constants";
-
 export const dynamic = 'force-dynamic';
 
+import {AMOUNT_IN_PAGE} from "@lib/constants";
 import React from 'react';
 import {getQueryClient} from "@lib/query/get-query-client";
 import {dehydrate, HydrationBoundary} from "@tanstack/react-query";

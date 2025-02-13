@@ -15,9 +15,7 @@ import * as React from "react";
 import {cn} from "@lib/utils-client";
 import ListTasks from "@/app/(member)/worker/dashboard/components/tasks-calendar/ListTasks";
 import {useQuery} from "@tanstack/react-query";
-import {getAllItemsOptions} from "@lib/query/user/queryOptions";
 import {getAllWorkerTasksOptions} from "@lib/query/worker/queryOptions";
-import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 

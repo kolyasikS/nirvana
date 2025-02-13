@@ -48,9 +48,17 @@ export class TaskController {
     }
   }
 
-  static async getAllUserTasks({ userEmail }: IGetAllUserTasks): Promise<IResponse> {
+  static async getAllUserTasks({ userEmail, month, year }: IGetAllUserTasks): Promise<IResponse> {
     try {
-      const { data } = await axios.get(`/assignmentsToUsers?email=${userEmail}`);
+      let queryParamsString = `email=${userEmail}`;
+      if (month) {
+        queryParamsString += `&month=${month}`;
+      }
+      if (year) {
+        queryParamsString += `&year=${year}`;
+      }
+
+      const { data } = await axios.get(`/assignmentsToUsers?${queryParamsString}`);
       return {
         error: false,
         message: 'Tasks were fetched successfully.',

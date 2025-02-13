@@ -1,6 +1,6 @@
 import {axios} from "@lib/axios";
 import {IGetUsers} from "@lib/query/user/queryOptions";
-import {MainError, ResponseError} from "@lib/errors";
+import {ResponseError} from "@lib/errors";
 import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 export class UserController {

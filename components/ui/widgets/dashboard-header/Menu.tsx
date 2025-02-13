@@ -39,11 +39,6 @@ const Menu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {/*<DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator/>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Support</DropdownMenuItem>
-                  <DropdownMenuSeparator/>*/}
         <DropdownMenuItem onClick={logout.mutate as any}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

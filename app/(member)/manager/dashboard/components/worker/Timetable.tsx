@@ -7,7 +7,6 @@ type Props = {
   close: () => void;
   dates: Date[] | undefined;
   onDateSelect: (dates: Date[] | undefined, updatedDate: Date) => void;
-  tasks: ITask[];
   isPending: boolean;
 }
 const Timetable = ({
@@ -15,7 +14,6 @@ const Timetable = ({
   close,
   onDateSelect,
   isPending,
-  tasks,
 }: Props) => {
 
   return (

@@ -1,5 +1,4 @@
 'use server';
-// import {cookies as getCookies} from "next/headers";
 
 export async function getCookieOnServer(name: string) {
   const { cookies: getCookies } = await import('next/headers');

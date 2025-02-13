@@ -1,24 +1,7 @@
 import {axios} from "@lib/axios";
 import {ResponseError} from "@lib/errors";
-import {IGetUser} from "@lib/query/admin/queryOptions";
 
 export class AdminController {
-
-  static async getUser({ userId }: IGetUser): Promise<IResponse> {
-    try {
-      const { data } = await axios.get(`/users/${userId}`);
-
-      return {
-        message: 'Data has been fetched successfully.',
-        data,
-        error: false,
-      }
-    } catch (error: any) {
-      console.error(error);
-      throw ResponseError.createResponseError(error);
-    }
-  }
-
   static async createUser(createUserDto: CreateUserDto): Promise<IResponse> {
     try {
       const result = await axios.post(`/auth/register`, {

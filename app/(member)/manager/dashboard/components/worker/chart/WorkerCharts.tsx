@@ -4,14 +4,8 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {AxisOptions, Chart} from "react-charts";
 import {TaskController} from "@/controllers/manager/Task.controller";
 import {
-  Button,
-  DropdownMenu, DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel, DropdownMenuSeparator,
-  DropdownMenuTrigger,
   Loader
 } from "@/components/ui";
-import {ListFilter} from "lucide-react";
 import FilterChart from "@/app/(member)/manager/dashboard/components/worker/chart/FilterChart";
 
 type Props = {
@@ -25,7 +19,10 @@ const WorkerCharts = ({
     data: [],
     maxTasksInDay: 0,
   });
-  const [selectedMonth, setSelectedMonth] = useState(2)//useState((new Date()).getMonth());
+
+  const [selectedMonth, setSelectedMonth] = useState(0) // test - useState((new Date()).getMonth());
+  const [selectedWorker, setSelectedWorker] = useState<IUserDetails | null>(null);
+
   const dateRangePrimaryAxis = useMemo(() => {
     const year = new Date().getFullYear();
     if (chartData.maxTasksInDay > 0) {
@@ -47,108 +44,27 @@ const WorkerCharts = ({
     let maxTasksInDay = 0;
 
     const tasksPromises: Promise<[IResponse, string]>[] = [];
-    workers.forEach((worker) => {
-      tasksPromises.push(TaskController.getAllUserTasks({userEmail: 'adsda'}).then(res => [res, worker.email]));
-    })
+    if (selectedWorker) {
+      tasksPromises.push(TaskController.getAllUserTasks({
+        userEmail: selectedWorker.email,
+        month: selectedMonth + 1,
+        year: new Date().getFullYear(),
+      }).then(res => [res, selectedWorker.email]));
+    } else {
+      workers.forEach((worker) => {
+        tasksPromises.push(TaskController.getAllUserTasks({
+          userEmail: worker.email,
+          month: selectedMonth + 1,
+          year: new Date().getFullYear(),
+        }).then(res => [res, worker.email]));
+      })
+    }
 
     Promise.all(tasksPromises)
       .then(responses => {
         responses.forEach(([response, workerEmail]) => {
           if (!response.error && response.data) {
             const tasks = response.data;
-            console.log(tasks, workerEmail)
-            /*const tasks = [
-              {
-                "id": "cfce965a-2e79-4d46-af0b-2fbbc409bcdc",
-                "assignment": {
-                  "name": "Clear room",
-                  "role": {
-                    "id": "9beb8da7-4160-4db7-9982-05604a4e51d5",
-                    "name": "Housemaid"
-                  }
-                },
-                "user": null,
-                "details": "sadada",
-                "startTime": "2025-01-17T10:00:00Z",
-                "endTime": "2025-01-17T11:30:00Z",
-                "isCompleted": false
-              },
-              {
-                "id": "cf9706de-97d7-48f3-beaa-82543f998736",
-                "assignment": {
-                  "name": "Clear room",
-                  "role": {
-                    "id": "9beb8da7-4160-4db7-9982-05604a4e51d5",
-                    "name": "Housemaid"
-                  }
-                },
-                "user": null,
-                "details": "asdad",
-                "startTime": "2025-01-13T10:00:00Z",
-                "endTime": "2025-01-13T11:30:00Z",
-                "isCompleted": false
-              },
-              {
-                "id": "9944d926-9888-4a65-abfb-91ad26638c50",
-                "assignment": {
-                  "name": "Clear room",
-                  "role": {
-                    "id": "9beb8da7-4160-4db7-9982-05604a4e51d5",
-                    "name": "Housemaid"
-                  }
-                },
-                "user": null,
-                "details": "dsadsad",
-                "startTime": "2025-01-29T08:01:00Z",
-                "endTime": "2025-01-29T08:40:00Z",
-                "isCompleted": false
-              },
-              {
-                "id": "173cdf0e-52f7-4dc3-bdbc-354a9c679e44",
-                "assignment": {
-                  "name": "Clear room",
-                  "role": {
-                    "id": "9beb8da7-4160-4db7-9982-05604a4e51d5",
-                    "name": "Housemaid"
-                  }
-                },
-                "user": null,
-                "details": "asdsads",
-                "startTime": "2025-01-13T12:00:00Z",
-                "endTime": "2025-01-13T14:00:00Z",
-                "isCompleted": false
-              },
-              {
-                "id": "33f25fe6-1d82-4f92-a5df-c556ed7fdd99",
-                "assignment": {
-                  "name": "Clear room",
-                  "role": {
-                    "id": "9beb8da7-4160-4db7-9982-05604a4e51d5",
-                    "name": "Housemaid"
-                  }
-                },
-                "user": null,
-                "details": "asdsads",
-                "startTime": "2025-01-29T12:00:00Z",
-                "endTime": "2025-01-29T14:00:00Z",
-                "isCompleted": false
-              },
-              {
-                "id": "3e89cca8-8966-4f65-9288-722c9ef28fb9",
-                "assignment": {
-                  "name": "Clear room",
-                  "role": {
-                    "id": "9beb8da7-4160-4db7-9982-05604a4e51d5",
-                    "name": "Housemaid"
-                  }
-                },
-                "user": null,
-                "details": "asdsads",
-                "startTime": "2025-01-29T15:00:00Z",
-                "endTime": "2025-01-29T16:00:00Z",
-                "isCompleted": false
-              }
-            ];*/
             const seriesData: { primary: Date; secondary: unknown; }[] = [];
             const tasksForDate: { [key: string]: number } = {};
             tasks.forEach((task: ITask) => {
@@ -164,7 +80,6 @@ const WorkerCharts = ({
                 tasksForDate[taskDateString] = 1;
               }
             });
-            console.log(tasksForDate);
             Object.entries(tasksForDate).forEach(([date, amount]) => {
               const primaryDate = new Date(date);
               primaryDate.setUTCHours(0);
@@ -195,9 +110,8 @@ const WorkerCharts = ({
       .finally(() => {
         setIsLoading(false);
       })
-  }, [workers, selectedMonth]);
+  }, [workers, selectedMonth, selectedWorker]);
 
-  console.log(chartData, workers, dateRangePrimaryAxis)
   const primaryAxis = React.useMemo<
     AxisOptions<typeof chartData.data[number]["data"][number]>
   >(
@@ -229,13 +143,14 @@ const WorkerCharts = ({
     activeDatumIndex: -1,
   });
 
-
-  console.log(chartData)
   return (
     <div className={'grid gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3 w-full'}>
       <div className={'w-full grid auto-rows-max lg:col-span-3'}>
         <h2 className={'w-full text-white text-center text-2xl mb-3'}>Workload Chart</h2>
-        <FilterChart setMonth={setSelectedMonth} month={selectedMonth}/>
+        <FilterChart
+          setMonth={setSelectedMonth} month={selectedMonth}
+          selectedWorker={selectedWorker} setSelectedWorker={setSelectedWorker} workers={workers}
+        />
         {isLoading
           ? (
             <div className={'min-h-[500px] w-full flex justify-center'}>

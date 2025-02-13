@@ -43,7 +43,6 @@ const WorkSchedule = ({
       <Timetable
         dates={dates}
         isPending={isPending}
-        tasks={tasksData?.data ?? []}
         onDateSelect={onDateSelect}
         close={() => setSelectedWorker(null)}
       />

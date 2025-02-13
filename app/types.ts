@@ -26,6 +26,8 @@ interface SendCodeDto {
 interface VerifyCodeDto {
   email: string;
   code: string;
+  password: string;
+  confirmPassword: string;
 }
 interface SetNewPasswordDto {
   newPassword: string;

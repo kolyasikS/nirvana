@@ -2,7 +2,6 @@ import {useState} from "react";
 import {AuthController} from "@/controllers/auth/Auth.controller";
 import {useToast} from "@/hooks/use-toast";
 import {Button, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Loader} from "@/components/ui";
-import Link from "next/link";
 import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import {userStore} from "@lib/stores";
@@ -107,13 +106,12 @@ export function LoginForm({
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              <Link
-                href="#"
+              <button
                 className="ml-auto inline-block text-sm underline"
                 onClick={() => startForgotPasswordFlow()}
               >
                 Forgot your password?
-              </Link>
+              </button>
             </div>
             <Input
               id="password"

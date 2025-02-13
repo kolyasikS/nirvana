@@ -1,29 +1,10 @@
-import ForgotPasswordStep1 from "@/app/(auth)/login/components/forgot-password/forgot-password-step-1";
-import {
-  useContext,
-  useMemo,
+import React, {
   useState,
-  createContext,
-  Dispatch,
-  SetStateAction
 } from "react";
-import ForgotPasswordStep2 from "@/app/(auth)/login/components/forgot-password/forgot-password-step-2";
-import ForgotPasswordStep3 from "@/app/(auth)/login/components/forgot-password/forgot-password-step-3";
-
-interface IForgotPasswordFormState {
-  email: string;
-}
-
-interface IForgotPasswordFormContext {
-  formState: IForgotPasswordFormState;
-  setFormState:  Dispatch<SetStateAction<IForgotPasswordFormState>>;
-}
-
-const ForgotPasswordFormContext = createContext<IForgotPasswordFormContext>({
-  formState: {} as IForgotPasswordFormState,
-  setFormState: () => {},
-});
-export const useForgotPasswordFormContext = () => useContext(ForgotPasswordFormContext);
+import {useToast} from "@/hooks/use-toast";
+import {useMutation} from "@tanstack/react-query";
+import {AuthController} from "@/controllers/auth/Auth.controller";
+import {Button, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Loader} from "@/components/ui";
 
 type ForgotPasswordFormProps = {
   startLoginFlow: () => void;
@@ -31,41 +12,65 @@ type ForgotPasswordFormProps = {
 export function ForgotPasswordForm ({
   startLoginFlow
 }: ForgotPasswordFormProps) {
-  const [step, setStep] = useState<number>(0);
-  const [formState, setFormState] = useState<IForgotPasswordFormState>({
-    email: '',
-  });
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
 
-  const stepComponent = useMemo(() => {
-    switch (step) {
-      case 0:
-        return <ForgotPasswordStep1
-          nextStep={() => setStep(step => step + 1)}
-          previousStep={() => startLoginFlow()}
-        />;
-      case 1:
-        return <ForgotPasswordStep2
-          nextStep={() => setStep(step => step + 1)}
-          previousStep={() => setStep(step => step - 1)}
-        />;
-      case 2:
-        return <ForgotPasswordStep3
-          nextStep={() => startLoginFlow()}
-          previousStep={() => setStep(step => step - 1)}
-        />;
-      default:
-        return <ForgotPasswordStep1
-          nextStep={() => setStep(step => step + 1)}
-          previousStep={() => startLoginFlow()}
-        />;
-    }
-  }, [step, startLoginFlow])
+  const sendRecoverEmailMutation = useMutation({
+    mutationFn: (AuthController.sendCodeToEmail),
+    onError: (error) => {
+      toast({
+        title: error.message,
+        variant: 'destructive',
+      });
+    },
+    onSuccess: ({ data, message }) => {
+      toast({
+        title: message
+      });
+
+      startLoginFlow();
+    },
+  })
+
   return (
-    <ForgotPasswordFormContext.Provider value={{
-      formState,
-      setFormState,
-    }}>
-      {stepComponent}
-    </ForgotPasswordFormContext.Provider>
+    <>
+      <CardHeader>
+        <CardTitle className="text-2xl flex justify-between">Forgot password</CardTitle>
+        <CardDescription>
+          Enter your email below to receive an email for recovering the password
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className={'flex gap-3'}>
+            <Button variant={'secondary'} className="w-full" onClick={() => startLoginFlow()}>
+              Back
+            </Button>
+            <Button
+              type="submit"
+              className="w-full"
+              onClick={() => {
+                if (!sendRecoverEmailMutation.isPending) {
+                  sendRecoverEmailMutation.mutate({email});
+                }
+              }}
+            >
+              {sendRecoverEmailMutation.isPending ? <Loader/> : 'Continue'}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </>
   )
 }
