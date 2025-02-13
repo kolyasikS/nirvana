@@ -4,14 +4,8 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {AxisOptions, Chart} from "react-charts";
 import {TaskController} from "@/controllers/manager/Task.controller";
 import {
-  Button,
-  DropdownMenu, DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel, DropdownMenuSeparator,
-  DropdownMenuTrigger,
   Loader
 } from "@/components/ui";
-import {ListFilter} from "lucide-react";
 import FilterChart from "@/app/(member)/manager/dashboard/components/worker/chart/FilterChart";
 
 type Props = {
@@ -25,7 +19,10 @@ const WorkerCharts = ({
     data: [],
     maxTasksInDay: 0,
   });
-  const [selectedMonth, setSelectedMonth] = useState(2)//useState((new Date()).getMonth());
+
+  const [selectedMonth, setSelectedMonth] = useState(0) // test - useState((new Date()).getMonth());
+  const [selectedWorker, setSelectedWorker] = useState<IUserDetails | null>(null);
+
   const dateRangePrimaryAxis = useMemo(() => {
     const year = new Date().getFullYear();
     if (chartData.maxTasksInDay > 0) {
@@ -47,9 +44,21 @@ const WorkerCharts = ({
     let maxTasksInDay = 0;
 
     const tasksPromises: Promise<[IResponse, string]>[] = [];
-    workers.forEach((worker) => {
-      tasksPromises.push(TaskController.getAllUserTasks({userEmail: 'adsda'}).then(res => [res, worker.email]));
-    })
+    if (selectedWorker) {
+      tasksPromises.push(TaskController.getAllUserTasks({
+        userEmail: selectedWorker.email,
+        month: selectedMonth + 1,
+        year: new Date().getFullYear(),
+      }).then(res => [res, selectedWorker.email]));
+    } else {
+      workers.forEach((worker) => {
+        tasksPromises.push(TaskController.getAllUserTasks({
+          userEmail: worker.email,
+          month: selectedMonth + 1,
+          year: new Date().getFullYear(),
+        }).then(res => [res, worker.email]));
+      })
+    }
 
     Promise.all(tasksPromises)
       .then(responses => {
@@ -195,7 +204,7 @@ const WorkerCharts = ({
       .finally(() => {
         setIsLoading(false);
       })
-  }, [workers, selectedMonth]);
+  }, [workers, selectedMonth, selectedWorker]);
 
   console.log(chartData, workers, dateRangePrimaryAxis)
   const primaryAxis = React.useMemo<
@@ -235,7 +244,10 @@ const WorkerCharts = ({
     <div className={'grid gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3 w-full'}>
       <div className={'w-full grid auto-rows-max lg:col-span-3'}>
         <h2 className={'w-full text-white text-center text-2xl mb-3'}>Workload Chart</h2>
-        <FilterChart setMonth={setSelectedMonth} month={selectedMonth}/>
+        <FilterChart
+          setMonth={setSelectedMonth} month={selectedMonth}
+          selectedWorker={selectedWorker} setSelectedWorker={setSelectedWorker} workers={workers}
+        />
         {isLoading
           ? (
             <div className={'min-h-[500px] w-full flex justify-center'}>
