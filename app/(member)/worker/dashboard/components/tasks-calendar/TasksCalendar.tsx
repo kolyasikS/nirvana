@@ -7,19 +7,21 @@ import {
   Card,
   CardContent, CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle, Loader,
   Tabs,
   TabsContent
 } from "@/components/ui";
 import * as React from "react";
 import {cn} from "@lib/utils-client";
 import ListTasks from "@/app/(member)/worker/dashboard/components/tasks-calendar/ListTasks";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {getAllWorkerTasksOptions} from "@lib/query/worker/queryOptions";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 const TasksCalendar = () => {
+  const queryClient = useQueryClient();
+
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
@@ -28,13 +30,18 @@ const TasksCalendar = () => {
   const daysInMonth = lastDayOfMonth.getDate()
   const startingDayIndex = (firstDayOfMonth.getDay() + 6) % 7 // Adjust to start week on Monday
 
-
   const prevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    queryClient.invalidateQueries({
+      queryKey: [{ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() }]
+    });
   }
 
   const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    queryClient.invalidateQueries({
+      queryKey: [{ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() }]
+    });
   }
 
   const isToday = (date: number) => {
@@ -48,8 +55,9 @@ const TasksCalendar = () => {
 
   const {
     data: tasksData,
+    isFetching
   } = useQuery(
-    getAllWorkerTasksOptions(),
+    getAllWorkerTasksOptions({ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() }),
   );
 
   const workingDates = useMemo(() => {
@@ -108,7 +116,12 @@ const TasksCalendar = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="flex-grow grid grid-cols-7 gap-1">
+                  <div className="flex-grow grid grid-cols-7 gap-1 relative">
+                    {isFetching && (
+                      <div className={'absolute w-full h-full flex items-center justify-center backdrop-blur-sm pb-32'}>
+                        <Loader/>
+                      </div>
+                    )}
                     {Array.from({length: startingDayIndex}).map((_, index) => (
                       <div key={`empty-${index}`} className="p-2"/>
                     ))}

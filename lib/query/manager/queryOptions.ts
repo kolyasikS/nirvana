@@ -9,8 +9,8 @@ export interface IGetAllUserTasks {
 }
 export const getAllUserTasksOptions = ({
   userEmail,
-  month,
-  year
+  month = -1,
+  year = -1,
 }: IGetAllUserTasks) => queryOptions({
   queryKey: [GET_ALL_USER_TASKS_QK, userEmail, month, year],
   queryFn: () => TaskController.getAllUserTasks({

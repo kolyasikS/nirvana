@@ -51,10 +51,10 @@ export class TaskController {
   static async getAllUserTasks({ userEmail, month, year }: IGetAllUserTasks): Promise<IResponse> {
     try {
       let queryParamsString = `email=${userEmail}`;
-      if (month) {
+      if (month !== -1) {
         queryParamsString += `&month=${month}`;
       }
-      if (year) {
+      if (month !== -1) {
         queryParamsString += `&year=${year}`;
       }
 

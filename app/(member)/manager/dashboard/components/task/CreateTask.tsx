@@ -60,9 +60,9 @@ export function CreateTask ({
   const createTaskMutation = useMutation({
     mutationFn: (TaskController.createTask),
     onMutate: async (task: ICreateTask) => {
-      await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
+      await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email, -1, -1], exact: true });
 
-      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USER_TASKS_QK, user.email]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USER_TASKS_QK, user.email, -1, -1]);
 
       const newTaskWithId: ITask = {
         startTime: makeTaskTime(task.date, task.startTime.hours, task.startTime.minutes).toString(),
@@ -83,6 +83,12 @@ export function CreateTask ({
           ? {...oldResponse, data: [...oldResponse.data, newTaskWithId]} as IResponse
           : {...oldResponse, data: [newTaskWithId]} as IResponse
       );
+
+      setForm({
+        ...defaultTaskForm,
+        date,
+        userId: user.id,
+      });
       onClose();
       return { previousResponse };
     },
@@ -93,13 +99,13 @@ export function CreateTask ({
       });
     },
     onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email, -1, -1], exact: true });
       toast({
         title: message
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email, -1, -1], exact: true });
     }
   })
 

@@ -1,5 +1,6 @@
 import {axios} from "@lib/axios";
 import {ResponseError} from "@lib/errors";
+import {IGetAllWorkerTasks} from "@lib/query/worker/queryOptions";
 
 export class TaskController {
   static async markAsCompleted({ assignmentToUserId }: IMarkAsCompletedTask): Promise<IResponse> {
@@ -19,9 +20,17 @@ export class TaskController {
     }
   }
 
-  static async getAllWorkerTasks(): Promise<IResponse> {
+  static async getAllWorkerTasks({ month, year }: IGetAllWorkerTasks): Promise<IResponse> {
     try {
-      const { data } = await axios.get(`/assignmentsToUsers/allOwn`);
+      let queryParamsString = ``;
+      if (month !== -1) {
+        queryParamsString += `month=${month}&`;
+      }
+      if (month !== -1) {
+        queryParamsString += `year=${year}`;
+      }
+
+      const { data } = await axios.get(`/assignmentsToUsers/allOwn?${queryParamsString}`);
       return {
         error: false,
         message: 'Tasks were fetched successfully.',
