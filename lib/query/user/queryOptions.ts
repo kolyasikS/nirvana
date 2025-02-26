@@ -4,6 +4,7 @@ import {
 } from "@lib/query/user/queryKeys";
 import {keepPreviousData, queryOptions} from "@tanstack/react-query";
 import {UserController} from "@/controllers/user/User.controller";
+import {AMOUNT_IN_PAGE} from "@lib/constants";
 
 export interface IGetUsers {
   roles?: string[];
@@ -26,12 +27,21 @@ export const getAllRoles = () => queryOptions({
 export const getAllUsersOption = ({
   roles = [],
   pagination,
-}: IGetUsers) => queryOptions({
-  queryKey: [GET_ALL_USERS_QK, roles, pagination.pageNumber, pagination.pageSize],
-  queryFn: () => UserController.getAllUsers({
-    roles,
-    pagination
-  }),
-  staleTime: 10 * 1000,
-  placeholderData: keepPreviousData,
-});
+}: IGetUsers) => {
+  const queryKey: any[] = [GET_ALL_USERS_QK];
+  if (roles.length > 0) {
+    queryKey.push(roles);
+  }
+  queryKey.push(pagination?.pageNumber ?? 1);
+  queryKey.push(pagination?.pageSize ?? AMOUNT_IN_PAGE);
+
+  return queryOptions({
+    queryKey,
+    queryFn: () => UserController.getAllUsers({
+      roles,
+      pagination
+    }),
+    staleTime: 10 * 1000,
+    placeholderData: keepPreviousData,
+  });
+};

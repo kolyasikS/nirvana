@@ -29,9 +29,9 @@ interface VerifyCodeDto {
   password: string;
   confirmPassword: string;
 }
-interface SetNewPasswordDto {
+interface ChangePasswordDto {
+  oldPassword: string;
   newPassword: string;
-  confirmPassword: string;
 }
 interface EmailConfirmDto {
   code: string;
@@ -154,6 +154,10 @@ interface IItemHistory {
   user: IUserDetails;
   value: number;
 }
+interface IItemCategory {
+  id: string;
+  name: string;
+}
 
 // entities
 interface IUserDetails {
@@ -186,6 +190,7 @@ interface IItem {
   name: string;
   quantity: number;
   minimumStockQuantity: number;
+  itemCategory: IItemCategory;
 }
 
 interface IRole {

@@ -20,7 +20,7 @@ const WorkerCharts = ({
     maxTasksInDay: 0,
   });
 
-  const [selectedMonth, setSelectedMonth] = useState(0) // test - useState((new Date()).getMonth());
+  const [selectedMonth, setSelectedMonth] = useState((new Date()).getMonth());
   const [selectedWorker, setSelectedWorker] = useState<IUserDetails | null>(null);
 
   const dateRangePrimaryAxis = useMemo(() => {

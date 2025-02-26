@@ -81,6 +81,9 @@ export const Dashboard = observer(() => {
                           <TableRow>
                             <TableHead>Item Name</TableHead>
                             <TableHead className="hidden sm:table-cell">
+                              Category
+                            </TableHead>
+                            <TableHead className="hidden sm:table-cell">
                               Item Change Value
                             </TableHead>
                             <TableHead className="hidden sm:table-cell">
@@ -102,12 +105,16 @@ export const Dashboard = observer(() => {
                               <TableCell>
                                 <div className="font-medium">{itemHistory.item.name}</div>
                               </TableCell>
+                              <TableCell className="hidden sm:table-cell">
+                                <div className="font-medium">{itemHistory.item.itemCategory.name}</div>
+                              </TableCell>
                               <TableCell>
                                 <div className="font-medium">{itemHistory.value}</div>
                               </TableCell>
                               <TableCell>
                                 <div
-                                  className="font-medium">{itemHistory.user.firstName} {itemHistory.user.lastName}</div>
+                                  className="font-medium">{itemHistory.user.firstName} {itemHistory.user.lastName}
+                                </div>
                               </TableCell>
                               <TableCell>
                                 <div className="font-medium">{itemHistory.performedAction}</div>

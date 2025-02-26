@@ -88,6 +88,9 @@ export const Dashboard = observer(() => {
                           <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead className="hidden sm:table-cell">
+                              Category
+                            </TableHead>
+                            <TableHead className="hidden sm:table-cell">
                               Quantity
                             </TableHead>
                             <TableHead className="hidden sm:table-cell">
@@ -104,6 +107,9 @@ export const Dashboard = observer(() => {
                             >
                               <TableCell>
                                 <div className="font-medium">{item.name}</div>
+                              </TableCell>
+                              <TableCell className="hidden sm:table-cell">
+                                  {item.itemCategory.name}
                               </TableCell>
                               <TableCell className="hidden sm:table-cell">
                                 <Badge className="text-xs"
@@ -139,6 +145,10 @@ export const Dashboard = observer(() => {
                               quantity: 0,
                               minimumStockQuantity: 0,
                               name: '',
+                              itemCategory: {
+                                id: '',
+                                name: '',
+                              }
                             })
                           }}
                         >
