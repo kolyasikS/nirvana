@@ -1,6 +1,6 @@
 "use client"
 
-import {useMemo, useState} from "react"
+import {useEffect, useMemo, useState} from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,15 +12,21 @@ import {
   TabsContent
 } from "@/components/ui";
 import * as React from "react";
-import {cn} from "@lib/utils-client";
+import {cn, getCookieOnClient} from "@lib/utils-client";
 import ListTasks from "@/app/(member)/worker/dashboard/components/tasks-calendar/ListTasks";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {getAllWorkerTasksOptions} from "@lib/query/worker/queryOptions";
+import { HubConnectionBuilder } from '@microsoft/signalr';
+import {API_URL, AUTH_HEADER_NAME} from "@lib/constants";
+import {GET_ALL_USERS_QK} from "@lib/query/user/queryKeys";
+import {GET_ALL_WORKER_TASKS_QK} from "@lib/query/worker/queryKeys";
+import {useToast} from "@/hooks/use-toast";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 const TasksCalendar = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
@@ -31,16 +37,18 @@ const TasksCalendar = () => {
   const startingDayIndex = (firstDayOfMonth.getDay() + 6) % 7 // Adjust to start week on Monday
 
   const prevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    setCurrentDate(newDate);
     queryClient.invalidateQueries({
-      queryKey: [{ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() }]
+      queryKey: [GET_ALL_WORKER_TASKS_QK, newDate.getMonth() + 1, newDate.getFullYear()]
     });
   }
 
   const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+    setCurrentDate(newDate);
     queryClient.invalidateQueries({
-      queryKey: [{ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() }]
+      queryKey: [GET_ALL_WORKER_TASKS_QK, newDate.getMonth() + 1, newDate.getFullYear()]
     });
   }
 
@@ -55,6 +63,7 @@ const TasksCalendar = () => {
 
   const {
     data: tasksData,
+    refetch,
     isFetching
   } = useQuery(
     getAllWorkerTasksOptions({ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() }),
@@ -75,6 +84,30 @@ const TasksCalendar = () => {
 
     return tasksForDate;
   }, [tasksData?.data]);
+
+  useEffect(() => {
+    console.log(`${API_URL}/notificationHub?access_token=${getCookieOnClient(AUTH_HEADER_NAME)}`);
+    const connection = new HubConnectionBuilder()
+      .withUrl(`${API_URL}/notificationHub?access_token=${getCookieOnClient(AUTH_HEADER_NAME)}`)
+      .build();
+
+    connection.on("ReceiveNotification", (message) => {
+      refetch();
+      console.log("Notification received:", message);
+      toast({
+        title: 'You have the new tasks!'
+      });
+    });
+
+    connection.start()
+      .then(() => console.log("SignalR connection established."))
+      .catch(err => console.error("SignalR connection error:", err));
+
+    return () => {
+      connection.off("ReceiveNotification");
+      connection.stop();
+    }
+  }, []);
 
   return (
     <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>

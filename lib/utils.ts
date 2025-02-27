@@ -71,8 +71,8 @@ export const getTaskTime = (task: ITask) => {
 
 export const makeTaskTime = (date: Date, hours: string, minutes: string) => {
   const startTime = new Date(date);
-  startTime.setHours(parseInt(hours));
-  startTime.setMinutes(parseInt(minutes));
+  startTime.setUTCHours(parseInt(hours));
+  startTime.setUTCMinutes(parseInt(minutes));
 
   return startTime;
 }

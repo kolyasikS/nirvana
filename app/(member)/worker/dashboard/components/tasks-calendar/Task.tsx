@@ -11,10 +11,12 @@ type Props = {
   number: number;
   userEmail: string;
   onMarkAsCompletedClick: () => void;
+  date: Date;
 }
 const Task = ({
   task,
   number,
+  date,
 }: Props) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
 
@@ -50,6 +52,7 @@ const Task = ({
         {!task.isCompleted &&
           <MarkAsCompletedModal
             taskId={task.id}
+            date={date}
           />
         }
       </div>

@@ -38,9 +38,11 @@ type IUsedItem = IItem & {
 }
 type Props = {
   taskId: string;
+  date: Date;
 }
 const MarkAsCompletedModal = ({
   taskId,
+  date
 }: Props) => {
   const [pageNumber, setPageNumber] = useState(1);
   const {
@@ -70,15 +72,14 @@ const MarkAsCompletedModal = ({
         item.name.toLowerCase().includes(debounceValue.toLowerCase())
       );
   }, [itemsResponse, usedItems, debounceValue]);
-
   const markAsCompletedMutation = useMutation({
     mutationFn: (TaskController.markAsCompleted),
     onMutate: async ({ assignmentToUserId: newTaskId }: IMarkAsCompletedTask) => {
-      await queryClient.cancelQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK], exact: true });
+      await queryClient.cancelQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()] });
 
-      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_WORKER_TASKS_QK]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()]);
 
-      queryClient.setQueryData<IResponse>([GET_ALL_WORKER_TASKS_QK], (oldResponse) =>
+      queryClient.setQueryData<IResponse>([GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()], (oldResponse) =>
         oldResponse?.data
           ? {...oldResponse, data: oldResponse.data.map((oldTask: ITask) => oldTask.id === newTaskId ? ({...oldTask, isCompleted: true}) : oldTask)} as IResponse
           : oldResponse
@@ -92,7 +93,7 @@ const MarkAsCompletedModal = ({
       });
     },
     onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()], exact: true });
       toast({
         title: message
       });
@@ -114,7 +115,7 @@ const MarkAsCompletedModal = ({
       Promise.all(modifyItemPromises).finally(() => queryClient.invalidateQueries({ queryKey: [GET_ALL_ITEMS_QK], exact: true }));
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()], exact: true });
     }
   });
 
