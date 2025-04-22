@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Button,
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui";
@@ -13,6 +13,8 @@ import Logout from "@/components/ui/widgets/dashboard-header/menu/options/Logout
 import ChangePassword from "@/components/ui/widgets/dashboard-header/menu/options/ChangePassword";
 
 const Menu = () => {
+  const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -27,8 +29,14 @@ const Menu = () => {
       <DropdownMenuContent align="end">
         <Logout/>
         <DropdownMenuSeparator/>
-        <ChangePassword/>
+        <DropdownMenuItem onClick={() => setChangePasswordModalVisible(true)}>
+          Change Password
+        </DropdownMenuItem>
       </DropdownMenuContent>
+      <ChangePassword
+        changePasswordModalVisible={changePasswordModalVisible}
+        setChangePasswordModalVisible={setChangePasswordModalVisible}
+      />
     </DropdownMenu>
   );
 };

@@ -75,98 +75,98 @@ export const Dashboard = observer(() => {
   }], []);
 
   return (
-    <TooltipProvider>
-      <div className="flex min-h-screen w-full flex-col bg-gray-100/40 dark:bg-zinc-800/40">
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-0">
-          <DashboardHeader breadcrumbs={breadcrumbs}/>
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-[100px]">
-            <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
-              <div
-                className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedWorker ? 'lg:col-span-3' : 'lg:col-span-3'}`}>
-                <Tabs defaultValue="week">
-                  <TabsContent value="week">
-                    <Card
-                      className={'dark:border-zinc-800'}
-                      x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
-                      <CardHeader className="px-7">
-                        <CardTitle>Workers</CardTitle>
-                        <CardDescription>
-                          Members of «Nirvana» hotel.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <Table className={'mb-5'}>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Full Name</TableHead>
-                              <TableHead className="hidden sm:table-cell">
-                                Post
-                              </TableHead>
-                              <TableHead className="hidden sm:table-cell">
-                                Gender
-                              </TableHead>
-                              <TableHead className="hidden md:table-cell">
-                                Email Confirmation Status
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {workersResponse?.data?.users?.map((user: IUserDetails) => (
-                              <TableRow
-                                key={user.id}
-                                className={`${user.id === selectedWorker?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
-                                onClick={() => selectWorker(user)}
-                              >
-                                <TableCell>
-                                  <div className="font-medium">{user.firstName}&nbsp;{user.lastName}</div>
-                                  <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
-                                    {user.email}
-                                  </div>
-                                </TableCell>
-                                <TableCell className="hidden sm:table-cell">
-                                  {user.role}
-                                </TableCell>
-                                <TableCell className="hidden sm:table-cell">
-                                  <Badge className="text-xs" variant="outline">
-                                    {uppercaseWord(user.sex)}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell">
-                                  {user.emailConfirmed ? 'Confirmed' : 'Pending'}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                        <TablePagination
-                          pageNumber={pageNumber}
-                          setPageNumber={setPageNumber}
-                          count={workersResponse?.data?.count ?? 0}
-                        />
-                        {isPlaceholderData && isFetching && (
-                          <div className={'absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-black/30 backdrop-blur-[2px]'}>
-                            <Loader/>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                </Tabs>
-              </div>
-              {/*{(*/}
-            </div>
-            {selectedWorker && (
-              <WorkSchedule
-                selectedWorker={selectedWorker}
-                setSelectedWorker={setSelectedWorker}
-                roles={rolesResponse?.data ?? []}
-              />
-            )}
-            <WorkerCharts workers={workersResponse?.data?.users ?? []}/>
-          </main>
+    <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+      <DashboardHeader breadcrumbs={breadcrumbs}/>
+      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-[100px]">
+        <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
+          <div
+            className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedWorker ? 'lg:col-span-3' : 'lg:col-span-3'}`}>
+            <Tabs defaultValue="week">
+              <TabsContent value="week">
+                <Card
+                  className={'dark:border-zinc-800'}
+                  x-chunk="A table of recent orders showing the following columns: Customer, Type, Status, Date, and Amount.">
+                  <CardHeader className="px-7">
+                    <CardTitle>Workers</CardTitle>
+                    <CardDescription>
+                      Members of «Nirvana» hotel.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table className={'mb-5'}>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Full Name</TableHead>
+                          <TableHead className="hidden sm:table-cell">
+                            Post
+                          </TableHead>
+                          <TableHead className="hidden sm:table-cell">
+                            Gender
+                          </TableHead>
+                          <TableHead className="hidden md:table-cell">
+                            Email Confirmation Status
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {workersResponse?.data?.users?.map((user: IUserDetails) => (
+                          <TableRow
+                            key={user.id}
+                            className={`${user.id === selectedWorker?.id ? 'bg-gray-100 dark:bg-zinc-800' : ''}`}
+                            onClick={() => selectWorker(user)}
+                          >
+                            <TableCell>
+                              <div className="font-medium">{user.firstName}&nbsp;{user.lastName}</div>
+                              <div className="hidden text-sm text-gray-500 md:inline dark:text-gray-400">
+                                {user.email}
+                              </div>
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell">
+                              {user.role}
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell">
+                              <Badge className="text-xs" variant="outline">
+                                {uppercaseWord(user.sex)}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">
+                              {user.emailConfirmed ? 'Confirmed' : 'Pending'}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <TablePagination
+                      pageNumber={pageNumber}
+                      setPageNumber={setPageNumber}
+                      count={workersResponse?.data?.count ?? 0}
+                    />
+                    {isPlaceholderData && isFetching && (
+                      <div className={'absolute z-10 top-0 left-0 w-full h-full flex items-center justify-center bg-black/30 backdrop-blur-[2px]'}>
+                        <Loader/>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+          {/*{(*/}
         </div>
+        {selectedWorker && (
+          <WorkSchedule
+            selectedWorker={selectedWorker}
+            setSelectedWorker={setSelectedWorker}
+            roles={rolesResponse?.data ?? []}
+          />
+        )}
+        <WorkerCharts workers={workersResponse?.data?.users ?? []}/>
+      </main>
+    </div>
+    /*<TooltipProvider>
+      <div className="flex min-h-screen w-full flex-col bg-gray-100/40 dark:bg-zinc-800/40">
       </div>
-    </TooltipProvider>
+    </TooltipProvider>*/
   )
 })
 

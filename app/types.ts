@@ -159,6 +159,20 @@ interface IItemCategory {
   name: string;
 }
 
+// Assignments
+interface ICreateAssessment {
+  name: string;
+  role: IRole;
+}
+interface IUpdateAssessment {
+  id: string;
+  name: string;
+  roleId: string;
+}
+interface IDeleteAssessment {
+  id: string;
+}
+
 // entities
 interface IUserDetails {
   id: string;
@@ -191,6 +205,11 @@ interface IItem {
   quantity: number;
   minimumStockQuantity: number;
   itemCategory: IItemCategory;
+}
+interface IAssignment {
+  id: string;
+  name: string;
+  role: IRole;
 }
 
 interface IRole {

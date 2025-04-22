@@ -51,7 +51,7 @@ export function CreateUserProfile({
             ...oldResponse,
             data: {
               count: oldResponse?.data?.count + 1,
-              users: [...oldResponse?.data?.users, newUserWithId]
+              users: [newUserWithId]
             }} as IResponse
       );
       return { previousResponse };

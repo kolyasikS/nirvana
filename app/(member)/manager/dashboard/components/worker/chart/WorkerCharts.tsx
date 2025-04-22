@@ -269,11 +269,14 @@ const WorkerCharts = ({
                   <div key={series.label} className={'pl-5'}>
                     <p className={'font-semibold'}>{series.label}</p>
                     <div className={'pl-5 pt-1'}>
-                      {series.data.map((item: any, ind: number) => (
-                        <div key={ind}>
-                          <p className={'text-sm'}>{item.primary.toLocaleDateString('en-UK')} — {item.secondary} Tasks</p>
-                        </div>
-                      ))}
+                      {series.data?.length > 0
+                        ? series.data.map((item: any, ind: number) => (
+                          <div key={ind}>
+                            <p className={'text-sm'}>{item.primary.toLocaleDateString('en-UK')} — {item.secondary} Tasks</p>
+                          </div>
+                        ))
+                        : <p className={'text-sm text-red-500'}>No Tasks</p>
+                      }
                     </div>
                   </div>
                 ))}

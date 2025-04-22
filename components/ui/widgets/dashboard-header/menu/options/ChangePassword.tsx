@@ -6,9 +6,14 @@ import {AuthController} from "@/controllers/auth/Auth.controller";
 import {toast} from "@/hooks/use-toast";
 import {userStore} from "@lib/stores";
 
-const ChangePassword = () => {
-
-  const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
+type Props = {
+  changePasswordModalVisible: boolean;
+  setChangePasswordModalVisible: (b: boolean) => void;
+}
+const ChangePassword = ({
+  changePasswordModalVisible,
+  setChangePasswordModalVisible
+}: Props) => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -45,14 +50,10 @@ const ChangePassword = () => {
 
   return (
     <>
-      <DropdownMenuItem onClick={() => setChangePasswordModalVisible(true)}>
-        Change Password
-      </DropdownMenuItem>
-      <Dialog open={changePasswordModalVisible}>
+      <Dialog open={changePasswordModalVisible} onOpenChange={(isOpen) => !isOpen && setChangePasswordModalVisible(isOpen)}>
         <DialogContent className="sm:max-w-[425px] gap-6">
           <DialogHeader>
             <DialogTitle>Change Password</DialogTitle>
-            {/*<DialogDescription></DialogDescription>*/}
           </DialogHeader>
           <FormInputBox value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} label={'Current Password'}/>
           <FormInputBox value={newPassword} onChange={(e) => setNewPassword(e.target.value)} label={'New Password'} type="password"/>
