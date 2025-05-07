@@ -18,7 +18,7 @@ export const getAllUserTasksOptions = ({
   queryFn: () => TaskController.getAllUserTasks({
     userEmail,
     month,
-    year
+    year,
   }),
   staleTime: 10 * 1000,
 })

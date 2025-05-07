@@ -1,10 +1,10 @@
 'use client';
 
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {ChevronDownIcon} from "@radix-ui/react-icons";
 import {cn} from "@lib/utils-client";
 import {getTaskTime} from "@lib/utils";
-import MarkAsCompletedModal from "@/app/(member)/worker/dashboard/components/tasks-calendar/MarkAsCompletedModal";
+import StatusModal from "@/app/(member)/worker/dashboard/components/tasks-calendar/StatusModal";
 
 type Props = {
   task: ITask;
@@ -49,12 +49,11 @@ const Task = ({
           <p className={'font-bold text-sm mt-3'}>Details:</p>
           <p>{task.details}</p>
         </div>
-        {!task.isCompleted &&
-          <MarkAsCompletedModal
-            taskId={task.id}
-            date={date}
-          />
-        }
+        <StatusModal
+          taskId={task.id}
+          date={date}
+          status={task.assignmentToUserStatus}
+        />
       </div>
     </div>
   );

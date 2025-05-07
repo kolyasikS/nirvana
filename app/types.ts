@@ -120,6 +120,10 @@ interface IDeleteTask {
 interface IMarkAsCompletedTask {
   assignmentToUserId: string;
 }
+interface IUpdateTaskStatus {
+  assignmentToUserId: string;
+  newStatus: IAssignmentToUserStatus;
+}
 
 // Item
 interface ICreateItem {
@@ -186,12 +190,8 @@ interface IUserDetails {
 
 interface ITask {
   id: string;
-  assignment: {
-    name: string;
-    role: {
-      name: string;
-    }
-  };
+  assignment: IAssignment;
+  assignmentToUserStatus: IAssignmentToUserStatus;
   user: any;
   details: string;
   startTime: string;
@@ -211,7 +211,10 @@ interface IAssignment {
   name: string;
   role: IRole;
 }
-
+interface IAssignmentToUserStatus {
+  id: string;
+  name: string;
+}
 interface IRole {
   id: string;
   name: string;

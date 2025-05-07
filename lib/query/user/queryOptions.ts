@@ -1,6 +1,6 @@
 import {
   GET_ALL_ITEMS_QK, GET_ALL_ROLES_QK,
-  GET_ALL_USERS_QK
+  GET_ALL_USERS_QK, GET_ASSIGNMENT_STATUSES_QK
 } from "@lib/query/user/queryKeys";
 import {keepPreviousData, queryOptions} from "@tanstack/react-query";
 import {UserController} from "@/controllers/user/User.controller";
@@ -22,6 +22,11 @@ export const getAllRoles = () => queryOptions({
   queryKey: [GET_ALL_ROLES_QK],
   queryFn: () => UserController.getAllRoles(),
   staleTime: 10 * 1000,
+})
+
+export const getAssignmentStatuses = () => queryOptions({
+  queryKey: [GET_ASSIGNMENT_STATUSES_QK],
+  queryFn: () => UserController.getAssignmentStatuses(),
 })
 
 export const getAllUsersOption = ({

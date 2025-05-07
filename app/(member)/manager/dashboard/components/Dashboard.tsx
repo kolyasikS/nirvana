@@ -38,6 +38,60 @@ import {TablePagination} from "@/components/ui/features";
 
 export const Dashboard = observer(() => {
   const [pageNumber, setPageNumber] = useState(1);
+  // const workersResponse = {
+  //   data: {
+  //     "users": [
+  //     {
+  //       "id": "181eae58-202d-4757-86e2-578df1743d6c",
+  //       "firstName": "InventoryManager",
+  //       "lastName": "InventoryManager",
+  //       "sex": "male",
+  //       "email": "inventorymanager@localhost.com",
+  //       "emailConfirmed": true,
+  //       "role": "InventoryManager"
+  //     },
+  //     {
+  //       "id": "217d332c-ef08-4f06-86b3-68df9eb48e73",
+  //       "firstName": "Technician",
+  //       "lastName": "Technician",
+  //       "sex": "male",
+  //       "email": "technician@localhost.com",
+  //       "emailConfirmed": true,
+  //       "role": "Technician"
+  //     },
+  //     {
+  //       "id": "8e445865-a24d-4543-a6c6-9443d048cdb9",
+  //       "firstName": "Admin",
+  //       "lastName": "Admin",
+  //       "sex": "male",
+  //       "email": "admin@localhost.com",
+  //       "emailConfirmed": true,
+  //       "role": "Administrator"
+  //     },
+  //     {
+  //       "id": "a9aebd65-e077-4d28-bb62-314428739789",
+  //       "firstName": "Manager",
+  //       "lastName": "Manager",
+  //       "sex": "male",
+  //       "email": "manager@localhost.com",
+  //       "emailConfirmed": true,
+  //       "role": "Manager"
+  //     },
+  //     {
+  //       "id": "d525eef7-5569-4b54-8b6d-2f796bc9ba9a",
+  //       "firstName": "Housemaid",
+  //       "lastName": "Housemaid",
+  //       "sex": "female",
+  //       "email": "housemaid@localhost.com",
+  //       "emailConfirmed": true,
+  //       "role": "Housemaid"
+  //     }
+  //     ],
+  //     "count": 5
+  //   },
+  // };
+  // const isFetching = false;
+  // const isPlaceholderData = false;
   const {
     data: workersResponse,
     isFetching,
@@ -58,8 +112,7 @@ export const Dashboard = observer(() => {
   );
   console.log(rolesResponse)
 
-  const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>(
-    null);
+  const [selectedWorker, setSelectedWorker] = useState<null | IUserDetails>(null);
 
   const selectWorker = (worker: IUserDetails) => {
     if (selectedWorker?.id === worker.id) {
@@ -70,7 +123,7 @@ export const Dashboard = observer(() => {
   }
 
   const breadcrumbs = useMemo(() => [{
-    title: `${userStore.user?.role ?? ''} Dashboard`,
+    title: `Manager Dashboard`,
     route: '',
   }], []);
 

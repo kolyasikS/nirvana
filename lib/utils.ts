@@ -70,11 +70,12 @@ export const getTaskTime = (task: ITask) => {
 }
 
 export const makeTaskTime = (date: Date, hours: string, minutes: string) => {
-  const startTime = new Date(date);
-  startTime.setUTCHours(parseInt(hours));
-  startTime.setUTCMinutes(parseInt(minutes));
-
-  return startTime;
+  const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), parseInt(hours), parseInt(minutes), 0, 0));
+  // const startTime = new Date(date);
+  // startTime.setHours(parseInt(hours));
+  // startTime.setMinutes(parseInt(minutes));
+  console.log(utcDate, date, hours, minutes)
+  return utcDate;
 }
 
 export const getFormattedTime = (date: string) => {

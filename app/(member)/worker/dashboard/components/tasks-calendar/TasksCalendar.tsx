@@ -29,8 +29,8 @@ const TasksCalendar = () => {
   const { toast } = useToast();
 
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
-
+  const [selectedDay, setSelectedDay] = useState<Date | null>(new Date());
+  console.log(selectedDay)
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
   const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
   const daysInMonth = lastDayOfMonth.getDate()
@@ -68,6 +68,74 @@ const TasksCalendar = () => {
   } = useQuery(
     getAllWorkerTasksOptions({ month: currentDate.getMonth() + 1, year: currentDate.getFullYear() }),
   );
+/*  const tasksData = {
+    data: [
+      {
+        "id": "3c1ba8f5-4ee6-428f-a04f-49f114f03c3e",
+        "assignment": {
+          "id": "c8837679-cb17-41a3-93b0-c7d797a61a76",
+          "name": "Clear room",
+          "role": null
+        },
+        "assignmentToUserStatus": {
+          "id": "3022c20b-6201-4569-ba95-1a5eb8b7be83",
+          "name": "Not Accepted"
+        },
+        "user": null,
+        "details": "WQEQWE",
+        "startTime": "2025-04-08T08:00:00Z",
+        "endTime": "2025-04-08T08:10:00Z"
+      },
+      {
+        "id": "1ee6185c-b74a-4539-b237-a57562e28e84",
+        "assignment": {
+          "id": "c8837679-cb17-41a3-93b0-c7d797a61a76",
+          "name": "Clear room",
+          "role": null
+        },
+        "assignmentToUserStatus": {
+          "id": "3022c20b-6201-4569-ba95-1a5eb8b7be83",
+          "name": "Not Accepted"
+        },
+        "user": null,
+        "details": "wsad",
+        "startTime": "2025-04-15T08:00:00Z",
+        "endTime": "2025-04-15T08:19:00Z"
+      },
+      {
+        "id": "88d0ff63-84f5-4928-95fc-3f96f58823b5",
+        "assignment": {
+          "id": "c8837679-cb17-41a3-93b0-c7d797a61a76",
+          "name": "Clear room",
+          "role": null
+        },
+        "assignmentToUserStatus": {
+          "id": "3022c20b-6201-4569-ba95-1a5eb8b7be83",
+          "name": "Not Accepted"
+        },
+        "user": null,
+        "details": "asdasd",
+        "startTime": "2025-04-15T10:00:00Z",
+        "endTime": "2025-04-15T12:00:00Z"
+      },
+      {
+        "id": "bdc45cd2-8057-447f-aa9e-415ec66700db",
+        "assignment": {
+          "id": "c8837679-cb17-41a3-93b0-c7d797a61a76",
+          "name": "Clear room",
+          "role": null
+        },
+        "assignmentToUserStatus": {
+          "id": "05f8bba5-01df-476b-9886-8b18eb95efef",
+          "name": "Completed"
+        },
+        "user": null,
+        "details": "asdsad",
+        "startTime": "2025-04-23T08:00:00Z",
+        "endTime": "2025-04-23T08:22:00Z"
+      }
+    ]
+  }*/
 
   const workingDates = useMemo(() => {
     const tasksForDate: { [key: string]: number } = {};

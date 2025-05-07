@@ -80,4 +80,26 @@ export class UserController {
       }
     }
   }
+
+  static async getAssignmentStatuses(): Promise<IResponse> {
+    try {
+      const { data } = await axios.get(`/assignmentToUserStatuses`);
+      return {
+        error: false,
+        message: 'Assignment statuses were fetched successfully.',
+        data
+      }
+    } catch (error: any) {
+      if (error.status === 404) {
+        return {
+          error: false,
+          message: 'Assignment statuses were fetched successfully.',
+          data: [],
+        }
+      } else {
+        console.error(error);
+        throw ResponseError.createResponseError(error);
+      }
+    }
+  }
 }

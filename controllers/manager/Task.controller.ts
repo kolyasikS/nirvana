@@ -177,4 +177,23 @@ export class TaskController {
       }
     }
   }
+
+  static async updateStatus({ newStatus, assignmentToUserId }: IUpdateTaskStatus): Promise<IResponse> {
+    try {
+      const result = await axios.put(`/assignmentsToUsers/check`, {
+        assignmentToUserId,
+        newStatusId: newStatus.id
+      });
+
+      return {
+        message: `Task's status has been updated successfully.`,
+        data: result.data,
+        error: false,
+      }
+    } catch (error: any) {
+      console.error(error);
+      throw ResponseError.createResponseError(error);
+    }
+  }
+
 }

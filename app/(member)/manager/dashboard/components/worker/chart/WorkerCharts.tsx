@@ -219,7 +219,6 @@ const WorkerCharts = ({
                               },
                             }) as any,
                   getSeriesStyle: (series) => {
-                    console.log('series', series);
                     return {
                       color: `url(#${series.index % 4})`,
                       opacity:
