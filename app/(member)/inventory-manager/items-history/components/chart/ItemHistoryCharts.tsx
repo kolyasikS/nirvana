@@ -2,30 +2,79 @@
 
 import React, {useEffect, useMemo, useState} from 'react';
 import {AxisOptions, Chart} from "react-charts";
-import {TaskController} from "@/controllers/manager/Task.controller";
 import {
   Loader
 } from "@/components/ui";
-import FilterChart from "@/app/(member)/manager/dashboard/components/worker/chart/FilterChart";
+import {useQuery} from "@tanstack/react-query";
+import {getItemHistories} from "@lib/query/inventory-manager/queryOptions";
+import FilterChart from "@/app/(member)/inventory-manager/items-history/components/chart/FilterChart";
+import itemsHistory from "@/app/(member)/inventory-manager/items-history/components/ItemsHistory";
 
-type Props = {
-  workers: IUserDetails[];
-}
-const WorkerCharts = ({
-  workers,
-}: Props) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [chartData, setChartData] = useState<{data: any, maxTasksInDay: number}>({
+const ItemHistoryCharts = () => {
+  const [chartData, setChartData] = useState<{data: any, maxUsedItemsPerDay: number}>({
     data: [],
-    maxTasksInDay: 0,
+    maxUsedItemsPerDay: 0,
   });
 
   const [selectedMonth, setSelectedMonth] = useState((new Date()).getMonth());
-  const [selectedWorker, setSelectedWorker] = useState<IUserDetails | null>(null);
+  const {
+    data: itemsHistoryResponse,
+    isFetching,
+    isPlaceholderData,
+  } = useQuery(getItemHistories({
+    month: selectedMonth + 1,
+  }));
+  // const isFetching = false;
+  // const itemsHistoryResponse = {
+  //   data: [
+  //     {
+  //       "value": 3,
+  //       "performedAction": "Put",
+  //       "dateOfAction": "2025-05-03T15:02:07.295Z",
+  //       "item": {
+  //         "id": "8da704f4-af4d-4e1a-b151-74f042572600",
+  //         "name": "Bedding set",
+  //         "itemCategory": null,
+  //         "quantity": 7,
+  //         "minimumStockQuantity": 10
+  //       },
+  //       "user": {
+  //         "id": "181eae58-202d-4757-86e2-578df1743d6c",
+  //         "firstName": "InventoryManager",
+  //         "lastName": "InventoryManager",
+  //         "sex": "male",
+  //         "email": "inventorymanager@localhost.com",
+  //         "emailConfirmed": true,
+  //         "role": null
+  //       }
+  //     },
+  //     {
+  //       "value": -6,
+  //       "performedAction": "Take",
+  //       "dateOfAction": "2025-05-07T15:06:37.482Z",
+  //       "item": {
+  //         "id": "8da704f4-af4d-4e1a-b151-74f042572600",
+  //         "name": "Bedding set",
+  //         "itemCategory": null,
+  //         "quantity": 7,
+  //         "minimumStockQuantity": 10
+  //       },
+  //       "user": {
+  //         "id": "181eae58-202d-4757-86e2-578df1743d6c",
+  //         "firstName": "InventoryManager",
+  //         "lastName": "InventoryManager",
+  //         "sex": "male",
+  //         "email": "inventorymanager@localhost.com",
+  //         "emailConfirmed": true,
+  //         "role": null
+  //       }
+  //     }
+  //   ]
+  // }
 
   const dateRangePrimaryAxis = useMemo(() => {
     const year = new Date().getFullYear();
-    if (chartData.maxTasksInDay > 0) {
+    if (chartData.maxUsedItemsPerDay > 0) {
       return {
         min: new Date(`${selectedMonth + 1}.01.${year}`),
         max: new Date(selectedMonth < 11 ? `${selectedMonth + 2}.01.${year}` : `01.01.${year + 1}`),
@@ -39,78 +88,51 @@ const WorkerCharts = ({
   }, [selectedMonth, chartData]);
 
   useEffect(() => {
-    setIsLoading(true);
     const series: any = [];
-    let maxTasksInDay = 0;
+    let maxUsedItemsPerDay = 0;
 
-    const tasksPromises: Promise<[IResponse, string]>[] = [];
-    if (selectedWorker) {
-      tasksPromises.push(TaskController.getAllUserTasks({
-        userEmail: selectedWorker.email,
-        month: selectedMonth + 1,
-        year: new Date().getFullYear(),
-      }).then(res => [res, selectedWorker.email]));
-    } else {
-      workers.forEach((worker) => {
-        tasksPromises.push(TaskController.getAllUserTasks({
-          userEmail: worker.email,
-          month: selectedMonth + 1,
-          year: new Date().getFullYear(),
-        }).then(res => [res, worker.email]));
-      })
-    }
+    const itemHistoryForDate: { [key: string]: number } = {};
+    console.log(itemsHistoryResponse)
+    const uniqueItems: IItem[] = itemsHistoryResponse?.data?.reduce((arr: IItem[], itemHistory: IItemHistory) => {
+      if (!arr.find((item: IItem) => item.id === itemHistory.item.id)) {
+        return [...arr, itemHistory.item];
+      } else {
+        return arr;
+      }
+    }, [] as IItem[]);
+    console.log(uniqueItems)
+    uniqueItems?.forEach((item: IItem) => {
+      const seriesData: { primary: Date; secondary: unknown; }[] = [];
 
-    Promise.all(tasksPromises)
-      .then(responses => {
-        responses.forEach(([response, workerEmail]) => {
-          if (!response.error && response.data) {
-            const tasks = response.data;
-            const seriesData: { primary: Date; secondary: unknown; }[] = [];
-            const tasksForDate: { [key: string]: number } = {};
-            tasks.forEach((task: ITask) => {
-              const taskDate = new Date(task.startTime);
-              if (taskDate.getMonth() !== selectedMonth) {
-                return;
-              }
-              const taskDateString = taskDate.toDateString();
+      itemsHistoryResponse?.data?.filter((itemHistory: IItemHistory) => itemHistory.item.id === item.id).forEach((itemHistory: IItemHistory) => {
 
-              if (tasksForDate[taskDateString]) {
-                tasksForDate[taskDateString] += 1;
-              } else {
-                tasksForDate[taskDateString] = 1;
-              }
-            });
-            Object.entries(tasksForDate).forEach(([date, amount]) => {
-              const primaryDate = new Date(date);
-              primaryDate.setUTCHours(0);
-              primaryDate.setUTCMinutes(0);
-              primaryDate.setUTCSeconds(0);
-              primaryDate.setUTCMilliseconds(0);
+        const primaryDate = new Date(itemHistory.dateOfAction);
+        primaryDate.setUTCHours(0);
+        primaryDate.setUTCMinutes(0);
+        primaryDate.setUTCSeconds(0);
+        primaryDate.setUTCMilliseconds(0);
 
-              seriesData.push({
-                primary: primaryDate,
-                secondary: amount,
-              });
-              if (amount > maxTasksInDay) {
-                maxTasksInDay = amount;
-              }
-            });
-            series.push({
-              label: workerEmail,
-              data: seriesData.sort((a, b) => a.primary > b.primary ? 1 : -1),
-            })
-          }
-        })
-
-        setChartData({
-          data: series,
-          maxTasksInDay,
+        seriesData.push({
+          primary: primaryDate,
+          secondary: Math.abs(itemHistory.value)
         });
+        if (Math.abs(itemHistory.value) > maxUsedItemsPerDay) {
+          maxUsedItemsPerDay = Math.abs(itemHistory.value);
+        }
       })
-      .finally(() => {
-        setIsLoading(false);
+
+      series.push({
+        label: item.name,
+        data: seriesData.sort((a, b) => a.primary > b.primary ? 1 : -1),
       })
-  }, [workers, selectedMonth, selectedWorker]);
+    });
+
+    setChartData({
+      data: series,
+      maxUsedItemsPerDay,
+    });
+  }, [itemsHistoryResponse?.data, selectedMonth]);
+
   const primaryAxis = React.useMemo<
     AxisOptions<typeof chartData.data[number]["data"][number]>
   >(
@@ -130,27 +152,26 @@ const WorkerCharts = ({
       {
         getValue: (datum) => datum.secondary,
         min: 0,
-        max: chartData.maxTasksInDay === 0 ? 1 : chartData.maxTasksInDay + 1, // enforce at least some range
+        max: chartData.maxUsedItemsPerDay + 1,
         scaleType: 'linear',
       },
     ],
-    [chartData.maxTasksInDay]
+    [chartData.maxUsedItemsPerDay]
   );
 
   const [{ activeSeriesIndex, activeDatumIndex }, setState] = React.useState({
     activeSeriesIndex: -1,
     activeDatumIndex: -1,
   });
-  console.log(chartData)
+
   return (
     <div className={'grid gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3 w-full'}>
       <div className={'w-full grid auto-rows-max lg:col-span-3'}>
         <h2 className={'w-full text-white text-center text-2xl mb-3'}>Workload Chart</h2>
         <FilterChart
           setMonth={setSelectedMonth} month={selectedMonth}
-          selectedWorker={selectedWorker} setSelectedWorker={setSelectedWorker} workers={workers}
         />
-        {isLoading
+        {isFetching
           ? (
             <div className={'min-h-[500px] w-full flex justify-center'}>
               <Loader/>
@@ -218,9 +239,8 @@ const WorkerCharts = ({
                               },
                             }) as any,
                   getSeriesStyle: (series) => {
-                    console.log(series)
                     return {
-                      strokeWidth: 2,
+                      color: `url(#${series.index % 4})`,
                       opacity:
                         activeSeriesIndex > -1
                           ? series.index === activeSeriesIndex
@@ -288,4 +308,4 @@ const WorkerCharts = ({
   );
 };
 
-export default WorkerCharts;
+export default ItemHistoryCharts;

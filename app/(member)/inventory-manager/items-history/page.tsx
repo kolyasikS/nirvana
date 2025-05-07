@@ -10,8 +10,10 @@ import {getItemHistories} from "@lib/query/inventory-manager/queryOptions";
 const Page = async () => {
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery(getItemHistories({
-    pageNumber: 1,
-    pageSize: AMOUNT_IN_PAGE,
+    pagination: {
+      pageNumber: 1,
+      pageSize: AMOUNT_IN_PAGE,
+    }
   }));
 
   return (

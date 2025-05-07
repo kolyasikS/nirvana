@@ -26,12 +26,14 @@ import {useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import ItemCard from "@/app/(member)/inventory-manager/dashboard/components/item/ItemCard";
 import {DashboardHeader} from "@/components/ui/widgets";
-import {getItemHistories} from "@lib/query/inventory-manager/queryOptions";
+import {getItemHistories, getMostPopularItem} from "@lib/query/inventory-manager/queryOptions";
 import {getFormattedTime} from "@lib/utils";
 import {TablePagination} from "@/components/ui/features";
 import {AMOUNT_IN_PAGE} from "@lib/constants";
 import ExportItemsHistoryButton
   from "@/app/(member)/inventory-manager/items-history/components/ExportItemsHistoryButton";
+import {cn} from "@lib/utils-client";
+import ItemHistoryCharts from "@/app/(member)/inventory-manager/items-history/components/chart/ItemHistoryCharts";
 
 export const Dashboard = observer(() => {
   const [pageNumber, setPageNumber] = useState(1);
@@ -40,11 +42,15 @@ export const Dashboard = observer(() => {
     isFetching,
     isPlaceholderData
   } = useQuery(getItemHistories({
-    pageNumber,
-    pageSize: AMOUNT_IN_PAGE,
+    pagination: {
+      pageNumber,
+      pageSize: AMOUNT_IN_PAGE,
+    }
   }));
-
-  const [selectedItem, setSelectedItem] = useState<null | IItem>(null);
+  const [showMostUsedItems, setShowMostUsedItems] = useState(false);
+  const {
+    data: mostPopularItemsResponse,
+  } = useQuery(getMostPopularItem());
 
   const breadcrumbs = useMemo(() => [{
     title: `Inventory Manager Dashboard`,
@@ -58,7 +64,7 @@ export const Dashboard = observer(() => {
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-[100px]">
           <div className={'grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
             <div
-              className={`grid auto-rows-max items-start gap-4 md:gap-8 ${selectedItem ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
+              className={`grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-3`}>
               <Tabs defaultValue="week">
                 <TabsContent value="week">
                   <div className="flex items-center mb-2">
@@ -101,6 +107,9 @@ export const Dashboard = observer(() => {
                           {itemsHistoryResponse?.data?.itemHistories?.map((itemHistory: IItemHistory) => (
                             <TableRow
                               key={itemHistory.dateOfAction}
+                              className={cn(
+                                showMostUsedItems && mostPopularItemsResponse?.data?.item?.id === itemHistory.item.id && 'bg-blue-100/10'
+                              )}
                             >
                               <TableCell>
                                 <div className="font-medium">{itemHistory.item.name}</div>
@@ -141,16 +150,42 @@ export const Dashboard = observer(() => {
                   </Card>
                 </TabsContent>
               </Tabs>
+              <div className={'w-full flex flex-col items-center gap-3'}>
+                <h3 className={'w-full text-center text-2xl text-blue-200'}>The Most Used Item</h3>
+                <Card
+                  className={'dark:border-zinc-800 w-fit'}
+                >
+                  <Table className={'mb-2 w-fit'}>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Item Name</TableHead>
+                        <TableHead className="hidden sm:table-cell">
+                          Category
+                        </TableHead>
+                        <TableHead className="hidden sm:table-cell">
+                          Amount interactions
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow onClick={() => setShowMostUsedItems(!showMostUsedItems)}>
+                        <TableCell>
+                          <div className="font-medium">{mostPopularItemsResponse?.data?.item.name}</div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <div className="font-medium">{mostPopularItemsResponse?.data?.item.itemCategory.name}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium">{mostPopularItemsResponse?.data?.interactions}</div>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </Card>
+              </div>
             </div>
-            {selectedItem && (
-              <ItemCard
-                selectedItem={selectedItem}
-                close={() => {
-                  setSelectedItem(null);
-                }}
-              />
-            )}
           </div>
+          <ItemHistoryCharts/>
         </main>
       </div>
     </>

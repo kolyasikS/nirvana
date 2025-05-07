@@ -162,6 +162,10 @@ interface IItemCategory {
   id: string;
   name: string;
 }
+interface IGetItemHistory {
+  month?: number;
+  pagination?: IPagination;
+}
 
 // Assignments
 interface ICreateAssessment {
