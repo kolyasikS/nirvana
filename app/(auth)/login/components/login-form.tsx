@@ -71,8 +71,8 @@ export function LoginForm({
     },
   })
 
-  const [email, setEmail] = useState('manager@localhost.com'); //kyrylo.hotvianskyi@nure.ua
-  const [password, setPassword] = useState('P@ssword1'); // P@ssword1
+  const [email, setEmail] = useState(''); //manager@localhost.com
+  const [password, setPassword] = useState(''); // P@ssword1
 
   async function submit() {
     if (!loginMutation.isPending) {
