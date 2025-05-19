@@ -35,7 +35,7 @@ export const ListTasksWrapper = memo(({
       <div className="space-y-4">
         {onDateTasks.length > 0
           ? onDateTasks.map((task, ind) =>
-            <TaskComponent task={task} number={ind} key={task.id} userEmail={userEmail} {...taskProps} />
+            <TaskComponent task={task} number={ind} key={task.id} userEmail={userEmail} {...taskProps} date={date}/>
           )
           : <p className={'text-lg text-center font-bold py-5 text-gray-400'}>No Tasks</p>
         }

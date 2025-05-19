@@ -6,22 +6,26 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {TaskController} from "@/controllers/manager/Task.controller";
 import {GET_ALL_USER_TASKS_QK} from "@lib/query/manager/queryKeys";
 import {useToast} from "@/hooks/use-toast";
+import {Button} from "@/components/ui";
+import StatusModal from "@/app/(member)/manager/dashboard/components/task/components/StatusModal";
 
 type Props = {
   task: ITask;
   number: number;
   userEmail: string;
+  date: Date;
 }
 const Task = ({
   task,
   number,
+  date,
   userEmail,
 }: Props) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const [detailsVisible, setDetailsVisible] = useState(false);
-
+  console.log('date', date);
   const deleteTaskMutation = useMutation({
     mutationFn: (TaskController.deleteTask),
     onMutate: async ({ id: toDeleteTaskId }: IDeleteTask) => {
@@ -59,10 +63,11 @@ const Task = ({
       deleteTaskMutation.mutate({ id: task.id });
     }
   }
-
+  console.log(task)
   return (
     <div className={cn({
-      'text-green-300': task.isCompleted
+      'text-green-300': task.assignmentToUserStatus.name === 'Approved',
+      'text-red-300': task.assignmentToUserStatus.name === 'Rejected',
     })}>
       <div className={cn(`flex w-full justify-between relative z-10'`)}>
         <div className={'flex gap-3'}>
@@ -94,6 +99,21 @@ const Task = ({
         <div className={'w-full'}>
           <p className={'font-bold text-sm mt-3'}>Details:</p>
           <p>{task.details}</p>
+        </div>
+        <div className={'flex flex-col items-end justify-center w-max gap-2 mt-3'}>
+          {task.assignmentToUserStatus.name !== 'Completed' && (
+            <p className={cn(
+              'w-max text-sm',
+              ['Not Accepted', 'Rejected'].includes(task.assignmentToUserStatus.name) && 'text-red-400',
+              task.assignmentToUserStatus.name === 'In Progress' && 'text-yellow-400',
+              task.assignmentToUserStatus.name === 'Approved' && 'text-green-400',
+            )}>
+              {task.assignmentToUserStatus.name}
+            </p>
+          )}
+          {task.assignmentToUserStatus.name === 'Completed' && (
+            <StatusModal taskId={task.id} date={date} userEmail={userEmail}/>
+          )}
         </div>
       </div>
     </div>

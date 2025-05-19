@@ -1,3 +1,4 @@
+'use client';
 import React, {useMemo} from 'react';
 import {ExportButton} from "@/components/ui/features/export-button";
 import {formatExportUsersData} from "@lib/export";

@@ -71,7 +71,7 @@ export function LoginForm({
     },
   })
 
-  const [email, setEmail] = useState('mykola.primachenko@gmail.com'); //kyrylo.hotvianskyi@nure.ua
+  const [email, setEmail] = useState('manager@localhost.com'); //kyrylo.hotvianskyi@nure.ua
   const [password, setPassword] = useState('P@ssword1'); // P@ssword1
 
   async function submit() {

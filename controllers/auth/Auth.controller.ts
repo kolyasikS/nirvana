@@ -140,4 +140,33 @@ export class AuthController {
       throw ResponseError.createResponseError(error);
     }
   }
+
+  static async changePassword({
+    oldPassword,
+    newPassword,
+  }: ChangePasswordDto): Promise<IResponse> {
+    let validationResult = await validatePassword(newPassword, {
+      required: true,
+    });
+
+    if (validationResult.error) {
+      throw new MainError(validationResult.message);
+    }
+
+    try {
+      const { data } = await axios.put(`/users/changePassword`, {
+        currentPassword: oldPassword,
+        newPassword: newPassword,
+      });
+
+      return {
+        message: 'Password was changed successfully.',
+        data,
+        error: false,
+      };
+    } catch (error: any) {
+      console.error(error);
+      throw ResponseError.createResponseError(error);
+    }
+  }
 }

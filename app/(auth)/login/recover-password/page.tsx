@@ -1,16 +1,13 @@
 import React from 'react';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui";
-import RecoverForm from "@/app/(auth)/login/recover-password/[code]/RecoverForm";
+import RecoverForm from "@/app/(auth)/login/recover-password/RecoverForm";
 
 type Props = {
-  params: Promise<any>,
   searchParams: Promise<any>,
 }
 const Page = async ({
-  params: paramsPromise,
   searchParams: searchParamsPromise,
 }: Props) => {
-  const params = await paramsPromise;
   const searchParams = await searchParamsPromise;
 
   return (
@@ -23,7 +20,7 @@ const Page = async ({
       </CardHeader>
       <CardContent>
         <RecoverForm
-          code={params.code}
+          code={searchParams.code}
           email={searchParams.email}
         />
       </CardContent>

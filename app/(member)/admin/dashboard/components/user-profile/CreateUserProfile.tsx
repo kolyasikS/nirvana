@@ -10,7 +10,7 @@ import {Button, Loader} from "@/components/ui";
 import {validateCreateUserSchema} from "@lib/validation/admin-validation";
 import {GET_ALL_USERS_QK} from "@lib/query/user/queryKeys";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {USER_ROLE_LABELS} from "@lib/constants";
+import {AMOUNT_IN_PAGE, USER_ROLE_LABELS} from "@lib/constants";
 
 type Props = {
   onClose: () => void;
@@ -32,20 +32,28 @@ export function CreateUserProfile({
   const createUserMutation = useMutation({
     mutationFn: (AdminController.createUser),
     onMutate: async (newUser: ICreateUserDetails) => {
-      await queryClient.cancelQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
+      await queryClient.cancelQueries({ queryKey: [GET_ALL_USERS_QK, 1, AMOUNT_IN_PAGE] });
 
-      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USERS_QK]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USERS_QK, 1, AMOUNT_IN_PAGE]);
 
       const newUserWithId = {
         ...newUser,
         id: newUser.email,
       };
-      queryClient.setQueryData<IResponse>([GET_ALL_USERS_QK], (oldResponse) =>
-        oldResponse?.data
-          ? {...oldResponse, data: [...oldResponse.data, newUserWithId]} as IResponse
-          : {...oldResponse, data: [newUserWithId]} as IResponse
+      queryClient.setQueryData<IResponse>([GET_ALL_USERS_QK, 1, AMOUNT_IN_PAGE], (oldResponse) => oldResponse?.data?.users
+          ? {
+            ...oldResponse,
+            data: {
+              count: oldResponse?.data?.count + 1,
+              users: [...oldResponse?.data?.users, newUserWithId]
+            }} as IResponse
+          : {
+            ...oldResponse,
+            data: {
+              count: oldResponse?.data?.count + 1,
+              users: [newUserWithId]
+            }} as IResponse
       );
-      onClose();
       return { previousResponse };
     },
     onError: (error) => {
@@ -55,13 +63,14 @@ export function CreateUserProfile({
       });
     },
     onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK] });
       toast({
         title: message
       });
+      onClose();
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK] });
     }
   })
 

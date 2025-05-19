@@ -1,16 +1,17 @@
 'use client'
 
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useToast} from "@/hooks/use-toast";
 import {Button, FormTextareaBox, Loader} from "@/components/ui";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {TASK_TYPES} from "@lib/constants";
+import {AMOUNT_IN_PAGE, TASK_TYPES} from "@lib/constants";
 import {TaskController} from "@/controllers/manager/Task.controller";
 import SelectTime from "@/app/(member)/manager/dashboard/components/task/components/SelectTime";
 import {GET_ALL_USER_TASKS_QK} from "@lib/query/manager/queryKeys";
 import {makeTaskTime} from "@lib/utils";
 import {validateCreateTaskSchema, validateCreateTaskTime} from "@lib/validation/task-validation";
+import {getAssignments} from "@lib/query/manager/queryOptions";
 
 const hours = Array.from({ length: 15 }, (_, i) => String(i + 8).padStart(2, '0'))
 const minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
@@ -60,18 +61,21 @@ export function CreateTask ({
   const createTaskMutation = useMutation({
     mutationFn: (TaskController.createTask),
     onMutate: async (task: ICreateTask) => {
-      await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
+      await queryClient.cancelQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email, -1, -1], exact: true });
 
-      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USER_TASKS_QK, user.email]);
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_USER_TASKS_QK, user.email, -1, -1]);
 
       const newTaskWithId: ITask = {
         startTime: makeTaskTime(task.date, task.startTime.hours, task.startTime.minutes).toString(),
         endTime: makeTaskTime(task.date, task.endTime.hours, task.endTime.minutes).toString(),
         details: task.details,
         user: user,
+        assignmentToUserStatus: null as any,
         assignment: {
+          id: `${Date.now()}`,
           name: TASK_TYPES.find(type => type.id === task.typeId)?.name ?? '',
           role: {
+            id: roles.find(role => role.name === user.role)?.id ?? '',
             name: user.role,
           }
         },
@@ -83,6 +87,12 @@ export function CreateTask ({
           ? {...oldResponse, data: [...oldResponse.data, newTaskWithId]} as IResponse
           : {...oldResponse, data: [newTaskWithId]} as IResponse
       );
+
+      setForm({
+        ...defaultTaskForm,
+        date,
+        userId: user.id,
+      });
       onClose();
       return { previousResponse };
     },
@@ -93,18 +103,19 @@ export function CreateTask ({
       });
     },
     onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email, -1, -1], exact: true });
       toast({
         title: message
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USER_TASKS_QK, user.email, -1, -1], exact: true });
     }
   })
 
   const createTaskHandler = async (e: any) => {
     e.preventDefault();
+    console.log(form)
     if (!createTaskMutation.isPending) {
       const validationSchemaResult = await validateCreateTaskSchema(form);
       if (validationSchemaResult.error) {
@@ -133,11 +144,17 @@ export function CreateTask ({
     }
   }
 
-  const availableTaskTypes = useMemo(() =>
-    TASK_TYPES.filter(type =>
-      type.roleId === roles.find(role => role.name === user.role)?.id
-    ), [roles, user.role]);
+  const {
+    data: assignmentsResponse,
+  } = useQuery(getAssignments({
+    pageNumber: 1,
+    pageSize: AMOUNT_IN_PAGE,
+  }));
 
+  const availableTaskTypes: IAssignment[] = useMemo(() =>
+    assignmentsResponse?.data?.assignments?.filter((assignment: IAssignment) => assignment.role.name === user.role),
+    [assignmentsResponse, user.role]);
+  console.log(assignmentsResponse, availableTaskTypes, user)
   const setFormStartTimeHours = useCallback((hours: string) =>
     setForm(form => ({
       ...form,
@@ -253,7 +270,7 @@ export function CreateTask ({
                   <SelectValue placeholder="Select type"/>
                 </SelectTrigger>
                 <SelectContent>
-                  {availableTaskTypes.map(type => (
+                  {availableTaskTypes?.map(type => (
                     <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
                   ))}
                 </SelectContent>

@@ -10,6 +10,7 @@ import {
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {cn} from "@lib/utils-client";
 import {
+  Badge,
   Button,
   FormInputBox,
   Input, Loader,
@@ -30,7 +31,7 @@ import {validateMarkAsCompletedTaskSchema} from "@lib/validation/task-validation
 import {validateModifyItemSchema} from "@lib/validation/item-validation";
 import {ItemController} from "@/controllers/worker/Item.controller";
 import {GET_ALL_ITEMS_QK} from "@lib/query/user/queryKeys";
-import {getAllItemsOptions} from "@lib/query/user/queryOptions";
+import {getAllItemsOptions, getAssignmentStatuses} from "@lib/query/user/queryOptions";
 import {TablePagination} from "@/components/ui/features";
 
 type IUsedItem = IItem & {
@@ -38,9 +39,15 @@ type IUsedItem = IItem & {
 }
 type Props = {
   taskId: string;
+  date: Date;
+  close: () => void;
+  open: boolean;
 }
-const MarkAsCompletedModal = ({
+const StatusModal = ({
   taskId,
+  date,
+  close,
+  open,
 }: Props) => {
   const [pageNumber, setPageNumber] = useState(1);
   const {
@@ -60,7 +67,13 @@ const MarkAsCompletedModal = ({
   const [searchValue, setSearchValue, debounceValue] = useDebounceValue({
     debounceDelay: 400
   });
-  console.log(itemsResponse?.data)
+
+  const {
+    data: assignmentStatusesResponse,
+  } = useQuery(
+    getAssignmentStatuses()
+  );
+
   const filterItems = useMemo(() => {
     return itemsResponse?.data?.items?.
       filter((item: IItem) =>
@@ -70,19 +83,27 @@ const MarkAsCompletedModal = ({
         item.name.toLowerCase().includes(debounceValue.toLowerCase())
       );
   }, [itemsResponse, usedItems, debounceValue]);
+  const updateStatusMutation = useMutation({
+    mutationFn: (TaskController.updateStatus),
+    onMutate: async ({ assignmentToUserId: newTaskId, newStatus }: IUpdateTaskStatus) => {
+      await queryClient.cancelQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()] });
 
-  const markAsCompletedMutation = useMutation({
-    mutationFn: (TaskController.markAsCompleted),
-    onMutate: async ({ assignmentToUserId: newTaskId }: IMarkAsCompletedTask) => {
-      await queryClient.cancelQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK], exact: true });
+      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()]);
 
-      const previousResponse = queryClient.getQueryData<IResponse>([GET_ALL_WORKER_TASKS_QK]);
-
-      queryClient.setQueryData<IResponse>([GET_ALL_WORKER_TASKS_QK], (oldResponse) =>
+      queryClient.setQueryData<IResponse>([GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()], (oldResponse) =>
         oldResponse?.data
-          ? {...oldResponse, data: oldResponse.data.map((oldTask: ITask) => oldTask.id === newTaskId ? ({...oldTask, isCompleted: true}) : oldTask)} as IResponse
+          ? {
+            ...oldResponse,
+            data: oldResponse.data.map((oldTask: ITask) =>
+              oldTask.id === newTaskId
+                ? ({
+                  ...oldTask,
+                  assignmentToUserStatus: newStatus
+                })
+                : oldTask)} as IResponse
           : oldResponse
       );
+
       return { previousResponse };
     },
     onError: (error) => {
@@ -92,7 +113,7 @@ const MarkAsCompletedModal = ({
       });
     },
     onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()], exact: true });
       toast({
         title: message
       });
@@ -112,26 +133,19 @@ const MarkAsCompletedModal = ({
       })
 
       Promise.all(modifyItemPromises).finally(() => queryClient.invalidateQueries({ queryKey: [GET_ALL_ITEMS_QK], exact: true }));
+      close();
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK], exact: true });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKER_TASKS_QK, date.getMonth() + 1, date.getFullYear()], exact: true });
     }
   });
 
   const markAsCompletedTaskHandler = useCallback(async () => {
-    if (!markAsCompletedMutation.isPending) {
-      const validationResult = await validateMarkAsCompletedTaskSchema({ assignmentToUserId: taskId });
-      if (validationResult.error) {
-        toast({
-          title: validationResult.message,
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      markAsCompletedMutation.mutate({ assignmentToUserId: taskId });
-    }
-  }, [markAsCompletedMutation, taskId, toast]);
+    updateStatusMutation.mutate({
+      assignmentToUserId: taskId,
+      newStatus: assignmentStatusesResponse?.data?.find((_status: IAssignmentToUserStatus) => _status.name === 'Completed')
+    });
+  }, [assignmentStatusesResponse, updateStatusMutation, taskId]);
 
   const modifyMutation = useMutation({
     mutationFn: (ItemController.modifyItem),
@@ -144,14 +158,7 @@ const MarkAsCompletedModal = ({
   });
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <div className={'flex flex-1 items-center min-w-fit dark:text-white'}>
-          <button className={'underline text-sm text-emerald-400'} onClick={() => {}}>
-            Mark as completed
-          </button>
-        </div>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={(open) => !open && close()}>
       <DialogContent className="sm:max-w-[425px]">
         {
           page === 0
@@ -221,8 +228,10 @@ const MarkAsCompletedModal = ({
                 </div>
               </div>
               <DialogFooter className={'flex w-full justify-between'}>
-                <Button type="button" variant="outline" onClick={markAsCompletedTaskHandler as any}>Skip</Button>
-                <Button type="submit" onClick={markAsCompletedTaskHandler as any}>Apply</Button>
+                <Button type="button" variant="outline" onClick={close as any}>Cancel</Button>
+                <Button type="submit" onClick={markAsCompletedTaskHandler as any}>
+                  {updateStatusMutation.isPending ? <Loader/> : 'Apply'}
+                </Button>
               </DialogFooter>
             </>
             : <>
@@ -271,4 +280,4 @@ const MarkAsCompletedModal = ({
   );
 };
 
-export default MarkAsCompletedModal;
+export default StatusModal;

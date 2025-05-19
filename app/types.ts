@@ -29,9 +29,9 @@ interface VerifyCodeDto {
   password: string;
   confirmPassword: string;
 }
-interface SetNewPasswordDto {
+interface ChangePasswordDto {
+  oldPassword: string;
   newPassword: string;
-  confirmPassword: string;
 }
 interface EmailConfirmDto {
   code: string;
@@ -120,6 +120,10 @@ interface IDeleteTask {
 interface IMarkAsCompletedTask {
   assignmentToUserId: string;
 }
+interface IUpdateTaskStatus {
+  assignmentToUserId: string;
+  newStatus: IAssignmentToUserStatus;
+}
 
 // Item
 interface ICreateItem {
@@ -154,6 +158,28 @@ interface IItemHistory {
   user: IUserDetails;
   value: number;
 }
+interface IItemCategory {
+  id: string;
+  name: string;
+}
+interface IGetItemHistory {
+  month?: number;
+  pagination?: IPagination;
+}
+
+// Assignments
+interface ICreateAssessment {
+  name: string;
+  role: IRole;
+}
+interface IUpdateAssessment {
+  id: string;
+  name: string;
+  roleId: string;
+}
+interface IDeleteAssessment {
+  id: string;
+}
 
 // entities
 interface IUserDetails {
@@ -168,12 +194,8 @@ interface IUserDetails {
 
 interface ITask {
   id: string;
-  assignment: {
-    name: string;
-    role: {
-      name: string;
-    }
-  };
+  assignment: IAssignment;
+  assignmentToUserStatus: IAssignmentToUserStatus;
   user: any;
   details: string;
   startTime: string;
@@ -186,8 +208,17 @@ interface IItem {
   name: string;
   quantity: number;
   minimumStockQuantity: number;
+  itemCategory: IItemCategory;
 }
-
+interface IAssignment {
+  id: string;
+  name: string;
+  role: IRole;
+}
+interface IAssignmentToUserStatus {
+  id: string;
+  name: string;
+}
 interface IRole {
   id: string;
   name: string;

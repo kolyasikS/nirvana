@@ -1,13 +1,12 @@
 import React from 'react';
-import {Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui";
-import {Settings} from "lucide-react";
+import {DropdownMenuItem} from "@/components/ui";
 import {useMutation} from "@tanstack/react-query";
 import {AuthController} from "@/controllers/auth/Auth.controller";
 import {toast} from "@/hooks/use-toast";
 import {userStore} from "@lib/stores";
 import {useRouter} from "next/navigation";
 
-const Menu = () => {
+const Logout = () => {
   const router = useRouter();
 
   const logout = useMutation({
@@ -28,21 +27,10 @@ const Menu = () => {
   });
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className="overflow-hidden rounded-full"
-        >
-          <Settings className="h-5 w-5"/>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={logout.mutate as any}>Logout</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <DropdownMenuItem onClick={logout.mutate as any}>
+      Logout
+    </DropdownMenuItem>
   );
 };
 
-export default Menu;
+export default Logout;
