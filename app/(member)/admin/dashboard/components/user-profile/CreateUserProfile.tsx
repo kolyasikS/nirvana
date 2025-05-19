@@ -63,14 +63,14 @@ export function CreateUserProfile({
       });
     },
     onSuccess: ({ data, message }) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK] });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK, 1, AMOUNT_IN_PAGE] });
       toast({
         title: message
       });
       onClose();
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK] });
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_QK, 1, AMOUNT_IN_PAGE] });
     }
   })
 
