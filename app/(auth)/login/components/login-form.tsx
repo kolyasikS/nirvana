@@ -1,34 +1,84 @@
 import {useState} from "react";
-import {AuthController} from "@/controllers/auth/AuthController";
+import {AuthController} from "@/controllers/auth/Auth.controller";
 import {useToast} from "@/hooks/use-toast";
-import {Button, CardContent, CardDescription, CardHeader, CardTitle, Input, Label} from "@/components/ui";
-import Link from "next/link";
+import {Button, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Loader} from "@/components/ui";
+import {useMutation} from "@tanstack/react-query";
+import {useRouter} from "next/navigation";
+import {userStore} from "@lib/stores";
+import {USER_ROLES_ENUM} from "@lib/constants";
 
 type LoginFormProps = {
   startForgotPasswordFlow: () => void;
+  moveToEmailConfirmation: () => void;
 }
 export function LoginForm({
-  startForgotPasswordFlow
+  startForgotPasswordFlow,
+  moveToEmailConfirmation,
 }: LoginFormProps) {
-  const { toast } = useToast()
+  const { toast } = useToast();
+  const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  async function login() {
-    const result = await AuthController.login({
-      email,
-      password
-    });
-
-    if (result.error) {
+  const loginMutation = useMutation({
+    mutationFn: (AuthController.login),
+    onError: (error) => {
       toast({
-        title: result.message,
+        title: error.message,
         variant: 'destructive',
       });
-    } else {
-      toast({
-        title: result.message
+    },
+    onSuccess: ({ data, message }) => {
+      AuthController.getUserDetails()
+        .then(({ data, error }: IResponse) => {
+
+          if (!error) {
+            userStore.setUser({
+              id: data.id,
+              role: data.role,
+              email: data.email,
+            });
+          }
+
+          toast({
+            title: message
+          });
+          console.log(data)
+          if (!data.emailConfirmed) {
+            moveToEmailConfirmation();
+          } else {
+            switch (data.role) {
+              case USER_ROLES_ENUM.Administrator:
+                router.push('/admin/dashboard');
+                break;
+              case USER_ROLES_ENUM.Manager:
+                router.push('/manager/dashboard');
+                break;
+
+              case USER_ROLES_ENUM.InventoryManager:
+                router.push('/inventory-manager/dashboard');
+                break;
+              case USER_ROLES_ENUM.Housemaid:
+              case USER_ROLES_ENUM.Technician:
+                router.push('/worker/dashboard');
+                break;
+              default:
+                toast({
+                  title: 'Your role is not available',
+                  variant: 'destructive',
+                });
+            }
+          }
+        })
+    },
+  })
+
+  const [email, setEmail] = useState('manager@localhost.com'); //kyrylo.hotvianskyi@nure.ua
+  const [password, setPassword] = useState('P@ssword1'); // P@ssword1
+
+  async function submit() {
+    if (!loginMutation.isPending) {
+      loginMutation.mutate({
+        email,
+        password
       });
     }
   }
@@ -56,13 +106,12 @@ export function LoginForm({
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              <Link
-                href="#"
+              <button
                 className="ml-auto inline-block text-sm underline"
                 onClick={() => startForgotPasswordFlow()}
               >
                 Forgot your password?
-              </Link>
+              </button>
             </div>
             <Input
               id="password"
@@ -72,8 +121,8 @@ export function LoginForm({
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <Button type="submit" className="w-full" onClick={login}>
-            Login
+          <Button type="submit" className="w-full" onClick={submit}>
+            {loginMutation.isPending ? <Loader/> : 'Login'}
           </Button>
         </div>
       </CardContent>
